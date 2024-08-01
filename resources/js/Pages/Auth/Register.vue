@@ -4,10 +4,13 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import NumberInput from '@/Components/NumberInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
+
 const form = useForm({
-    name: '',
+    fullname: '',
+    contactno: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -18,6 +21,8 @@ const submit = () => {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
+
+
 </script>
 
 <template>
@@ -26,20 +31,22 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="fullname" value="Fullname" />
 
                 <TextInput
-                    id="name"
+                    id="fullname"
                     type="text"
                     class="mt-1 block w-full"
-                    v-model="form.name"
+                    v-model="form.fullname"
                     required
                     autofocus
-                    autocomplete="name"
+                    autocomplete="fullname"
                 />
 
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError class="mt-2" :message="form.errors.fullname" />
             </div>
+
+          
 
             <div class="mt-4">
                 <InputLabel for="email" value="Email" />
@@ -54,6 +61,23 @@ const submit = () => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+              <div class="mt-4">
+                <InputLabel for="contactno" value="Phone Number" />
+
+               <NumberInput
+                    id="contactno"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.contactno"
+                    required
+                    autocomplete="contactno"
+                    minlength=11
+                    maxlength=11  
+                />
+
+                <InputError class="mt-2" :message="form.errors.contactno" />
             </div>
 
             <div class="mt-4">
