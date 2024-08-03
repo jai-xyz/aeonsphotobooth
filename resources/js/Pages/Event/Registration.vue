@@ -20,16 +20,12 @@ const form = useForm({
     user_id: userId,
 });
 
-
-
 const submit = () => {
     form.post(route('event.store'), {
     });
 };
 
 </script>
-
-
 
 <template>
     <Head title="Registration" />
@@ -136,20 +132,7 @@ const submit = () => {
                         </div>
 
                             <div class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4 ">
-                            <div>
-                                <InputLabel for="numofpics" value="Number of Pictures" />
-                                <TextInput
-                                    id="numofpics"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.numofpics"
-                                    required
-                                    autofocus
-                                    autocomplete="numofpics"
-                                />
-                                <InputError class="mt-2" :message="form.errors.numofpics" />
-                            </div>
-
+                         
                             <div>
                                 <InputLabel for="suggestion" value="Suggestions" />
                                 <TextInput
@@ -169,7 +152,7 @@ const submit = () => {
 
                         <!-- hidden: userId -->
 
-                        <input type="text" name="user_id" :value="form.user_id">
+                        <input type="hidden" name="user_id" :value="form.user_id">
 
                         <PrimaryButton class="mt-6 flex float-right" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                             Register

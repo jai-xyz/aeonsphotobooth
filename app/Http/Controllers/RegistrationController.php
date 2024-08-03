@@ -3,19 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Registration;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 
 class RegistrationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): Response
     {
-        return Inertia::render('Event/List');
+        $events = DB::table('registration')->get();
+        
+        $events = $events->map(function ($event){
+            $event->date = (new DateTime($event->date))->format('m-d-Y');
+            $event->time = (new DateTime($event->time))->format('g:i A');
+            return $event;
+        });
+
+        return Inertia::render('Event/List', ['events' => $events]);
     }
 
     /**
@@ -34,17 +45,17 @@ class RegistrationController extends Controller
 
          $request->validate([
             'event' => 'required|string|max:255',
-            'date' => 'required|string|max:255',
-            'time' => 'required|string|max:255',
+            'date' => 'required|date_format:m-d-Y',
+            'time' => 'required|date_format:g:i A',
             'address' => 'required|string|max:255',
             'backdroptype' => 'required|string|max:255',
             'backdropcolor' => 'required|string|max:255',
             'numofpics' => 'required|string|max:255',
             'suggestion' => 'required|string|max:255',
         ]);
-
-        $userId = auth()->id();
         
+        $userId = auth()->id();
+
         Registration::create([
             'user_id' => $userId,
             'event' => $request->event,
@@ -57,7 +68,7 @@ class RegistrationController extends Controller
             'suggestion' => $request->suggestion,
         ]);
 
-        return redirect(route('event', [], false));
+        return Redirect::route('event');
     }
 
     /**

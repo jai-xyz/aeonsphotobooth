@@ -2,6 +2,15 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import AButton from '@/Components/AButton.vue';
+import EventListTable from '@/Pages/Event/Partials/EventListTable.vue';
+
+defineProps({
+    events: {
+        type: Array,
+        required: true,
+    },
+});
+
 </script>
 
 
@@ -15,8 +24,9 @@ import AButton from '@/Components/AButton.vue';
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg flex justify-center flex-col">
                     <div class="p-6 text-gray-900">Lists of Event</div>
+                    <EventListTable :events="events" class="mx-10 mb-10" />
                 </div>
             </div>
         </div>
