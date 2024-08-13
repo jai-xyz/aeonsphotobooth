@@ -9,7 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrationController extends Controller
 {
@@ -17,14 +17,19 @@ class RegistrationController extends Controller
      * Display a listing of the resource.
      */
     public function index(): Response
-    {
-        $events = DB::table('registration')->get();
+    {  
+        $userId = Auth::id();
         
+        $packages = 
+
+        $events = DB::table('registrations')->where('user_id', $userId)->get();
+
         $events = $events->map(function ($event){
+            $event->user = DB::table('users')->where('id', $event->user_id)->first();   
             $event->date = (new DateTime($event->date))->format('m-d-Y');
             $event->time = (new DateTime($event->time))->format('g:i A');
             return $event;
-        });
+        }); 
 
         return Inertia::render('Event/List', ['events' => $events]);
     }
@@ -45,16 +50,19 @@ class RegistrationController extends Controller
 
          $request->validate([
             'event' => 'required|string|max:255',
-            'date' => 'required|date_format:m-d-Y',
-            'time' => 'required|date_format:g:i A',
+            'date' => 'required|date_format:Y-m-d|after_or_equal:today',
+            'time' => 'required|date_format:H:i',
             'address' => 'required|string|max:255',
             'backdroptype' => 'required|string|max:255',
             'backdropcolor' => 'required|string|max:255',
-            'numofpics' => 'required|string|max:255',
             'suggestion' => 'required|string|max:255',
-        ]);
-        
-        $userId = auth()->id();
+        ],
+        [
+            'date.after_or_equal' => 'Date must be a future date.',
+        ]
+    );
+            
+         $userId = Auth::id();
 
         Registration::create([
             'user_id' => $userId,
@@ -64,11 +72,10 @@ class RegistrationController extends Controller
             'address' => $request->address,
             'backdroptype' => $request->backdroptype,
             'backdropcolor' => $request->backdropcolor,
-            'numofpics' => $request->numofpics,
             'suggestion' => $request->suggestion,
         ]);
 
-        return Redirect::route('event');
+        return redirect()->route('event.index');
     }
 
     /**

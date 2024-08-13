@@ -9,7 +9,7 @@ class Registration extends Model
 {
     use HasFactory;
 
-    protected $table = "registration";
+    protected $table = "registrations";
 
     protected $fillable = [
         'user_id',
@@ -19,7 +19,6 @@ class Registration extends Model
         'address',
         'backdroptype',
         'backdropcolor',
-        'numofpics',
         'suggestion',
     ];
 }

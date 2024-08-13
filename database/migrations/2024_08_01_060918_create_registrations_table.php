@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('registration', function (Blueprint $table) {
+        Schema::create('registrations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->string('event');
@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('address');
             $table->string('backdroptype');
             $table->string('backdropcolor');
-            $table->string('numofpics');
             $table->string('suggestion');
             $table->timestamps();
         });
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('registration');
+        Schema::dropIfExists('registrations');
     }
 };

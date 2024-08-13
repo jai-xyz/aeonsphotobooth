@@ -2,7 +2,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import AButton from '@/Components/AButton.vue';
-import EventListTable from '@/Pages/Event/Partials/EventListTable.vue';
 
 defineProps({
     events: {
@@ -12,6 +11,7 @@ defineProps({
 });
 
 </script>
+
 
 
 <template>
@@ -25,8 +25,42 @@ defineProps({
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg flex justify-center flex-col">
-                    <div class="p-6 text-gray-900">Lists of Event</div>
-                    <EventListTable :events="events" class="mx-10 mb-10" />
+                    
+                    <div class="p-6 text-gray-900">Booked events</div>
+
+
+                        <table class="border-separate border-spacing-2 border-2 border-slate-500 table-fixed">
+                                <thead class="bg-slate-500">
+                                    <tr>
+                                        <th>Event</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Address</th>
+                                        <th>Backdrop Type</th>
+                                        <th>Backdrop Color</th>
+                                        <th>Suggestion</th>
+                                        <th>Action</th> 
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr v-for="event in events" :key="event.id">
+                                        <td>{{ event.event }}</td>
+                                        <td>{{ event.date }}</td>
+                                        <td>{{ event.time }}</td>
+                                        <td>{{ event.address }}</td>
+                                        <td>{{ event.backdroptype }}</td>
+                                        <td>{{ event.backdropcolor }}</td>
+                                        <td>{{ event.suggestion }}</td>
+                                        <td><AButton>Edit</AButton></td>
+                                    </tr>
+                                    <!-- no event registered -->
+                                       <tr v-if="events == 0">
+                                        <td colspan="12" class="text-center bg-gray-300">No events booked so far</td>    
+                                        </tr>
+                                </tbody>
+                            </table>
+
                 </div>
             </div>
         </div>
