@@ -20,6 +20,9 @@ return new class extends Migration
             $table->string('contactno');
             $table->date('date');
             $table->time('time');
+            $table->foreignId('packageid')->constrained('packages', 'id');
+            $table->string('packagename');
+            $table->string('packagesize');
             $table->string('backdroptype');
             $table->string('backdropcolor');
             $table->string('suggestion');

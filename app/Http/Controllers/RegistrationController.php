@@ -37,13 +37,10 @@ class RegistrationController extends Controller
      * Show the form for creating a new resource.
      */
     public function create($packageId = null): Response
-    {
-        $pkg = null;
-    
-        if ($packageId) {
-            $pkg = DB::table('packages')->where('id', $packageId)->first();
-        }
-    
+    {    
+        $pkg = $packageId ? DB::table('packages')->where('id', $packageId)->first() : (object) [];
+        
+
         $getEvents = DB::table('registrations')->get(); 
     
         $backdropTypes = DB::table('backdroptypes')->get();
@@ -76,6 +73,9 @@ class RegistrationController extends Controller
             'hour' => 'required|string',
             'minute' => 'required|string',
             'ampm' => 'required|string|in:AM,PM',
+            'packageid' => 'required|exists:packages,id',
+            'packagename' => 'required|string|max:255',
+            'packagesize' => 'required|string|max:255',
             'backdroptype' => 'required|string|max:255',
             'backdropcolor' => 'required|string|max:255',
             'suggestion' => 'required|string|max:255',
@@ -100,8 +100,8 @@ class RegistrationController extends Controller
         $time = sprintf('%02d:%02d', $hour, $minute);
         
         $userId = Auth::id();
-
         
+
         Registration::create([
             'user_id' => $userId,
             'event' => $request->event,
@@ -110,6 +110,9 @@ class RegistrationController extends Controller
             'contactno' => $request->contactno,
             'date' => $request->date,
             'time' => $time,
+            'packageid' => $request->packageid,
+            'packagename' => $request->packagename,
+            'packagesize' => $request->packagesize,
             'backdroptype' => $request->backdroptype,
             'backdropcolor' => $request->backdropcolor,
             'suggestion' => $request->suggestion,

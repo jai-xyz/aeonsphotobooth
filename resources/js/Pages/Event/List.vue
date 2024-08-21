@@ -36,6 +36,8 @@ defineProps({
                                         <th>Date</th>
                                         <th>Time</th>
                                         <th>Address</th>
+                                        <th>Package Name</th>
+                                        <th>Package Size</th>
                                         <th>Backdrop Type</th>
                                         <th>Backdrop Color</th>
                                         <th>Suggestion</th>
@@ -49,6 +51,8 @@ defineProps({
                                         <td>{{ event.date }}</td>
                                         <td>{{ event.time }}</td>
                                         <td>{{ event.address }}</td>
+                                        <td>{{ event.packagename }}</td>
+                                        <td>{{ event.packagesize }}</td>
                                         <td>{{ event.backdroptype }}</td>
                                         <td>{{ event.backdropcolor }}</td>
                                         <td>{{ event.suggestion }}</td>

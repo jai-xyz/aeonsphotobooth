@@ -14,6 +14,26 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const userId = usePage().props.auth.user.id;
 
+const props = defineProps({
+    pkg: {
+        type: Object,
+        default: () => ({}),
+    },
+    getEvents: {
+        type: Array,
+        required: true,
+    },
+    backdropTypes: {
+        type: Array,
+        required: true,
+    },
+
+    backdropColors: {
+        type: Array,
+        required: true,
+    },
+});
+
 const form = useForm({
     event: "",
     address: "",
@@ -23,11 +43,19 @@ const form = useForm({
     hour: "",
     minute: "",
     ampm: "",
+    packageid: String(props.pkg.id || ""),
+    packagename: props.pkg.name || "",
+    packagesize: "",
     backdroptype: "",
     backdropcolor: "",
     suggestion: "",
     user_id: userId,
 });
+
+const packageSizes = computed(() => {
+    return [props.pkg.size, props.pkg.size2, props.pkg.size3, props.pkg.size4, props.pkg.size5].filter((size) => size);
+});
+
 
 const time = computed(() => {
     return `${form.hour}:${form.minute} ${form.ampm}`;
@@ -35,6 +63,7 @@ const time = computed(() => {
 
 const submit = () => {
     form.time = time.value;
+     console.log('Form details:', form);
     form.post(route("event.store"));
 };
 
@@ -48,6 +77,97 @@ const submit = () => {
 //         image: "/images/sequins.jpg",
 //     },
 // ]);
+
+const nextStep = () => {
+    if (validateStep()) {
+        activeStep.value++;
+    }
+};
+
+const prevStep = () => {
+    activeStep.value--;
+};
+
+// time - hour, minute, ampm
+
+const validateDate = (date) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(date);
+
+    if (selectedDate < currentDate) {
+        return false;
+    }
+    return true;
+};
+
+const hours = computed(() => {
+    const hoursArray = [];
+    for (let hour = 1; hour <= 12; hour++) {
+        hoursArray.push(String(hour).padStart(2, "0"));
+    }
+    return hoursArray;
+});
+
+const minutes = computed(() => {
+    const minutesArray = [];
+    for (let minute = 0; minute < 60; minute += 15) {
+        minutesArray.push(String(minute).padStart(2, "0"));
+    }
+    return minutesArray;
+});
+
+const ampmOptions = ref(["AM", "PM"]);
+
+// VUECAL CODES and BACKDROP
+
+const events = ref([]);
+
+if (props.getEvents && Array.isArray(props.getEvents)) {
+    events.value = props.getEvents.map((event) => {
+        const startDateTime = new Date(`${event.date}T${event.time}`);
+        const endDateTime = new Date(
+            startDateTime.getTime() + 2 * 60 * 60 * 1000
+        );
+        const endHours = String(endDateTime.getHours()).padStart(2, "0");
+        const endMinutes = String(endDateTime.getMinutes()).padStart(2, "0");
+        const end = `${event.date} ${endHours}:${endMinutes}`;
+
+        // const allowanceStart = new Date(endDateTime.getTime() + 1 * 60 * 60 * 1000);
+
+        return {
+            start: startDateTime,
+            end: end,
+            title: "Event",
+            class: "primary",
+            deletable: false,
+            resizable: false,
+            draggable: false,
+        };
+        // ,
+        // {
+        //     start: end,
+        //     end: allowanceStart,
+        //     class: "allowance",
+        //     deletable: false,
+        //     resizable: false,
+        //     draggable: false,
+        // };
+    });
+}
+
+const filterBackdropColors = (backdropType) => {
+    return props.backdropColors.filter(
+        (color) => color.backdroptype_name === backdropType
+    );
+};
+
+const filteredBackdropColors = computed(() => {
+    return filterBackdropColors(form.backdroptype);
+});
+
+const isBackdropColorDisabled = computed(() => {
+    return !form.backdroptype;
+});
 
 const activeStep = ref(1);
 
@@ -113,118 +233,6 @@ const validateStep = () => {
     // }
     return isValid;
 };
-
-const nextStep = () => {
-    if (validateStep()) {
-        activeStep.value++;
-    }
-};
-
-const prevStep = () => {
-    activeStep.value--;
-};
-
-// time - hour, minute, ampm
-
-const validateDate = (date) => {
-    const currentDate = new Date();
-    const selectedDate = new Date(date);
-
-    if (selectedDate < currentDate) {
-        return false;
-    }
-    return true;
-};
-
-const hours = computed(() => {
-    const hoursArray = [];
-    for (let hour = 1; hour <= 12; hour++) {
-        hoursArray.push(String(hour).padStart(2, "0"));
-    }
-    return hoursArray;
-});
-
-const minutes = computed(() => {
-    const minutesArray = [];
-    for (let minute = 0; minute < 60; minute += 15) {
-        minutesArray.push(String(minute).padStart(2, "0"));
-    }
-    return minutesArray;
-});
-
-const ampmOptions = ref(["AM", "PM"]);
-
-// VUECAL CODES and BACKDROP
-
-const props = defineProps({
-    pkg : {
-        type: Object,
-        required: true,
-    }, 
-    getEvents: {
-        type: Array,
-        required: true,
-    },
-        backdropTypes: {
-        type: Array,
-        required: true,
-    },
-
-    backdropColors: {
-        type: Array,
-        required: true,
-    },
-});
-
-const events = ref([]);
-
-if (props.getEvents && Array.isArray(props.getEvents)) {
-    events.value = props.getEvents.map((event) => {
-        const startDateTime = new Date(`${event.date}T${event.time}`);
-        const endDateTime = new Date(
-            startDateTime.getTime() + 2 * 60 * 60 * 1000
-        );
-        const endHours = String(endDateTime.getHours()).padStart(2, "0");
-        const endMinutes = String(endDateTime.getMinutes()).padStart(2, "0");
-        const end = `${event.date} ${endHours}:${endMinutes}`;
-
-        // const allowanceStart = new Date(endDateTime.getTime() + 1 * 60 * 60 * 1000);
-
-
-        return {
-            start: startDateTime,
-            end: end,
-            title: "Event",
-            class: "primary",
-            deletable: false,
-            resizable: false,
-            draggable: false,
-         }
-        // ,
-        // {
-        //     start: end,
-        //     end: allowanceStart,
-        //     class: "allowance",
-        //     deletable: false,
-        //     resizable: false,
-        //     draggable: false,
-        // };
-    });
-}
-
-const filterBackdropColors = (backdropType) => {
-    return props.backdropColors.filter((color) => color.backdroptype_name === backdropType);
-};
-
-
-const filteredBackdropColors = computed(() => {
-    return filterBackdropColors(form.backdroptype);
-});
-
-const isBackdropColorDisabled = computed(() => {
-    return !form.backdroptype
-});
-
 </script>
 
 <template>
@@ -401,9 +409,9 @@ const isBackdropColorDisabled = computed(() => {
                                             v-model="form.hour"
                                             :required="validateDate"
                                         >
-                                          <option disabled value="">
-                                            Hour
-                                        </option>
+                                            <option disabled value="">
+                                                Hour
+                                            </option>
                                             <option
                                                 v-for="hour in hours"
                                                 :key="hour"
@@ -419,9 +427,9 @@ const isBackdropColorDisabled = computed(() => {
                                             v-model="form.minute"
                                             :required="validateDate"
                                         >
-                                         <option disabled value="">
-                                            Minute
-                                        </option>
+                                            <option disabled value="">
+                                                Minute
+                                            </option>
                                             <option
                                                 v-for="minute in minutes"
                                                 :key="minute"
@@ -430,15 +438,16 @@ const isBackdropColorDisabled = computed(() => {
                                                 {{ minute }}
                                             </option>
                                         </select>
-                       
+
                                         <select
                                             id="ampm"
-                                              class="select select-info rounded-s-none border-gray-300 mt-1 block w-full"
+                                            class="select select-info rounded-s-none border-gray-300 mt-1 block w-full"
                                             v-model="form.ampm"
                                             :required="validateDate"
-                                        > <option disabled value="">
-                                            AM/PM
-                                        </option>
+                                        >
+                                            <option disabled value="">
+                                                AM/PM
+                                            </option>
                                             <option
                                                 v-for="ampm in ampmOptions"
                                                 :key="ampm"
@@ -447,22 +456,21 @@ const isBackdropColorDisabled = computed(() => {
                                                 {{ ampm }}
                                             </option>
                                         </select>
-                                 
                                     </div>
-                            <div class="flex gap-2">
-                              <InputError
-                                        class="mt-2"
-                                        :message="form.errors.hour"
-                                    />
+                                    <div class="flex gap-2">
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.hour"
+                                        />
 
-                                 <InputError
-                                        class="mt-2"
-                                        :message="form.errors.minute"
-                                    />
-                                    <InputError
-                                        class="mt-2"
-                                        :message="form.errors.ampm"
-                                    />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.minute"
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.ampm"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -476,7 +484,7 @@ const isBackdropColorDisabled = computed(() => {
                                         :events="events"
                                         class="vuecal--blue-theme mx-12"
                                         events-count-on-year-view
-                                                sticky-split-labels
+                                        sticky-split-labels
                                         style="
                                             width: 150%;
                                             height: 500px;
@@ -485,7 +493,10 @@ const isBackdropColorDisabled = computed(() => {
                                         :disable-views="['day']"
                                         active-view="month"
                                         timeFormat="hh:mm {AM}"
-                                        :split-days="[{ id: 1, label: 'Booth 1' }, { id: 2, label: 'Booth 2' }]"
+                                        :split-days="[
+                                            { id: 1, label: 'Booth 1' },
+                                            { id: 2, label: 'Booth 2' },
+                                        ]"
                                     >
                                     </VueCal>
                                 </div>
@@ -500,18 +511,20 @@ const isBackdropColorDisabled = computed(() => {
                             <div
                                 class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4"
                             >
-                             <div>
+                                <div>
                                     <InputLabel
                                         for="packageid"
                                         value="Package ID"
                                     />
-                                   <TextInput
+                                    <TextInput
                                         id="packageid"
                                         type="text"
                                         class="mt-1 block w-full"
                                         v-model="form.packageid"
-                                        :value="pkg.id"
-                                         :class="{ 'display:none': !pkg.id }"
+                                        :value="String(props.pkg.id)"
+                                        :class="{
+                                            'display:none': !props.pkg.id,
+                                        }"
                                         required
                                         readonly
                                         autocomplete="off"
@@ -519,10 +532,62 @@ const isBackdropColorDisabled = computed(() => {
 
                                     <InputError
                                         class="mt-2"
-                                        :message="form.errors.backdroptype"
+                                        :message="form.errors.packageid"
                                     />
                                 </div>
-                                
+
+                                <div>
+                                    <InputLabel
+                                        for="packagename"
+                                        value="Package Name"
+                                    />
+                                    <TextInput
+                                        id="packagename"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="form.packagename"
+                                        :value="String(props.pkg.id)"
+                                        required
+                                        readonly
+                                        autocomplete="off"
+                                    />
+
+                                     <InputError
+                                        class="mt-2"
+                                        :message="form.errors.packagename"
+                                    />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="packagesize"
+                                        value="Size"
+                                    />
+                                    <select
+                                        class="select select-info border-gray-300 mt-1 block w-full"
+                                        id="packagesize"
+                                        name="packagesize"
+                                        required
+                                        v-model="form.packagesize"  
+                                    >
+                                        <option disabled value="">
+                                            Select Size
+                                        </option>
+                                        <option
+                                            v-for="size in packageSizes"
+                                            :key="size"
+                                            :value="size"
+                                        >
+                                            {{ size }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                     <InputError
+                                        class="mt-2"
+                                        :message="form.errors.packagesize"
+                                    />
+
                                 <div>
                                     <InputLabel
                                         for="backdroptype"
@@ -558,13 +623,13 @@ const isBackdropColorDisabled = computed(() => {
                                         for="backdropcolor"
                                         value="Backdrop Color"
                                     />
-                                      <select
+                                    <select
                                         class="select select-info border-gray-300 mt-1 block w-full"
                                         id="backdropcolor"
                                         name="backdropcolor"
                                         required
                                         v-model="form.backdropcolor"
-                                           :disabled="isBackdropColorDisabled"
+                                        :disabled="isBackdropColorDisabled"
                                     >
                                         <option disabled value="">
                                             Select Background Color
