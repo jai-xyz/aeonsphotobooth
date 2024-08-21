@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->string('event');
+            $table->string('address');
+            $table->string('contactperson');
+            $table->string('contactno');
             $table->date('date');
             $table->time('time');
-            $table->string('address');
             $table->string('backdroptype');
             $table->string('backdropcolor');
             $table->string('suggestion');

@@ -26,14 +26,14 @@ defineProps({
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg flex justify-center flex-col">
                     <div class="p-6 text-gray-900">List of packages</div>
-
-                    <table class="border-separate border-spacing-2 border-2 border-slate-500 table-fixed">
+<div class="overflow-x-auto">
+                    <table class="border-separate border-spacing-2 border-2 border-slate-500 table-fixed  table-pin-rows">
                                 <thead class="bg-slate-500">
                                     <tr>
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th>Duration</th>
-                                        <th>Size</th>
+                                        <th>Size/s</th>
                                         <th>Inclusion</th>
                                         <th>Note</th>
                                         <th>Extension</th>
@@ -46,7 +46,7 @@ defineProps({
                                         <td>{{ pkg.name }}</td>
                                         <td>{{ pkg.price }}</td>
                                         <td>{{ pkg.duration }}</td>
-                                        <td>{{ pkg.size}}</td>
+                                       <td>{{ pkg.size }}{{ pkg.size2 ? ', ' + pkg.size2 : '' }}{{ pkg.size2 ? ', ' + pkg.size2 : '' }}{{ pkg.size3 ? ', ' + pkg.size3 : '' }}{{ pkg.size4 ? ', ' + pkg.size4 : '' }}{{ pkg.size5 ? ', ' + pkg.size5 : '' }}</td>
                                         <td>{{ pkg.inclusion }}</td>
                                         <td>{{ pkg.note }}</td>
                                         <td>{{ pkg.extension }}</td>
@@ -54,6 +54,7 @@ defineProps({
                                     </tr>
                                 </tbody>
                             </table>
+                             </div>
                 </div>
             </div>
         </div>

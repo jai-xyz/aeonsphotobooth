@@ -1,40 +1,53 @@
 <script setup>
+import { ref, computed, onMounted } from "vue";
+import { Head, useForm, usePage } from "@inertiajs/vue3";
+import VueCal from "vue-cal";
+import "vue-cal/dist/vuecal.css";
+import "../../../css/custom-styles.css";
+
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
+import NumberInput from "@/Components/NumberInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { Head, useForm, usePage } from "@inertiajs/vue3";
-// import Select from "@/Components/Select.vue";
-import { ref } from "vue";
 
 const userId = usePage().props.auth.user.id;
 
 const form = useForm({
     event: "",
-    date: "",
-    time: "",
     address: "",
+    contactperson: "",
+    contactno: "",
+    date: "",
+    hour: "",
+    minute: "",
+    ampm: "",
     backdroptype: "",
     backdropcolor: "",
     suggestion: "",
     user_id: userId,
 });
 
+const time = computed(() => {
+    return `${form.hour}:${form.minute} ${form.ampm}`;
+});
+
 const submit = () => {
+    form.time = time.value;
     form.post(route("event.store"));
 };
 
-const options = ref([
-    {
-        value: "Plain",
-        image: "/images/plain.png",
-    },
-    {
-        value: "Sequins",
-        image: "/images/sequins.jpg",
-    },
-]);
+// const options = ref([
+//     {
+//         value: "Plain",
+//         image: "/images/plain.png",
+//     },
+//     {
+//         value: "Sequins",
+//         image: "/images/sequins.jpg",
+//     },
+// ]);
 
 const activeStep = ref(1);
 
@@ -43,7 +56,7 @@ const validateStep = () => {
     form.errors = {}; // Clear previous errors
 
     if (activeStep.value === 1) {
-          if (!form.event) {
+        if (!form.event) {
             form.errors.event = "Event name is required.";
             isValid = false;
         }
@@ -51,8 +64,27 @@ const validateStep = () => {
             form.errors.address = "Address is required.";
             isValid = false;
         }
-
-         if (!form.date) {
+        if (!form.contactperson) {
+            form.errors.contactperson = "Contact person is required.";
+            isValid = false;
+        }
+        if (!form.contactno) {
+            form.errors.contactno = "Contact number is required.";
+            isValid = false;
+        }
+        if (!form.hour) {
+            form.errors.hour = "Hour is required.";
+            isValid = false;
+        }
+        if (!form.minute) {
+            form.errors.minute = "Minute is required.";
+            isValid = false;
+        }
+        if (!form.ampm) {
+            form.errors.ampm = "AMPM is required.";
+            isValid = false;
+        }
+        if (!form.date) {
             form.errors.date = "Date is required.";
             isValid = false;
         } else if (!validateDate(form.date)) {
@@ -64,8 +96,7 @@ const validateStep = () => {
             isValid = false;
         }
     } else if (activeStep.value === 2) {
-       
-         if (!form.backdroptype) {
+        if (!form.backdroptype) {
             form.errors.backdroptype = "Backdrop type is required.";
             isValid = false;
         }
@@ -77,9 +108,9 @@ const validateStep = () => {
             form.errors.suggestion = "Suggestion is required.";
             isValid = false;
         }
-    } else if (activeStep.value === 3) {
-     
     }
+    // else if (activeStep.value === 3) {
+    // }
     return isValid;
 };
 
@@ -93,6 +124,8 @@ const prevStep = () => {
     activeStep.value--;
 };
 
+// time - hour, minute, ampm
+
 const validateDate = (date) => {
     const currentDate = new Date();
     const selectedDate = new Date(date);
@@ -102,6 +135,96 @@ const validateDate = (date) => {
     }
     return true;
 };
+
+const hours = computed(() => {
+    const hoursArray = [];
+    for (let hour = 1; hour <= 12; hour++) {
+        hoursArray.push(String(hour).padStart(2, "0"));
+    }
+    return hoursArray;
+});
+
+const minutes = computed(() => {
+    const minutesArray = [];
+    for (let minute = 0; minute < 60; minute += 15) {
+        minutesArray.push(String(minute).padStart(2, "0"));
+    }
+    return minutesArray;
+});
+
+const ampmOptions = ref(["AM", "PM"]);
+
+// VUECAL CODES and BACKDROP
+
+const props = defineProps({
+    pkg : {
+        type: Object,
+        required: true,
+    }, 
+    getEvents: {
+        type: Array,
+        required: true,
+    },
+        backdropTypes: {
+        type: Array,
+        required: true,
+    },
+
+    backdropColors: {
+        type: Array,
+        required: true,
+    },
+});
+
+const events = ref([]);
+
+if (props.getEvents && Array.isArray(props.getEvents)) {
+    events.value = props.getEvents.map((event) => {
+        const startDateTime = new Date(`${event.date}T${event.time}`);
+        const endDateTime = new Date(
+            startDateTime.getTime() + 2 * 60 * 60 * 1000
+        );
+        const endHours = String(endDateTime.getHours()).padStart(2, "0");
+        const endMinutes = String(endDateTime.getMinutes()).padStart(2, "0");
+        const end = `${event.date} ${endHours}:${endMinutes}`;
+
+        // const allowanceStart = new Date(endDateTime.getTime() + 1 * 60 * 60 * 1000);
+
+
+        return {
+            start: startDateTime,
+            end: end,
+            title: "Event",
+            class: "primary",
+            deletable: false,
+            resizable: false,
+            draggable: false,
+         }
+        // ,
+        // {
+        //     start: end,
+        //     end: allowanceStart,
+        //     class: "allowance",
+        //     deletable: false,
+        //     resizable: false,
+        //     draggable: false,
+        // };
+    });
+}
+
+const filterBackdropColors = (backdropType) => {
+    return props.backdropColors.filter((color) => color.backdroptype_name === backdropType);
+};
+
+
+const filteredBackdropColors = computed(() => {
+    return filterBackdropColors(form.backdroptype);
+});
+
+const isBackdropColorDisabled = computed(() => {
+    return !form.backdroptype
+});
+
 </script>
 
 <template>
@@ -122,16 +245,15 @@ const validateDate = (date) => {
                     <form @submit.prevent="submit">
                         <!-- STEP 1: BACKDROP DETAILS -->
                         <div v-if="activeStep === 1">
-                            <h1 class="text-center">
-                                Step 1: Backdrop Details
-                            </h1>
+                            <h1 class="text-center">Step 1: Event Details</h1>
+
                             <div
                                 class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4"
                             >
-     <div>
+                                <div>
                                     <InputLabel
                                         for="event"
-                                        value="Event Name"
+                                        value="Title of the Event"
                                     />
                                     <TextInput
                                         id="event"
@@ -150,7 +272,10 @@ const validateDate = (date) => {
                                 </div>
 
                                 <div>
-                                    <InputLabel for="address" value="Address" />
+                                    <InputLabel
+                                        for="address"
+                                        value="Event Location"
+                                    />
                                     <TextInput
                                         id="address"
                                         type="text"
@@ -164,6 +289,47 @@ const validateDate = (date) => {
                                         :message="form.errors.address"
                                     />
                                 </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="contactperson"
+                                        value="Contact Person"
+                                    />
+                                    <TextInput
+                                        id="contactperson"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="form.contactperson"
+                                        required
+                                        autocomplete="off"
+                                    />
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.contactperson"
+                                    />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="contactno"
+                                        value="Contact Number"
+                                    />
+                                    <NumberInput
+                                        id="contactno"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        minlength="11"
+                                        maxlength="11"
+                                        v-model="form.contactno"
+                                        required
+                                        autocomplete="off"
+                                    />
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.contactno"
+                                    />
+                                </div>
+
                                 <div>
                                     <InputLabel for="date" value="Date" />
                                     <TextInput
@@ -182,18 +348,146 @@ const validateDate = (date) => {
 
                                 <div>
                                     <InputLabel for="time" value="Time" />
-                                    <TextInput
-                                        id="time"
-                                        type="time"
-                                        class="mt-1 block w-full"
-                                        v-model="form.time"
-                                        required
-                                        autocomplete="time"
+                                    <!-- <div class="flex">
+                                        <select
+                                            id="hour"
+                                            v-model="form.hour"
+                                            class="mt-1 block w-full"
+                                        >
+                                            <option
+                                                v-for="hour in 12"
+                                                :key="hour"
+                                                :value="hour"
+                                            >
+                                                {{ hour }}
+                                            </option>
+                                        </select>
+                                        <span class="mx-2">:</span>
+                                        <select
+                                            v-model="form.minute"
+                                            id="minute"
+                                            class="mt-1 block w-full"
+                                        >
+                                            <option
+                                                v-for="minute in 60"
+                                                :key="minute"
+                                                :value="
+                                                    minute < 10
+                                                        ? '0' + (minute - 1)
+                                                        : minute - 1
+                                                "
+                                            >
+                                                {{
+                                                    minute < 10
+                                                        ? "0" + (minute - 1)
+                                                        : minute - 1
+                                                }}
+                                            </option>
+                                        </select>
+                                        <select
+                                            v-model="form.ampm"
+                                            class="mt-1 ml-2 block"
+                                            id="ampm"
+                                        >
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </div> -->
+                                    <div class="flex">
+                                        <select
+                                            id="hour"
+                                            placeholder="Hour"
+                                            class="select select-info rounded-e-none border-gray-300 mt-1 block w-full"
+                                            v-model="form.hour"
+                                            :required="validateDate"
+                                        >
+                                          <option disabled value="">
+                                            Hour
+                                        </option>
+                                            <option
+                                                v-for="hour in hours"
+                                                :key="hour"
+                                                :value="hour"
+                                            >
+                                                {{ hour }}
+                                            </option>
+                                        </select>
+
+                                        <select
+                                            id="minute"
+                                            class="select select-info rounded-none border-gray-300 mt-1 block w-full"
+                                            v-model="form.minute"
+                                            :required="validateDate"
+                                        >
+                                         <option disabled value="">
+                                            Minute
+                                        </option>
+                                            <option
+                                                v-for="minute in minutes"
+                                                :key="minute"
+                                                :value="minute"
+                                            >
+                                                {{ minute }}
+                                            </option>
+                                        </select>
+                       
+                                        <select
+                                            id="ampm"
+                                              class="select select-info rounded-s-none border-gray-300 mt-1 block w-full"
+                                            v-model="form.ampm"
+                                            :required="validateDate"
+                                        > <option disabled value="">
+                                            AM/PM
+                                        </option>
+                                            <option
+                                                v-for="ampm in ampmOptions"
+                                                :key="ampm"
+                                                :value="ampm"
+                                            >
+                                                {{ ampm }}
+                                            </option>
+                                        </select>
+                                 
+                                    </div>
+                            <div class="flex gap-2">
+                              <InputError
+                                        class="mt-2"
+                                        :message="form.errors.hour"
+                                    />
+
+                                 <InputError
+                                        class="mt-2"
+                                        :message="form.errors.minute"
                                     />
                                     <InputError
                                         class="mt-2"
-                                        :message="form.errors.time"
+                                        :message="form.errors.ampm"
                                     />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br /><br />
+                            <div class="row">
+                                <div
+                                    class="col-12 flex justify-center align-center"
+                                >
+                                    <VueCal
+                                        :events="events"
+                                        class="vuecal--blue-theme mx-12"
+                                        events-count-on-year-view
+                                                sticky-split-labels
+                                        style="
+                                            width: 150%;
+                                            height: 500px;
+                                            max-width: 1500px;
+                                        "
+                                        :disable-views="['day']"
+                                        active-view="month"
+                                        timeFormat="hh:mm {AM}"
+                                        :split-days="[{ id: 1, label: 'Booth 1' }, { id: 2, label: 'Booth 2' }]"
+                                    >
+                                    </VueCal>
                                 </div>
                             </div>
                         </div>
@@ -201,13 +495,35 @@ const validateDate = (date) => {
                         <!-- STEP 2: EVENT DATE DETAILS -->
                         <div v-if="activeStep === 2">
                             <h1 class="text-center">
-                                Step 2: Event Date Details
+                                Step 2: Backdrop Details
                             </h1>
                             <div
                                 class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4"
                             >
-
                              <div>
+                                    <InputLabel
+                                        for="packageid"
+                                        value="Package ID"
+                                    />
+                                   <TextInput
+                                        id="packageid"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="form.packageid"
+                                        :value="pkg.id"
+                                         :class="{ 'display:none': !pkg.id }"
+                                        required
+                                        readonly
+                                        autocomplete="off"
+                                    />
+
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.backdroptype"
+                                    />
+                                </div>
+                                
+                                <div>
                                     <InputLabel
                                         for="backdroptype"
                                         value="Backdrop Type"
@@ -223,11 +539,11 @@ const validateDate = (date) => {
                                             Select Background Type
                                         </option>
                                         <option
-                                            v-for="(option, index) in options"
-                                            :key="index"
-                                            :value="option.value"
+                                            v-for="type in props.backdropTypes"
+                                            :key="type.id"
+                                            :value="type.name"
                                         >
-                                            {{ option.value }}
+                                            {{ type.name }}
                                         </option>
                                     </select>
 
@@ -242,14 +558,26 @@ const validateDate = (date) => {
                                         for="backdropcolor"
                                         value="Backdrop Color"
                                     />
-                                    <TextInput
+                                      <select
+                                        class="select select-info border-gray-300 mt-1 block w-full"
                                         id="backdropcolor"
-                                        type="text"
-                                        class="mt-1 block w-full"
-                                        v-model="form.backdropcolor"
+                                        name="backdropcolor"
                                         required
-                                        autocomplete="backdropcolor"
-                                    />
+                                        v-model="form.backdropcolor"
+                                           :disabled="isBackdropColorDisabled"
+                                    >
+                                        <option disabled value="">
+                                            Select Background Color
+                                        </option>
+                                        <option
+                                            v-for="color in filteredBackdropColors"
+                                            :key="color.id"
+                                            :value="color.color"
+                                        >
+                                            {{ color.color }}
+                                        </option>
+                                    </select>
+
                                     <InputError
                                         class="mt-2"
                                         :message="form.errors.backdropcolor"
@@ -274,20 +602,16 @@ const validateDate = (date) => {
                                         :message="form.errors.suggestion"
                                     />
                                 </div>
-
-                               
                             </div>
                         </div>
 
                         <!-- STEP 3: EVENT DETAILS -->
-                        <div v-if="activeStep === 3">
+                        <!-- <div v-if="activeStep === 3">
                             <h1 class="text-center">Step 3: Event Details</h1>
                             <div
                                 class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4"
-                            >
-                               
-                            </div>
-                        </div>
+                            ></div>
+                        </div> -->
 
                         <input
                             type="hidden"
@@ -305,7 +629,7 @@ const validateDate = (date) => {
 
                         <PrimaryButton
                             class="mt-6 flex float-right"
-                            v-if="activeStep < 3"
+                            v-if="activeStep < 2"
                             @Click="nextStep"
                             :class="{ 'opacity-25': form.processing }"
                             :disabled="form.processing"
@@ -315,7 +639,7 @@ const validateDate = (date) => {
 
                         <PrimaryButton
                             class="mt-6 flex float-right"
-                            v-if="activeStep === 3"
+                            v-if="activeStep === 2"
                             :class="{ 'opacity-25': form.processing }"
                             :disabled="form.processing"
                         >

@@ -10,6 +10,10 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons'
 
+
+import VueCal from 'vue-cal'
+import 'vue-cal/dist/vuecal.css'
+
 library.add(faCaretDown) 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -21,6 +25,7 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .component('font-awesome-icon', FontAwesomeIcon)
+            .component('VueCal', VueCal)
             .use(ZiggyVue)
             .mount(el);
     },

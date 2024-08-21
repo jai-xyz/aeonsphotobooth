@@ -27,8 +27,6 @@ const handleChange = (event) => {
 };
 </script>
 
-
-
 <template>
     <select class="select select-info border-gray-300" 
             :id="id"

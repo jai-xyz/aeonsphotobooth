@@ -17,10 +17,8 @@ class RegistrationController extends Controller
      * Display a listing of the resource.
      */
     public function index(): Response
-    {  
+{  
         $userId = Auth::id();
-        
-        $packages = 
 
         $events = DB::table('registrations')->where('user_id', $userId)->get();
 
@@ -31,15 +29,36 @@ class RegistrationController extends Controller
             return $event;
         }); 
 
-        return Inertia::render('Event/List', ['events' => $events]);
+        return Inertia::render('Event/List', ['events' => $events]);            
     }
+
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response
+    public function create($packageId = null): Response
     {
-        return Inertia::render('Event/Registration');
+        $pkg = null;
+    
+        if ($packageId) {
+            $pkg = DB::table('packages')->where('id', $packageId)->first();
+        }
+    
+        $getEvents = DB::table('registrations')->get(); 
+    
+        $backdropTypes = DB::table('backdroptypes')->get();
+        
+        $backdropColors = DB::table('backdropcolors')
+            ->join('backdroptypes', 'backdropcolors.backdroptype_id', '=', 'backdroptypes.id')
+            ->select('backdropcolors.*', 'backdroptypes.name as backdroptype_name')
+            ->get();
+    
+        return Inertia::render('Event/Registration', [
+            'pkg' => $pkg,
+            'getEvents' => $getEvents,
+            'backdropTypes' => $backdropTypes,
+            'backdropColors' => $backdropColors
+        ]);
     }
 
     /**
@@ -50,9 +69,13 @@ class RegistrationController extends Controller
 
          $request->validate([
             'event' => 'required|string|max:255',
-            'date' => 'required|date_format:Y-m-d|after_or_equal:today',
-            'time' => 'required|date_format:H:i',
             'address' => 'required|string|max:255',
+            'contactperson' => 'required|string|max:255',
+            'contactno' => 'required|string|max:100',
+            'date' => 'required|date_format:Y-m-d|after_or_equal:today',
+            'hour' => 'required|string',
+            'minute' => 'required|string',
+            'ampm' => 'required|string|in:AM,PM',
             'backdroptype' => 'required|string|max:255',
             'backdropcolor' => 'required|string|max:255',
             'suggestion' => 'required|string|max:255',
@@ -61,15 +84,32 @@ class RegistrationController extends Controller
             'date.after_or_equal' => 'Date must be a future date.',
         ]
     );
-            
-         $userId = Auth::id();
 
+            
+         // Convert hour, minute, and ampm to a 24-hour format time string
+        $hour = $request->hour;
+        $minute = $request->minute;
+        $ampm = $request->ampm;
+
+        if ($ampm === 'PM' && $hour != 12) {
+            $hour += 12;
+        } elseif ($ampm === 'AM' && $hour == 12) {
+            $hour = 0;
+        }
+
+        $time = sprintf('%02d:%02d', $hour, $minute);
+        
+        $userId = Auth::id();
+
+        
         Registration::create([
             'user_id' => $userId,
             'event' => $request->event,
-            'date' => $request->date,
-            'time' => $request->time,
             'address' => $request->address,
+            'contactperson' => $request->contactperson,
+            'contactno' => $request->contactno,
+            'date' => $request->date,
+            'time' => $time,
             'backdroptype' => $request->backdroptype,
             'backdropcolor' => $request->backdropcolor,
             'suggestion' => $request->suggestion,

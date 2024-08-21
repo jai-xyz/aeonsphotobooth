@@ -10,6 +10,7 @@ defineProps({
     }
 
 }); 
+
 </script>
 
 <template>
@@ -18,7 +19,7 @@ defineProps({
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Dashboard
+                Packages
             </h2>
         </template>
     
@@ -26,8 +27,7 @@ defineProps({
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                    <div class="flex justify-between align-center"> 
-                   <div class="p-6 text-gray-900">Explore packages "Slider" </div>
-                   <div class="p-6 text-gray-900"><a href="/packages">See all packages</a></div>
+                   <div class="p-6 text-gray-900">Explore each packages and its inclusions</div>
                    </div>
                     <div class="flex flex-wrap -mx-3 px-5">
                         <div v-for="pkg in packages" :key="pkg.id" class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-3 mb-6">
@@ -41,7 +41,8 @@ defineProps({
                                 </ul>
                                 <p>Note: {{ pkg.note }}</p>
                                 <p>Extension: {{ pkg.extension }}</p>
-                                <AButton :href="`/packages/${pkg.id}`">View Package</AButton>
+                                <!-- <AButton :href="`/event/packages/${pkg.id}`">View Package</AButton> -->
+                                <AButton :href="`/event/registration/${pkg.id}`">Avail Package</AButton>
                             </div>
                         </div>
                     </div>
