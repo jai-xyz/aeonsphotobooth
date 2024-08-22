@@ -11,7 +11,7 @@ use Inertia\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class RegistrationController extends Controller
+class UserRegistrationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -29,7 +29,7 @@ class RegistrationController extends Controller
             return $event;
         }); 
 
-        return Inertia::render('Event/List', ['events' => $events]);            
+        return Inertia::render('User/List', ['events' => $events]);            
     }
 
 
@@ -50,7 +50,7 @@ class RegistrationController extends Controller
             ->select('backdropcolors.*', 'backdroptypes.name as backdroptype_name')
             ->get();
     
-        return Inertia::render('Event/Registration', [
+        return Inertia::render('User/Registration', [
             'pkg' => $pkg,
             'getEvents' => $getEvents,
             'backdropTypes' => $backdropTypes,
@@ -97,10 +97,12 @@ class RegistrationController extends Controller
             $hour = 0;
         }
 
+        // $hour = 5;
+        // $minute = 7;
         $time = sprintf('%02d:%02d', $hour, $minute);
-        
+        // Output: 05:07
+
         $userId = Auth::id();
-        
 
         Registration::create([
             'user_id' => $userId,
@@ -118,7 +120,7 @@ class RegistrationController extends Controller
             'suggestion' => $request->suggestion,
         ]);
 
-        return redirect()->route('event.index');
+        return redirect()->route('user.event.index');
     }
 
     /**

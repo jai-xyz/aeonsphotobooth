@@ -3,9 +3,10 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\BackdropController;
+use App\Http\Controllers\Admin\RegistrationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserPackageController;
-use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\UserRegistrationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,15 +26,16 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', UserMiddleware::class])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/event', [RegistrationController::class, 'index'])->name('event.index');
-    Route::get('/event/registration/{packageId?}', [RegistrationController::class, 'create'])->name('event.create');
-    Route::post('/event/registration', [RegistrationController::class, 'store'])->name('event.store');
-    Route::post('/event/registration', [RegistrationController::class, 'store'])->name('event.store');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('user.profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('user.profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('user.profile.destroy');
 
-    Route::get('/packages', [UserPackageController::class, 'index'])->name('package.index');
+    Route::get('/event', [UserRegistrationController::class, 'index'])->name('user.event.index');
+    Route::get('/event/registration/{packageId?}', [UserRegistrationController::class, 'create'])->name('user.event.create');
+    Route::post('/event/registration', [UserRegistrationController::class, 'store'])->name('user.event.store');
+    Route::post('/event/registration', [UserRegistrationController::class, 'store'])->name('user.event.store');
+
+    Route::get('/packages', [UserPackageController::class, 'index'])->name('user.package.index');
     
 });
 
@@ -53,10 +55,12 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
     Route::get('/admin/backdrop', [BackdropController::class, 'index'])->name('backdrop.index');
     Route::get('/admin/backdrop/type/add', [BackdropController::class, 'createType'])->name('backdroptype.create');
     Route::post('/admin/backdrop/type/add', [BackdropController::class, 'storeType'])->name('backdroptype.store');
-
     Route::get('/admin/backdrop/color/add', [BackdropController::class, 'createColor'])->name('backdropcolor.create');
     Route::post('/admin/backdrop/color/add', [BackdropController::class, 'storeColor'])->name('backdropcolor.store');
     
+    Route::get('/admin/events', [RegistrationController::class, 'index'])->name('event.index');
+    Route::patch('/admin/events/{event}', [RegistrationController::class, 'update'])->name('event.update');
+
 });
 
 

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('backdroptype');
             $table->string('backdropcolor');
             $table->string('suggestion');
+            $table->string('status')->default('Pending');
             $table->timestamps();
         });
     }

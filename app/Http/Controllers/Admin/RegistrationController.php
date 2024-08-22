@@ -1,23 +1,26 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\Packages;
+use App\Http\Controllers\Controller;
+use App\Models\Registration;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class DashboardController extends Controller
+class RegistrationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index() : Response
     {
-       
-        $packages = Packages::all();
-
-        return Inertia::render('User/Dashboard', ['packages' => $packages]);
+        $events = Registration::all();
+        return Inertia::render('Admin/Registration', [
+            'events' => $events,
+        ]);
     }
 
     /**
@@ -55,9 +58,18 @@ class DashboardController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Registration $event) : RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:Pending,Accepted,Declined'],
+            'user_id' => ['required', 'integer'], 
+        ]);
+
+        $event->status = $validated['status'];
+        $event->user_id = $validated['user_id'];
+
+        $event->save();
+    return Redirect::route('event.index');
     }
 
     /**

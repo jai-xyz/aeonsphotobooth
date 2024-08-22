@@ -105,7 +105,7 @@ class PackageController extends Controller
        $validatedData =  $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|string|max:255',
-            'duration' => 'required|string|max:255',
+            'duration' => 'required|string|max:255',    
             'size' => 'required|string|max:255',
             'inclusion' => 'required|string|max:2500',
             'note' => 'required|string|max:255',

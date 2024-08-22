@@ -64,7 +64,7 @@ const time = computed(() => {
 const submit = () => {
     form.time = time.value;
      console.log('Form details:', form);
-    form.post(route("event.store"));
+    form.post(route("user.event.store"));
 };
 
 // const options = ref([

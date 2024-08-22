@@ -16,7 +16,7 @@ class UserPackageController extends Controller
     {
         $packages = Packages::all();
 
-        return Inertia::render('Packages', ['packages' => $packages]);
+        return Inertia::render('User/Packages', ['packages' => $packages]);
     }
 
     /**

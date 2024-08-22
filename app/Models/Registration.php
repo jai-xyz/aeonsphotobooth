@@ -20,7 +20,7 @@ class Registration extends Model
         'date',
         'time',
         'packageid',
-        'packagename',
+        'packagename',  
         'packagesize',
         'backdroptype',
         'backdropcolor',
