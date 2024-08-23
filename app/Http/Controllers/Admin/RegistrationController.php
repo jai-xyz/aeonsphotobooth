@@ -17,7 +17,8 @@ class RegistrationController extends Controller
      */
     public function index() : Response
     {
-        $events = Registration::all();
+        $events = Registration::orderBy('created_at', 'desc')->get();
+
         return Inertia::render('Admin/Registration', [
             'events' => $events,
         ]);

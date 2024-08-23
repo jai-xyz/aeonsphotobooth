@@ -39,10 +39,9 @@ class UserRegistrationController extends Controller
     public function create($packageId = null): Response
     {    
         $pkg = $packageId ? DB::table('packages')->where('id', $packageId)->first() : (object) [];
-        
+            
+        $getEvents = DB::table('registrations')->where('status', 'Accepted')->get(); 
 
-        $getEvents = DB::table('registrations')->get(); 
-    
         $backdropTypes = DB::table('backdroptypes')->get();
         
         $backdropColors = DB::table('backdropcolors')
@@ -54,7 +53,7 @@ class UserRegistrationController extends Controller
             'pkg' => $pkg,
             'getEvents' => $getEvents,
             'backdropTypes' => $backdropTypes,
-            'backdropColors' => $backdropColors
+            'backdropColors' => $backdropColors 
         ]);
     }
 
