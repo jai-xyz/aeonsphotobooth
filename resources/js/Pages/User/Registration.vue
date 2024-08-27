@@ -67,26 +67,6 @@ const submit = () => {
     form.post(route("user.event.store"));
 };
 
-// const options = ref([
-//     {
-//         value: "Plain",
-//         image: "/images/plain.png",
-//     },
-//     {
-//         value: "Sequins",
-//         image: "/images/sequins.jpg",
-//     },
-// ]);
-
-const nextStep = () => {
-    if (validateStep()) {
-        activeStep.value++;
-    }
-};
-
-const prevStep = () => {
-    activeStep.value--;
-};
 
 // time - hour, minute, ampm
 
@@ -120,41 +100,49 @@ const ampmOptions = ref(["AM", "PM"]);
 
 // VUECAL CODES and BACKDROP
 
+
+// MIN DATES FOR DATE PICKER
+    const minDate = computed(() => {
+        return new Date().addDays(1);
+    });
+// SPLIT DAYS
+        const splitDays =  [ 
+            { id: 1, class: 'booth1', label: 'Booth 1'},
+            { id: 2, class: 'booth2', label: 'Booth 2'},  
+        ]
 const events = ref([]);
 
 if (props.getEvents && Array.isArray(props.getEvents)) {
-    events.value = props.getEvents.map((event) => {
+    events.value = props.getEvents.filter(event => {
+            const startDateTime = new Date(`${event.date}T${event.time}`);
+            return startDateTime > minDate.value;
+        }).map((event) => {
         const startDateTime = new Date(`${event.date}T${event.time}`);
         const endDateTime = new Date(
             startDateTime.getTime() + 2 * 60 * 60 * 1000
         );
+
+        if(startDateTime.getHours() >= 22){
+            endDateTime.setDate(endDateTime.getDate());
+        }
+
         const endHours = String(endDateTime.getHours()).padStart(2, "0");
         const endMinutes = String(endDateTime.getMinutes()).padStart(2, "0");
-        const end = `${event.date} ${endHours}:${endMinutes}`;
+        const end = `${endDateTime.getFullYear()}-${String(endDateTime.getMonth() + 1).padStart(2, "0")}-${String(endDateTime.getDate()).padStart(2, "0")} ${endHours}:${endMinutes}`;
+        
 
-        // const allowanceStart = new Date(endDateTime.getTime() + 1 * 60 * 60 * 1000);
-
+        
         return {
             start: startDateTime,
             end: end,
             title: "Event",
             class: "primary",
-            deletable: false,
-            resizable: false,
-            draggable: false,
         };
-        // ,
-        // {
-        //     start: end,
-        //     end: allowanceStart,
-        //     class: "allowance",
-        //     deletable: false,
-        //     resizable: false,
-        //     draggable: false,
-        // };
+        
     });
 }
 
+    // DEPENDENT DROPDOWN FOR BACKDROP TYPES AND COLORS
 const filterBackdropColors = (backdropType) => {
     return props.backdropColors.filter(
         (color) => color.backdroptype_name === backdropType
@@ -168,6 +156,18 @@ const filteredBackdropColors = computed(() => {
 const isBackdropColorDisabled = computed(() => {
     return !form.backdroptype;
 });
+
+    // STEPPER
+
+const nextStep = () => {
+    if (validateStep()) {
+        activeStep.value++;
+    }
+};
+
+const prevStep = () => {
+    activeStep.value--;
+};
 
 const activeStep = ref(1);
 
@@ -356,51 +356,6 @@ const validateStep = () => {
 
                                 <div>
                                     <InputLabel for="time" value="Time" />
-                                    <!-- <div class="flex">
-                                        <select
-                                            id="hour"
-                                            v-model="form.hour"
-                                            class="mt-1 block w-full"
-                                        >
-                                            <option
-                                                v-for="hour in 12"
-                                                :key="hour"
-                                                :value="hour"
-                                            >
-                                                {{ hour }}
-                                            </option>
-                                        </select>
-                                        <span class="mx-2">:</span>
-                                        <select
-                                            v-model="form.minute"
-                                            id="minute"
-                                            class="mt-1 block w-full"
-                                        >
-                                            <option
-                                                v-for="minute in 60"
-                                                :key="minute"
-                                                :value="
-                                                    minute < 10
-                                                        ? '0' + (minute - 1)
-                                                        : minute - 1
-                                                "
-                                            >
-                                                {{
-                                                    minute < 10
-                                                        ? "0" + (minute - 1)
-                                                        : minute - 1
-                                                }}
-                                            </option>
-                                        </select>
-                                        <select
-                                            v-model="form.ampm"
-                                            class="mt-1 ml-2 block"
-                                            id="ampm"
-                                        >
-                                            <option value="AM">AM</option>
-                                            <option value="PM">PM</option>
-                                        </select>
-                                    </div> -->
                                     <div class="flex">
                                         <select
                                             id="hour"
@@ -482,8 +437,9 @@ const validateStep = () => {
                                 >
                                     <VueCal
                                         :events="events"
-                                        class="vuecal--blue-theme mx-12"
+                                        class="vuecal mx-12"
                                         events-count-on-year-view
+                                        today-button
                                         sticky-split-labels
                                         style="
                                             width: 150%;
@@ -493,10 +449,8 @@ const validateStep = () => {
                                         :disable-views="['day']"
                                         active-view="month"
                                         timeFormat="hh:mm {AM}"
-                                        :split-days="[
-                                            { id: 1, label: 'Booth 1' },
-                                            { id: 2, label: 'Booth 2' },
-                                        ]"
+                                        :min-date="minDate"
+                                        :split-days="splitDays"
                                     >
                                     </VueCal>
                                 </div>
@@ -516,12 +470,12 @@ const validateStep = () => {
                                         for="packageid"
                                         value="Package ID"
                                     />
-                                    <TextInput
+                                    <NumberInput
                                         id="packageid"
                                         type="text"
                                         class="mt-1 block w-full"
                                         v-model="form.packageid"
-                                        :value="String(props.pkg.id)"
+                                        :value="props.pkg.id"
                                         :class="{
                                             'display:none': !props.pkg.id,
                                         }"
@@ -546,7 +500,7 @@ const validateStep = () => {
                                         type="text"
                                         class="mt-1 block w-full"
                                         v-model="form.packagename"
-                                        :value="String(props.pkg.id)"
+                                        :value="props.pkg.name"
                                         required
                                         readonly
                                         autocomplete="off"

@@ -39,8 +39,9 @@ class UserRegistrationController extends Controller
     public function create($packageId = null): Response
     {    
         $pkg = $packageId ? DB::table('packages')->where('id', $packageId)->first() : (object) [];
-            
-        $getEvents = DB::table('registrations')->where('status', 'Accepted')->get(); 
+        
+        //                                                       Accepted
+        $getEvents = DB::table('registrations')->where('status', 'Pending')->get(); 
 
         $backdropTypes = DB::table('backdroptypes')->get();
         
