@@ -53,21 +53,28 @@ const form = useForm({
 });
 
 const packageSizes = computed(() => {
-    return [props.pkg.size, props.pkg.size2, props.pkg.size3, props.pkg.size4, props.pkg.size5].filter((size) => size);
+    return [
+        props.pkg.size,
+        props.pkg.size2,
+        props.pkg.size3,
+        props.pkg.size4,
+        props.pkg.size5,
+    ].filter((size) => size);
 });
-
 
 const time = computed(() => {
     return `${form.hour}:${form.minute} ${form.ampm}`;
 });
 
 const submit = () => {
-    form.time = time.value;
-     console.log('Form details:', form);
-    form.post(route("user.event.store"));
+        form.time = `${form.hour}:${form.minute} ${form.ampm}`;
+    if (validateStep()) {
+        console.log("Form details:", form);
+        form.post(route("user.event.store"));
+    } else {
+        console.log("Form validation failed:", form.errors);
+    }
 };
-
-
 // time - hour, minute, ampm
 
 const validateDate = (date) => {
@@ -100,49 +107,98 @@ const ampmOptions = ref(["AM", "PM"]);
 
 // VUECAL CODES and BACKDROP
 
+// MIN DATES FOR INPUT DATE
+const minInputDate = computed(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+})
 
-// MIN DATES FOR DATE PICKER
-    const minDate = computed(() => {
-        return new Date().addDays(1);
-    });
-// SPLIT DAYS
-        const splitDays =  [ 
-            { id: 1, class: 'booth1', label: 'Booth 1'},
-            { id: 2, class: 'booth2', label: 'Booth 2'},  
-        ]
-const events = ref([]);
+// MIN DATES VUECAL
+const minDate = computed(() => {
+    const date = new Date();
+    date.setDate(date.getDate());
+    return date;
+});
+
+
+// SPLIT DAYS AND EVENTS VUECAL
+const splitsAndEvents = {
+    splits: [
+            { id: 1, class: "booth1", label: "Booth 1" }, 
+            { id: 2, class: "booth2", label: "Booth 2" }
+            ],
+    events: []
+};
 
 if (props.getEvents && Array.isArray(props.getEvents)) {
-    events.value = props.getEvents.filter(event => {
+
+    // Split days end times
+        const splitEndTimes = {
+        1: new Date(0),
+        2: new Date(0)
+    };
+
+    // splitsAndEvents gets the props.getEvents
+    splitsAndEvents.events = props.getEvents
+
+    // filter events that are after the min date
+        .filter((event) => {
             const startDateTime = new Date(`${event.date}T${event.time}`);
             return startDateTime > minDate.value;
-        }).map((event) => {
-        const startDateTime = new Date(`${event.date}T${event.time}`);
-        const endDateTime = new Date(
-            startDateTime.getTime() + 2 * 60 * 60 * 1000
-        );
+        })
 
-        if(startDateTime.getHours() >= 22){
-            endDateTime.setDate(endDateTime.getDate());
-        }
+    // map the events to the splitsAndEvents
+        .map((event) => {
+            const startDateTime = new Date(`${event.date}T${event.time}`);
 
-        const endHours = String(endDateTime.getHours()).padStart(2, "0");
-        const endMinutes = String(endDateTime.getMinutes()).padStart(2, "0");
-        const end = `${endDateTime.getFullYear()}-${String(endDateTime.getMonth() + 1).padStart(2, "0")}-${String(endDateTime.getDate()).padStart(2, "0")} ${endHours}:${endMinutes}`;
-        
+        // the end time of the event is 2 hours after the start time
+            const endDateTime = new Date(
+                startDateTime.getTime() + 2 * 60 * 60 * 1000
+            );
 
-        
-        return {
-            start: startDateTime,
-            end: end,
-            title: "Event",
-            class: "primary",
-        };
-        
-    });
+        // if the start time is after 10pm, the end time will be the next day
+            if (startDateTime.getHours() >= 22) {
+                endDateTime.setDate(endDateTime.getDate());
+            }
+
+            const endHours = String(endDateTime.getHours()).padStart(2, "0");
+            const endMinutes = String(endDateTime.getMinutes()).padStart(
+                2,
+                "0"
+            );
+
+            const end = `${endDateTime.getFullYear()}-${String(
+                endDateTime.getMonth() + 1
+            ).padStart(2, "0")}-${String(endDateTime.getDate()).padStart(
+                2,
+                "0"
+            )} ${endHours}:${endMinutes}`;
+
+            let  split = 1;
+            if (startDateTime < splitEndTimes[1]) {
+                split = 2;
+            }
+
+            splitEndTimes[split] = endDateTime;
+            
+            return {
+                start: startDateTime,
+                end: end,
+                title: "Event",
+                class: "primary",
+                split: split
+            };
+        });
+
+    console.log(splitsAndEvents.events);
+
 }
 
-    // DEPENDENT DROPDOWN FOR BACKDROP TYPES AND COLORS
+// DEPENDENT DROPDOWN FOR BACKDROP TYPES AND COLORS
 const filterBackdropColors = (backdropType) => {
     return props.backdropColors.filter(
         (color) => color.backdroptype_name === backdropType
@@ -157,8 +213,22 @@ const isBackdropColorDisabled = computed(() => {
     return !form.backdroptype;
 });
 
-    // STEPPER
+const isDateTimeTaken = (date, time) => {
+    const selectedStartDateTime = new Date(`${date}T${time}`);
+    const selectedEndDateTime = new Date(selectedStartDateTime.getTime() + 2 * 60 * 60 * 1000);
 
+    return splitsAndEvents.events.some(event => {
+        const eventStartDateTime = new Date(event.start);
+        const eventEndDateTime = new Date(event.end);
+
+        console.log(`start:` +  eventStartDateTime)
+        console.log(`end:` +  eventEndDateTime)
+
+        // return (selectedStartDateTime < eventEndDateTime && selectedEndDateTime > eventStartDateTime);
+    });
+};
+
+// STEPPER
 const nextStep = () => {
     if (validateStep()) {
         activeStep.value++;
@@ -210,6 +280,9 @@ const validateStep = () => {
         } else if (!validateDate(form.date)) {
             form.errors.date = "Date must be a future date.";
             isValid = false;
+        } else if (isDateTimeTaken(form.date, `${form.hour}:${form.minute} ${form.ampm}`)) {
+            form.errors.date = 'Event date is already taken.';
+            isValid = false;q
         }
         if (!form.time) {
             form.errors.time = "Time is required.";
@@ -347,6 +420,7 @@ const validateStep = () => {
                                         v-model="form.date"
                                         :required="validateDate"
                                         autocomplete="date"
+                                        :min="minInputDate"
                                     />
                                     <InputError
                                         class="mt-2"
@@ -436,7 +510,7 @@ const validateStep = () => {
                                     class="col-12 flex justify-center align-center"
                                 >
                                     <VueCal
-                                        :events="events"
+                                        :events="splitsAndEvents.events"
                                         class="vuecal mx-12"
                                         events-count-on-year-view
                                         today-button
@@ -450,7 +524,7 @@ const validateStep = () => {
                                         active-view="month"
                                         timeFormat="hh:mm {AM}"
                                         :min-date="minDate"
-                                        :split-days="splitDays"
+                                        :split-days="splitsAndEvents.splits"
                                     >
                                     </VueCal>
                                 </div>
@@ -506,7 +580,7 @@ const validateStep = () => {
                                         autocomplete="off"
                                     />
 
-                                     <InputError
+                                    <InputError
                                         class="mt-2"
                                         :message="form.errors.packagename"
                                     />
@@ -522,7 +596,7 @@ const validateStep = () => {
                                         id="packagesize"
                                         name="packagesize"
                                         required
-                                        v-model="form.packagesize"  
+                                        v-model="form.packagesize"
                                     >
                                         <option disabled value="">
                                             Select Size
@@ -537,10 +611,10 @@ const validateStep = () => {
                                     </select>
                                 </div>
 
-                                     <InputError
-                                        class="mt-2"
-                                        :message="form.errors.packagesize"
-                                    />
+                                <InputError
+                                    class="mt-2"
+                                    :message="form.errors.packagesize"
+                                />
 
                                 <div>
                                     <InputLabel

@@ -1,28 +1,95 @@
 .vuecal__event.primary {
-    background-color: rgba(19, 132, 198, 0.899);
-    border: 1px solid rgba(0, 86, 120, 0.899);
+    background-color: rgb(222, 85, 170);
+    border: 1px solid rgb(226, 123, 184);
+    font-weight: bold;
     color: #fff;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
 .vuecal__event-time {
-    color: #fff;
     display: none;
 }
 
 .vuecal__event.primary.timeallowance {
-    background: repeating-linear-gradient(45deg, transparent, transparent 10px, #f2f2f2 10px, #f2f2f2 20px); /* IE 10+ */
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        #f2f2f2 10px,
+        #f2f2f2 20px
+    ); /* IE 10+ */
     color: #999;
 }
 
-.vuecal__menu {background-color:   rgb(222,85,170); color: #fff}
+.vuecal__menu {
+    background-color: rgb(222, 85, 170);
+    color: #fff;
+}
 
-.vuecal__title-bar {background-color: rgb(226,123,184); color: #fff}
+.vuecal__title-bar {
+    background-color: rgb(226, 123, 184);
+    color: #fff;
+}
 
-.vuecal__cell-events-count  {background-color:  rgb(226,123,184); color: #fff}
+.vuecal__cell-events-count {
+    background-color: rgb(226, 123, 184);
+    color: #fff;
+}
 
-.vuecal__cell-split.booth1 {background-color:rgba(255, 232, 251, 0.5);}
+.vuecal__cell-split.booth1 {
+    background-color: rgba(255, 232, 251, 0.379);
+}
 
-.vuecal__cell-split.booth2 {background-color:rgba(255, 255, 255, 0.5);}
+.vuecal__time-cell {
+    background-color: rgb(222, 85, 170);
+}
+
+.vuecal__time-cell-label {
+    color: #fff;
+}
+
+.vuecal__now-line {
+    display: none;
+}
+
+.day-split-header.booth1 {
+    background-color: rgba(255, 232, 251, 0.5);
+}
+
+.vuecal__cell-content {
+    border: 1px solid rgb(235, 185, 215);
+}
+
+.vuecal__flex > .vuecal__cell-content {
+    border-bottom: 5px solid rgb(228, 166, 203) !important;
+}
+
+.vuecal__time-cell-line:before {
+    border-color: rgb(235, 185, 215);
+    border-style: solid;
+    border-width: 1px;
+}
+
+.vuecal__cell--today {
+    background-color: rgba(247, 244, 246, 0.695);
+    color:  rgb(222, 85, 170);
+    pointer-events: none;
+}
+
+.vuecal__cell--today.vuecal__cell--selected {
+    color:  rgb(222, 85, 170);
+    background-color: rgba(246, 237, 242, 0.797);
+}
+
+.vuecal__cell--selected {
+    background-color: rgba(240, 217, 231, 0.797);
+    border: 1px solid rgb(222, 85, 170);
+}
+
+.vuecal__flex.vuecal__weekdays-headings{
+    border-left: 1px solid rgb(235, 185, 215);
+    border-right: 1px solid rgb(235, 185, 215);
+}
