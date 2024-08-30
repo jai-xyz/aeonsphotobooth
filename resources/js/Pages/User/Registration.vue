@@ -62,12 +62,8 @@ const packageSizes = computed(() => {
     ].filter((size) => size);
 });
 
-const time = computed(() => {
-    return `${form.hour}:${form.minute} ${form.ampm}`;
-});
 
 const submit = () => {
-        form.time = `${form.hour}:${form.minute} ${form.ampm}`;
     if (validateStep()) {
         console.log("Form details:", form);
         form.post(route("user.event.store"));
@@ -194,9 +190,45 @@ if (props.getEvents && Array.isArray(props.getEvents)) {
             };
         });
 
+}
     console.log(splitsAndEvents.events);
 
-}
+
+
+const isDateTimeTaken = (date, hour, minute, ampm) => {
+    const checkDate = form.date;
+    
+    // time
+    const checkHour = form.hour
+    const checkMinute = form.minute;
+    const checkAmpm = form.ampm;
+
+    let hour24 = parseInt(checkHour, 10);
+    if (checkAmpm.toLowerCase() === 'pm' && hour24 !== 12) {
+        hour24 += 12;
+    } else if (checkAmpm.toLowerCase() === 'am' && hour24 === 12) {
+        hour24 = 0;
+    }
+
+    const checkTime = `${String(hour24).padStart(2, '0')}:${String(checkMinute).padStart(2, '0')}:00`;
+    
+    // selected of user
+    const selectedStartDateTime = new Date(`${checkDate}T${checkTime}`);
+    const selectedEndDateTime = new Date(selectedStartDateTime.getTime() + 2 * 60 * 60 * 1000);
+
+    // filtering events from split 2 or booth 2
+    const booth2Events = splitsAndEvents.events.filter(event => event.split === 2);
+
+    // getting the event start and end date/time from booth 2 
+    return booth2Events.some(event => {
+        const eventStartDateTime = new Date(event.start);
+        const eventEndDateTime = new Date(event.end);
+
+        return (selectedStartDateTime < eventEndDateTime && selectedEndDateTime > eventStartDateTime);
+    });
+};
+
+
 
 // DEPENDENT DROPDOWN FOR BACKDROP TYPES AND COLORS
 const filterBackdropColors = (backdropType) => {
@@ -211,22 +243,8 @@ const filteredBackdropColors = computed(() => {
 
 const isBackdropColorDisabled = computed(() => {
     return !form.backdroptype;
+    
 });
-
-const isDateTimeTaken = (date, time) => {
-    const selectedStartDateTime = new Date(`${date}T${time}`);
-    const selectedEndDateTime = new Date(selectedStartDateTime.getTime() + 2 * 60 * 60 * 1000);
-
-    return splitsAndEvents.events.some(event => {
-        const eventStartDateTime = new Date(event.start);
-        const eventEndDateTime = new Date(event.end);
-
-        console.log(`start:` +  eventStartDateTime)
-        console.log(`end:` +  eventEndDateTime)
-
-        // return (selectedStartDateTime < eventEndDateTime && selectedEndDateTime > eventStartDateTime);
-    });
-};
 
 // STEPPER
 const nextStep = () => {
@@ -282,9 +300,10 @@ const validateStep = () => {
             isValid = false;
         } else if (isDateTimeTaken(form.date, `${form.hour}:${form.minute} ${form.ampm}`)) {
             form.errors.date = 'Event date is already taken.';
-            isValid = false;q
+            console.log(`Event date is already taken.`);
+            isValid = false;
         }
-        if (!form.time) {
+        if (!form.hour && !form.minute && !form.ampm) {
             form.errors.time = "Time is required.";
             isValid = false;
         }
