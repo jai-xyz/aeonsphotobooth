@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
@@ -18,6 +18,10 @@ const props = defineProps({
     pkg: {
         type: Object,
         default: () => ({}),
+    },
+    getAllPackages: {
+        type: Array,
+        required: true,
     },
     getEvents: {
         type: Array,
@@ -61,7 +65,6 @@ const packageSizes = computed(() => {
         props.pkg.size5,
     ].filter((size) => size);
 });
-
 
 const submit = () => {
     if (validateStep()) {
@@ -119,7 +122,6 @@ const minDate = computed(() => {
     date.setDate(date.getDate());
     return date;
 });
-
 
 // SPLIT DAYS AND EVENTS VUECAL
 const splitsAndEvents = {
@@ -191,9 +193,6 @@ if (props.getEvents && Array.isArray(props.getEvents)) {
         });
 
 }
-    console.log(splitsAndEvents.events);
-
-
 
 const isDateTimeTaken = (date, hour, minute, ampm) => {
     const checkDate = form.date;
@@ -228,8 +227,6 @@ const isDateTimeTaken = (date, hour, minute, ampm) => {
     });
 };
 
-
-
 // DEPENDENT DROPDOWN FOR BACKDROP TYPES AND COLORS
 const filterBackdropColors = (backdropType) => {
     return props.backdropColors.filter(
@@ -243,7 +240,6 @@ const filteredBackdropColors = computed(() => {
 
 const isBackdropColorDisabled = computed(() => {
     return !form.backdroptype;
-    
 });
 
 // STEPPER
@@ -264,49 +260,48 @@ const validateStep = () => {
     form.errors = {}; // Clear previous errors
 
     if (activeStep.value === 1) {
-        if (!form.event) {
-            form.errors.event = "Event name is required.";
-            isValid = false;
-        }
-        if (!form.address) {
-            form.errors.address = "Address is required.";
-            isValid = false;
-        }
-        if (!form.contactperson) {
-            form.errors.contactperson = "Contact person is required.";
-            isValid = false;
-        }
-        if (!form.contactno) {
-            form.errors.contactno = "Contact number is required.";
-            isValid = false;
-        }
-        if (!form.hour) {
-            form.errors.hour = "Hour is required.";
-            isValid = false;
-        }
-        if (!form.minute) {
-            form.errors.minute = "Minute is required.";
-            isValid = false;
-        }
-        if (!form.ampm) {
-            form.errors.ampm = "AMPM is required.";
-            isValid = false;
-        }
-        if (!form.date) {
-            form.errors.date = "Date is required.";
-            isValid = false;
-        } else if (!validateDate(form.date)) {
-            form.errors.date = "Date must be a future date.";
-            isValid = false;
-        } else if (isDateTimeTaken(form.date, `${form.hour}:${form.minute} ${form.ampm}`)) {
-            form.errors.date = 'Event date is already taken.';
-            console.log(`Event date is already taken.`);
-            isValid = false;
-        }
-        if (!form.hour && !form.minute && !form.ampm) {
-            form.errors.time = "Time is required.";
-            isValid = false;
-        }
+        // if (!form.event) {
+        //     form.errors.event = "Event name is required.";
+        //     isValid = false;
+        // }
+        // if (!form.address) {
+        //     form.errors.address = "Address is required.";
+        //     isValid = false;
+        // }
+        // if (!form.contactperson) {
+        //     form.errors.contactperson = "Contact person is required.";
+        //     isValid = false;
+        // }
+        // if (!form.contactno) {
+        //     form.errors.contactno = "Contact number is required.";
+        //     isValid = false;
+        // }
+        // if (!form.hour) {
+        //     form.errors.hour = "Hour is required.";
+        //     isValid = false;
+        // }
+        // if (!form.minute) {
+        //     form.errors.minute = "Minute is required.";
+        //     isValid = false;
+        // }
+        // if (!form.ampm) {
+        //     form.errors.ampm = "AMPM is required.";
+        //     isValid = false;
+        // }
+        // if (!form.date) {
+        //     form.errors.date = "Date is required.";
+        //     isValid = false;
+        // } else if (!validateDate(form.date)) {
+        //     form.errors.date = "Date must be a future date.";
+        //     isValid = false;
+        // } else if (isDateTimeTaken(form.date, `${form.hour}:${form.minute} ${form.ampm}`)) {
+        //     form.errors.date = 'Event date and time is already taken.';
+        //     isValid = false;
+        // }
+        // if (!form.hour && !form.minute && !form.ampm) {
+        //     form.errors.time = "Time is required.";
+        //     isValid = false;
+        // }
     } else if (activeStep.value === 2) {
         if (!form.backdroptype) {
             form.errors.backdroptype = "Backdrop type is required.";
@@ -325,6 +320,15 @@ const validateStep = () => {
     // }
     return isValid;
 };
+
+watch(() => form.packagename, (newPackageName) => {
+    const selectedPackage = props.getAllPackages.find(pkg => pkg.name === newPackageName);
+    if (selectedPackage) {
+        form.packageid = String(selectedPackage.id);
+    } else {
+        form.packageid = '';
+    }
+});
 </script>
 
 <template>
@@ -558,7 +562,7 @@ const validateStep = () => {
                             <div
                                 class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4"
                             >
-                                <div>
+                                <div v-if="props.pkg.id">
                                     <InputLabel
                                         for="packageid"
                                         value="Package ID"
@@ -583,7 +587,22 @@ const validateStep = () => {
                                     />
                                 </div>
 
-                                <div>
+                                
+                        <div v-else-if="!props.pkg.id && form.packageid">
+                            <InputLabel for="packageid" value="Package ID" />
+                            <NumberInput
+                                id="packageid"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.packageid"
+                                required
+                                readonly
+                                autocomplete="off"
+                            />
+                            <InputError class="mt-2" :message="form.errors.packageid" />
+                        </div>
+
+                                <div v-if="props.pkg.id">
                                     <InputLabel
                                         for="packagename"
                                         value="Package Name"
@@ -604,6 +623,29 @@ const validateStep = () => {
                                         :message="form.errors.packagename"
                                     />
                                 </div>
+
+                                <div v-else>
+                                    <InputLabel for="packagename" value="Package Name" />
+                                    <select
+                                        class="select select-info border-gray-300 mt-1 block w-full"
+                                        id="packagename"
+                                        name="packagename"
+                                        required
+                                        v-model="form.packagename"
+                                    >
+                                        <option disabled value="">Select Package</option>
+                                        <option
+                                            v-for="allpkg in props.getAllPackages"
+                                            :key="allpkg.id"
+                                            :value="allpkg.name"
+                                        >
+                                            {{ allpkg.name }}
+                                        </option>
+                                    </select>
+                                    <InputError class="mt-2" :message="form.errors.packagename" />
+                                </div>
+
+
 
                                 <div>
                                     <InputLabel
@@ -629,11 +671,6 @@ const validateStep = () => {
                                         </option>
                                     </select>
                                 </div>
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.packagesize"
-                                />
 
                                 <div>
                                     <InputLabel

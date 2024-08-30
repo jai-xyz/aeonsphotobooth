@@ -40,6 +40,8 @@ class UserRegistrationController extends Controller
     {    
         $pkg = $packageId ? DB::table('packages')->where('id', $packageId)->first() : (object) [];
         
+        $getAllPackages = DB::table('packages')->get();
+
         //                                                       Accepted
         $getEvents = DB::table('registrations')->where('status', 'Pending')->get(); 
 
@@ -52,6 +54,7 @@ class UserRegistrationController extends Controller
     
         return Inertia::render('User/Registration', [
             'pkg' => $pkg,
+            'getAllPackages' => $getAllPackages,
             'getEvents' => $getEvents,
             'backdropTypes' => $backdropTypes,
             'backdropColors' => $backdropColors 
