@@ -114,7 +114,7 @@ const minInputDate = computed(() => {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
-})
+});
 
 // MIN DATES VUECAL
 const minDate = computed(() => {
@@ -126,39 +126,38 @@ const minDate = computed(() => {
 // SPLIT DAYS AND EVENTS VUECAL
 const splitsAndEvents = {
     splits: [
-            { id: 1, class: "booth1", label: "Booth 1" }, 
-            { id: 2, class: "booth2", label: "Booth 2" }
-            ],
-    events: []
+        { id: 1, class: "booth1", label: "Booth 1" },
+        { id: 2, class: "booth2", label: "Booth 2" },
+    ],
+    events: [],
 };
 
 if (props.getEvents && Array.isArray(props.getEvents)) {
-
     // Split days end times
-        const splitEndTimes = {
+    const splitEndTimes = {
         1: new Date(0),
-        2: new Date(0)
+        2: new Date(0),
     };
 
     // splitsAndEvents gets the props.getEvents
     splitsAndEvents.events = props.getEvents
 
-    // filter events that are after the min date
+        // filter events that are after the min date
         .filter((event) => {
             const startDateTime = new Date(`${event.date}T${event.time}`);
             return startDateTime > minDate.value;
         })
 
-    // map the events to the splitsAndEvents
+        // map the events to the splitsAndEvents
         .map((event) => {
             const startDateTime = new Date(`${event.date}T${event.time}`);
 
-        // the end time of the event is 2 hours after the start time
+            // the end time of the event is 2 hours after the start time
             const endDateTime = new Date(
                 startDateTime.getTime() + 2 * 60 * 60 * 1000
             );
 
-        // if the start time is after 10pm, the end time will be the next day
+            // if the start time is after 10pm, the end time will be the next day
             if (startDateTime.getHours() >= 22) {
                 endDateTime.setDate(endDateTime.getDate());
             }
@@ -176,54 +175,62 @@ if (props.getEvents && Array.isArray(props.getEvents)) {
                 "0"
             )} ${endHours}:${endMinutes}`;
 
-            let  split = 1;
+            let split = 1;
             if (startDateTime < splitEndTimes[1]) {
                 split = 2;
             }
 
             splitEndTimes[split] = endDateTime;
-            
+
             return {
                 start: startDateTime,
                 end: end,
                 title: "Event",
                 class: "primary",
-                split: split
+                split: split,
             };
         });
-
 }
 
 const isDateTimeTaken = (date, hour, minute, ampm) => {
     const checkDate = form.date;
-    
+
     // time
-    const checkHour = form.hour
+    const checkHour = form.hour;
     const checkMinute = form.minute;
     const checkAmpm = form.ampm;
 
     let hour24 = parseInt(checkHour, 10);
-    if (checkAmpm.toLowerCase() === 'pm' && hour24 !== 12) {
+    if (checkAmpm.toLowerCase() === "pm" && hour24 !== 12) {
         hour24 += 12;
-    } else if (checkAmpm.toLowerCase() === 'am' && hour24 === 12) {
+    } else if (checkAmpm.toLowerCase() === "am" && hour24 === 12) {
         hour24 = 0;
     }
 
-    const checkTime = `${String(hour24).padStart(2, '0')}:${String(checkMinute).padStart(2, '0')}:00`;
-    
+    const checkTime = `${String(hour24).padStart(2, "0")}:${String(
+        checkMinute
+    ).padStart(2, "0")}:00`;
+
     // selected of user
     const selectedStartDateTime = new Date(`${checkDate}T${checkTime}`);
-    const selectedEndDateTime = new Date(selectedStartDateTime.getTime() + 2 * 60 * 60 * 1000);
+    const selectedEndDateTime = new Date(
+        selectedStartDateTime.getTime() + 2 * 60 * 60 * 1000
+    );
 
     // filtering events from split 2 or booth 2
-    const booth2Events = splitsAndEvents.events.filter(event => event.split === 2);
+    const booth2Events = splitsAndEvents.events.filter(
+        (event) => event.split === 2
+    );
 
-    // getting the event start and end date/time from booth 2 
-    return booth2Events.some(event => {
+    // getting the event start and end date/time from booth 2
+    return booth2Events.some((event) => {
         const eventStartDateTime = new Date(event.start);
         const eventEndDateTime = new Date(event.end);
 
-        return (selectedStartDateTime < eventEndDateTime && selectedEndDateTime > eventStartDateTime);
+        return (
+            selectedStartDateTime < eventEndDateTime &&
+            selectedEndDateTime > eventStartDateTime
+        );
     });
 };
 
@@ -321,14 +328,23 @@ const validateStep = () => {
     return isValid;
 };
 
-watch(() => form.packagename, (newPackageName) => {
-    const selectedPackage = props.getAllPackages.find(pkg => pkg.name === newPackageName);
+const packageSizeNoIDSelected = ref([]);
+
+// Watch for changes in packagename and update packageid and other attributes accordingly
+watch(() => form.packagename, (newPackagename) => {
+    const selectedPackage = props.getAllPackages.find(pkg => pkg.name === newPackagename);
     if (selectedPackage) {
         form.packageid = String(selectedPackage.id);
-    } else {
-        form.packageid = '';
+        packageSizeNoIDSelected.value = [
+            selectedPackage.size,
+            selectedPackage.size2,
+            selectedPackage.size3,
+            selectedPackage.size4,
+            selectedPackage.size5,
+        ].filter(size => size);
     }
 });
+
 </script>
 
 <template>
@@ -555,14 +571,15 @@ watch(() => form.packagename, (newPackageName) => {
                         </div>
 
                         <!-- STEP 2: EVENT DATE DETAILS -->
-                        <div v-if="activeStep === 2">
+                        <!-- DISPLAYS WHEN A PACKAGE IS SELECTED -->
+                        <div v-if="activeStep === 2 && props.pkg.id">
                             <h1 class="text-center">
                                 Step 2: Backdrop Details
                             </h1>
                             <div
                                 class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4"
                             >
-                                <div v-if="props.pkg.id">
+                                <div>
                                     <InputLabel
                                         for="packageid"
                                         value="Package ID"
@@ -573,9 +590,6 @@ watch(() => form.packagename, (newPackageName) => {
                                         class="mt-1 block w-full"
                                         v-model="form.packageid"
                                         :value="props.pkg.id"
-                                        :class="{
-                                            'display:none': !props.pkg.id,
-                                        }"
                                         required
                                         readonly
                                         autocomplete="off"
@@ -587,22 +601,7 @@ watch(() => form.packagename, (newPackageName) => {
                                     />
                                 </div>
 
-                                
-                        <div v-else-if="!props.pkg.id && form.packageid">
-                            <InputLabel for="packageid" value="Package ID" />
-                            <NumberInput
-                                id="packageid"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.packageid"
-                                required
-                                readonly
-                                autocomplete="off"
-                            />
-                            <InputError class="mt-2" :message="form.errors.packageid" />
-                        </div>
-
-                                <div v-if="props.pkg.id">
+                                <div>
                                     <InputLabel
                                         for="packagename"
                                         value="Package Name"
@@ -623,29 +622,6 @@ watch(() => form.packagename, (newPackageName) => {
                                         :message="form.errors.packagename"
                                     />
                                 </div>
-
-                                <div v-else>
-                                    <InputLabel for="packagename" value="Package Name" />
-                                    <select
-                                        class="select select-info border-gray-300 mt-1 block w-full"
-                                        id="packagename"
-                                        name="packagename"
-                                        required
-                                        v-model="form.packagename"
-                                    >
-                                        <option disabled value="">Select Package</option>
-                                        <option
-                                            v-for="allpkg in props.getAllPackages"
-                                            :key="allpkg.id"
-                                            :value="allpkg.name"
-                                        >
-                                            {{ allpkg.name }}
-                                        </option>
-                                    </select>
-                                    <InputError class="mt-2" :message="form.errors.packagename" />
-                                </div>
-
-
 
                                 <div>
                                     <InputLabel
@@ -751,6 +727,82 @@ watch(() => form.packagename, (newPackageName) => {
                                         :message="form.errors.suggestion"
                                     />
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- DISPLAYS THERE'S NO PACKAGE SELECTED -->
+                        <div v-else-if="activeStep === 2 && !props.pkg.id">
+                            <h1 class="text-center">
+                                Step 2: Backdrop Details
+                            </h1>
+                            <div
+                                class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4"
+                            >
+                                <div>
+                                    <InputLabel
+                                        for="packageid"
+                                        value="Package ID"
+                                    />
+                                    <NumberInput
+                                        id="packageid"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="form.packageid"
+                                        required
+                                        readonly
+                                        autocomplete="off"
+                                    />
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.packageid"
+                                    />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="packagename"
+                                        value="Package Name"
+                                    />
+                                    <select
+                                        class="select select-info border-gray-300 mt-1 block w-full"
+                                        id="packagename"
+                                        name="packagename"
+                                        required
+                                        v-model="form.packagename"
+                                    >
+                                        <option disabled value="">
+                                            Select Package
+                                        </option>
+                                        <option
+                                            v-for="allpkg in props.getAllPackages"
+                                            :key="allpkg.id"
+                                            :value="allpkg.name"
+                                        >
+                                            {{ allpkg.name }}
+                                        </option>
+                                    </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.packagename"
+                                    />
+                                </div>
+
+                                 <div>
+            <InputLabel for="packagesize" value="Package Size" />
+            <select
+                class="select select-info border-gray-300 mt-1 block w-full"
+                id="packagesize"
+                name="packagesize"
+                required
+                v-model="form.packagesize"
+            >
+                <option disabled value="">Select Size</option>
+                <option v-for="size in packageSizeNoIDSelected" :key="size" :value="size">
+                    {{ size }}
+                </option>
+            </select>
+            <InputError class="mt-2" :message="form.errors.packagesize" />
+        </div>  
                             </div>
                         </div>
 
