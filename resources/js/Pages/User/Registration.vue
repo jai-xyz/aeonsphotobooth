@@ -331,20 +331,24 @@ const validateStep = () => {
 const packageSizeNoIDSelected = ref([]);
 
 // Watch for changes in packagename and update packageid and other attributes accordingly
-watch(() => form.packagename, (newPackagename) => {
-    const selectedPackage = props.getAllPackages.find(pkg => pkg.name === newPackagename);
-    if (selectedPackage) {
-        form.packageid = String(selectedPackage.id);
-        packageSizeNoIDSelected.value = [
-            selectedPackage.size,
-            selectedPackage.size2,
-            selectedPackage.size3,
-            selectedPackage.size4,
-            selectedPackage.size5,
-        ].filter(size => size);
+watch(
+    () => form.packagename,
+    (newPackagename) => {
+        const selectedPackage = props.getAllPackages.find(
+            (pkg) => pkg.name === newPackagename
+        );
+        if (selectedPackage) {
+            form.packageid = String(selectedPackage.id);
+            packageSizeNoIDSelected.value = [
+                selectedPackage.size,
+                selectedPackage.size2,
+                selectedPackage.size3,
+                selectedPackage.size4,
+                selectedPackage.size5,
+            ].filter((size) => size);
+        }
     }
-});
-
+);
 </script>
 
 <template>
@@ -768,6 +772,7 @@ watch(() => form.packagename, (newPackagename) => {
                                         id="packagename"
                                         name="packagename"
                                         required
+                                        placeholder="Select Package"
                                         v-model="form.packagename"
                                     >
                                         <option disabled value="">
@@ -787,22 +792,34 @@ watch(() => form.packagename, (newPackagename) => {
                                     />
                                 </div>
 
-                                 <div>
-            <InputLabel for="packagesize" value="Package Size" />
-            <select
-                class="select select-info border-gray-300 mt-1 block w-full"
-                id="packagesize"
-                name="packagesize"
-                required
-                v-model="form.packagesize"
-            >
-                <option disabled value="">Select Size</option>
-                <option v-for="size in packageSizeNoIDSelected" :key="size" :value="size">
-                    {{ size }}
-                </option>
-            </select>
-            <InputError class="mt-2" :message="form.errors.packagesize" />
-        </div>  
+                                <div>
+                                    <InputLabel
+                                        for="packagesize"
+                                        value="Package Size"
+                                    />
+                                    <select
+                                        class="select select-info border-gray-300 mt-1 block w-full"
+                                        id="packagesize"
+                                        name="packagesize"
+                                        required
+                                        v-model="form.packagesize"
+                                    >
+                                        <option disabled value="">
+                                            Select Size
+                                        </option>
+                                        <option
+                                            v-for="size in packageSizeNoIDSelected"
+                                            :key="size"
+                                            :value="size"
+                                        >
+                                            {{ size }}
+                                        </option>
+                                    </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.packagesize"
+                                    />
+                                </div>
                             </div>
                         </div>
 
