@@ -20,7 +20,7 @@ class UserRegistrationController extends Controller
 {  
         $userId = Auth::id();
 
-        $events = DB::table('registrations')->where('user_id', $userId)->get();
+        $events = DB::table('registrations')->where('user_id', $userId)->orderBy('created_at', 'desc')->get();
 
         $events = $events->map(function ($event){
             $event->user = DB::table('users')->where('id', $event->user_id)->first();   
@@ -106,6 +106,7 @@ class UserRegistrationController extends Controller
         // Output: 05:07
 
         $userId = Auth::id();
+
 
         Registration::create([
             'user_id' => $userId,

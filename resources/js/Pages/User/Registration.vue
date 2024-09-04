@@ -329,6 +329,7 @@ const validateStep = () => {
 };
 
 const packageSizeNoIDSelected = ref([]);
+const selectedPackageDetails = ref({});
 
 // Watch for changes in packagename and update packageid and other attributes accordingly
 watch(
@@ -345,7 +346,12 @@ watch(
                 selectedPackage.size3,
                 selectedPackage.size4,
                 selectedPackage.size5,
-            ].filter((size) => size);
+            ].filter((size) => size);          
+            selectedPackageDetails.value = {
+                name: selectedPackage.price,
+                description: selectedPackage.description,
+                price: selectedPackage.price,
+            }
         }
     }
 );
@@ -820,6 +826,98 @@ watch(
                                         :message="form.errors.packagesize"
                                     />
                                 </div>
+
+                            <div>
+                                <InputLabel for="selectedPackagePrice" value="Price" />
+                                <TextInput
+                                    id="selectedPackagePrice"
+                                    type="text"
+                                    class="mt-1 block w-full"
+                                    v-model="selectedPackageDetails.price"
+                                    readonly
+                                    autocomplete="off"
+                                />
+                            </div>
+                                                            <div>
+                                    <InputLabel
+                                        for="backdroptype"
+                                        value="Backdrop Type"
+                                    />
+                                    <select
+                                        class="select select-info border-gray-300 mt-1 block w-full"
+                                        id="backdroptype"
+                                        name="backdroptype"
+                                        required
+                                        v-model="form.backdroptype"
+                                    >
+                                        <option disabled value="">
+                                            Select Background Type
+                                        </option>
+                                        <option
+                                            v-for="type in props.backdropTypes"
+                                            :key="type.id"
+                                            :value="type.name"
+                                        >
+                                            {{ type.name }}
+                                        </option>
+                                    </select>
+
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.backdroptype"
+                                    />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="backdropcolor"
+                                        value="Backdrop Color"
+                                    />
+                                    <select
+                                        class="select select-info border-gray-300 mt-1 block w-full"
+                                        id="backdropcolor"
+                                        name="backdropcolor"
+                                        required
+                                        v-model="form.backdropcolor"
+                                        :disabled="isBackdropColorDisabled"
+                                    >
+                                        <option disabled value="">
+                                            Select Background Color
+                                        </option>
+                                        <option
+                                            v-for="color in filteredBackdropColors"
+                                            :key="color.id"
+                                            :value="color.color"
+                                        >
+                                            {{ color.color }}
+                                        </option>
+                                    </select>
+
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.backdropcolor"
+                                    />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="suggestion"
+                                        value="Suggestions"
+                                    />
+                                    <TextInput
+                                        id="suggestion"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="form.suggestion"
+                                        required
+                                        autocomplete="suggestion"
+                                    />
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.suggestion"
+                                    />
+                                </div>
+                        
                             </div>
                         </div>
 
