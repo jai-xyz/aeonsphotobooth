@@ -328,6 +328,12 @@ const validateStep = () => {
     return isValid;
 };
 
+const backdropImage = computed(() => {
+    console.log("Backdrop Type:", form.backdroptype);
+    console.log("Backdrop Color:", form.backdropcolor);
+    return form.backdroptype === "Sequins" && form.backdropcolor === "black" ? "/backdrop/sequins/black.jpg" : "";
+});
+
 const packageSizeNoIDSelected = ref([]);
 const selectedPackageDetails = ref({});
 
@@ -348,7 +354,7 @@ watch(
                 selectedPackage.size5,
             ].filter((size) => size);          
             selectedPackageDetails.value = {
-                name: selectedPackage.price,
+                name: selectedPackage.name,
                 description: selectedPackage.description,
                 price: selectedPackage.price,
             }
@@ -917,7 +923,11 @@ watch(
                                         :message="form.errors.suggestion"
                                     />
                                 </div>
-                        
+                            
+                            <div>
+                                <img width="500px" :src="backdropImage" alt="backdropimage">
+                            </div>
+
                             </div>
                         </div>
 

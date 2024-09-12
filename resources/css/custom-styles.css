@@ -36,7 +36,7 @@
 
 .vuecal__cell-events-count {
     background-color: rgb(226, 123, 184);
-    color: #fff;
+    color: #fff;    
 }
 
 .vuecal__cell-split.booth1 {
@@ -47,8 +47,18 @@
     background-color: rgb(222, 85, 170);
 }
 
+.vuecal__flex .vuecal__weekdays-headings{
+    padding-left: 65px;
+}
+
+.vuecal__time-column {
+    width: 65px;
+}
+
 .vuecal__time-cell-label {
     color: #fff;
+    font-weight: bold;
+    font-size: 13px;
 }
 
 .vuecal__now-line {
@@ -64,7 +74,7 @@
 }
 
 .vuecal__flex > .vuecal__cell-content {
-    border-bottom: 5px solid rgb(228, 166, 203) !important;
+    border-bottom: 5px solid rgb(228, 166, 203);
 }
 
 .vuecal__time-cell-line:before {
@@ -74,7 +84,7 @@
 }
 
 .vuecal__cell--today {
-    background-color: rgba(247, 244, 246, 0.695);
+    background-color: #fff;
     color:  rgb(222, 85, 170);
     pointer-events: none;
 }
@@ -85,7 +95,7 @@
 }
 
 .vuecal__cell--selected {
-    background-color: rgba(240, 217, 231, 0.797);
+    background-color: #fff;
     border: 1px solid rgb(222, 85, 170);
 }
 

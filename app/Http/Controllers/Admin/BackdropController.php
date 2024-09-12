@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BackdropColor;
 use App\Models\BackdropType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,7 +17,17 @@ class BackdropController extends Controller
      */
     public function index() : Response
     {
-        return Inertia::render('Admin/Backdrop');
+
+        $backdrops = DB::table('backdroptypes')
+                    ->join('backdropcolors', 'backdroptypes.id', '=', 'backdropcolors.backdroptype_id')
+                    ->select('backdropcolors.*', 'backdroptypes.name as backdroptype')
+                    ->get();
+
+        // dd($backdrops);
+
+        return Inertia::render('Admin/Backdrop', [
+            'backdrops' => $backdrops
+        ]);
     }
 
     /**

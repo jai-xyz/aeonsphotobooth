@@ -3,13 +3,13 @@ import { Head } from "@inertiajs/vue3";
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 import AButton from "@/Components/AButton.vue";
 
-// defineProps({
-//     packages: {
-//         type: Array,
-//         required: true,
-//     },
+defineProps({
+    backdrops: {
+        type: Array,
+        required: true,
+    },
     
-// });
+});
 
 </script>
 
@@ -31,28 +31,20 @@ import AButton from "@/Components/AButton.vue";
                     <table class="border-separate border-spacing-2 border-2 border-slate-500 table-fixed">
                                 <thead class="bg-slate-500">
                                     <tr>
-                                        <th>Name</th>
-                                        <!-- <th>Price</th>
-                                        <th>Duration</th>
-                                        <th>Size</th>
-                                        <th>Inclusion</th>
-                                        <th>Note</th>
-                                        <th>Extension</th>
-                                        <th>Action</th>  -->
+                                        <th>Type</th>
+                                        <th>Color</th>
+                                        <th>Image</th>
+                                        <th>Action</th> 
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                      <!-- <tr v-for="pkg in packages" :key="pkg.id">
-                                        <td>{{ pkg.name }}</td>
-                                        <td>{{ pkg.price }}</td>
-                                        <td>{{ pkg.duration }}</td>
-                                        <td>{{ pkg.size}}</td>
-                                        <td>{{ pkg.inclusion }}</td>
-                                        <td>{{ pkg.note }}</td>
-                                        <td>{{ pkg.extension }}</td>
-                                        <td><AButton :href="`/admin/package/edit/${pkg.id}`">Edit</AButton></td>
-                                    </tr> -->
+                                      <tr v-for="backdrop in backdrops" :key="backdrop.id">
+                                        <td>{{ backdrop.backdroptype }}</td>
+                                        <td>{{ backdrop.color }}</td>
+                                        <!-- <td>{{ pkg.duration }}</td> -->
+                                        <!-- <td><AButton :href="`/admin/package/edit/${pkg.id}`">Edit</AButton></td> -->
+                                    </tr>
                                 </tbody>
                             </table>
                 </div>
