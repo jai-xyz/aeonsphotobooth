@@ -17,10 +17,11 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('backdropcolors', function (Blueprint $table) {
+       Schema::create('backdropcolors', function (Blueprint $table) {
             $table->id();
             $table->string('color');
             $table->foreignId('backdroptype_id')->constrained('backdroptypes')->onDelete('cascade');
+            $table->string('image');
             $table->timestamps();
         });
 
@@ -31,9 +32,11 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+       public function down(): void
     {
+        // Drop the backdropcolors table first to avoid foreign key constraint violations
+        Schema::dropIfExists('backdropcolors');
+        // Then drop the backdroptypes table
         Schema::dropIfExists('backdroptypes');
-        Schema::dropIfExists('backdropcolor');
     }
 };

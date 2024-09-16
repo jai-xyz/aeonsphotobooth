@@ -15,17 +15,17 @@ class BackdropController extends Controller
     /**
      * Display a listing of the resource.   
      */
-    public function index() : Response
+    public function index(): Response
     {
 
         $backdrops = DB::table('backdroptypes')
-                    ->join('backdropcolors', 'backdroptypes.id', '=', 'backdropcolors.backdroptype_id')
-                    ->select('backdropcolors.*', 'backdroptypes.name as backdroptype')
-                    ->get();
+            ->join('backdropcolors', 'backdroptypes.id', '=', 'backdropcolors.backdroptype_id')
+            ->select('backdropcolors.*', 'backdroptypes.name as backdroptype')
+            ->get();
 
         // dd($backdrops);
 
-        return Inertia::render('Admin/Backdrop', [
+        return Inertia::render('Admin/BackdropList', [
             'backdrops' => $backdrops
         ]);
     }
@@ -33,10 +33,13 @@ class BackdropController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function createType()
+    public function create()
     {
-        return Inertia::render('Admin/AddBackdropType');
+        $backdropTypes = BackdropType::all();
 
+        return Inertia::render('Admin/AddBackdrop', [
+            'backdroptypes' => $backdropTypes
+        ]);
     }
 
     /**
@@ -54,18 +57,10 @@ class BackdropController extends Controller
     }
 
 
-       /**
+    /**
      * Show the form for creating a new resource.
      */
-    public function createColor()
-    {
-        $backdropTypes = BackdropType::all();
-
-        return Inertia::render('Admin/AddBackdropColor', [
-                            'backdroptypes' => $backdropTypes
-        ]);
-
-    }
+    public function createColor() {}
 
     /**
      * Store a newly created resource in storage.
@@ -74,12 +69,35 @@ class BackdropController extends Controller
     {
         $request->validate([
             'backdroptype_id' => 'required|exists:backdroptypes,id',
-            'color' => 'required|string'
+            'color' => 'required|string',
+            'image' => 'required|file|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        BackdropColor::create($request->all());
+        if ($request->backdroptype_id == 1) {
+            $directory = 'plain';
+        } elseif ($request->backdroptype_id == 2) {
+            $directory = 'sequins';
+        } else {
+            $directory = 'custom';
+        }
 
-        return redirect()->route('backdrop.index');
+        // small letters and replace space with underscore
+        $color = strtolower(preg_replace('/\s+/', '_', $request->color));
+        $fileName = null;
+
+        if ($request->hasFIle('image')) {   
+            $file = $request->file('image');
+            $fileName = $color . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
+        }
+
+        BackdropColor::create([
+            'backdroptype_id' => $request->backdroptype_id,
+            'color' => $request->color,
+            'image' => $fileName
+        ]);
+
+        return redirect()->route('backdrop.create');
     }
 
     /**

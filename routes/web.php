@@ -53,10 +53,10 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
     Route::patch('/admin/package/edit/{package}', [PackageController::class, 'update'])->name('package.update');
 
     Route::get('/admin/backdrop', [BackdropController::class, 'index'])->name('backdrop.index');
-    Route::get('/admin/backdrop/type/add', [BackdropController::class, 'createType'])->name('backdroptype.create');
-    Route::post('/admin/backdrop/type/add', [BackdropController::class, 'storeType'])->name('backdroptype.store');
-    Route::get('/admin/backdrop/color/add', [BackdropController::class, 'createColor'])->name('backdropcolor.create');
-    Route::post('/admin/backdrop/color/add', [BackdropController::class, 'storeColor'])->name('backdropcolor.store');
+    Route::get('/admin/backdrop/add', [BackdropController::class, 'create'])->name('backdrop.create');
+    Route::post('/admin/backdrop/addtype', [BackdropController::class, 'storeType'])->name('backdroptype.store');
+    // Route::get('/admin/backdrop/color/add', [BackdropController::class, 'createColor'])->name('backdropcolor.create');
+    Route::post('/admin/backdrop/addcolor', [BackdropController::class, 'storeColor'])->name('backdropcolor.store');
     
     Route::get('/admin/events', [RegistrationController::class, 'index'])->name('event.index');
     Route::patch('/admin/events/{event}', [RegistrationController::class, 'update'])->name('event.update');

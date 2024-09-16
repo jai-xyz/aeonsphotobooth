@@ -13,6 +13,7 @@ class BackdropColor extends Model
 
     protected $fillable = [
         'color',
-        'backdroptype_id'
+        'backdroptype_id',
+        'image'
     ];
 }
