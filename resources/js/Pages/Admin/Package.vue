@@ -46,7 +46,7 @@ defineProps({
                                         <td>{{ pkg.name }}</td>
                                         <td>{{ pkg.price }}</td>
                                         <td>{{ pkg.duration }}</td>
-                                       <td>{{ pkg.size }}{{ pkg.size2 ? ', ' + pkg.size2 : '' }}{{ pkg.size2 ? ', ' + pkg.size2 : '' }}{{ pkg.size3 ? ', ' + pkg.size3 : '' }}{{ pkg.size4 ? ', ' + pkg.size4 : '' }}{{ pkg.size5 ? ', ' + pkg.size5 : '' }}</td>
+                                       <td>{{ pkg.size }}{{ pkg.size2 ? ', ' + pkg.size2 : '' }}{{ pkg.size3 ? ', ' + pkg.size3 : '' }}{{ pkg.size4 ? ', ' + pkg.size4 : '' }}{{ pkg.size5 ? ', ' + pkg.size5 : '' }}</td>
                                         <td>{{ pkg.inclusion }}</td>
                                         <td>{{ pkg.note }}</td>
                                         <td>{{ pkg.extension }}</td>

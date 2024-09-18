@@ -17,7 +17,9 @@ const form = useForm({
     name: props.package.name,
     price: props.package.price,
     duration: props.package.duration,
-    size: props.package.size,
+    size: [props.package.size, props.package.size2, props.package.size3, props.package.size4, props.package.size5]
+        .filter(size => size) // Filter out any empty or null values
+        .join(', '),
     inclusion: props.package.inclusion,
     note: props.package.note,
     extension: props.package.extension,
