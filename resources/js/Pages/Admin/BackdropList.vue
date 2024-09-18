@@ -49,7 +49,7 @@ defineProps({
                                 <td>{{ backdrop.backdroptype }}</td>
                                 <td>{{ backdrop.color }}</td>
                                 <td v-if="backdrop.backdroptype == 'Plain'">
-                                    <img :src="`/uploads/backdrop/plain/` + backdrop.image" width="125px" alt="Backdrop Image" />
+                                    <img :src="`/uploads/backdrop/plain/` + backdrop.image" width="120px" alt="Backdrop Image" />
                                 </td>
 
                                 <td v-else-if="backdrop.backdroptype == 'Sequins'">
