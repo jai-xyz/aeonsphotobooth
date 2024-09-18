@@ -329,10 +329,32 @@ const validateStep = () => {
 };
 
 const backdropImage = computed(() => {
+    console.log("Image:", props.backdropColors);
     console.log("Backdrop Type:", form.backdroptype);
     console.log("Backdrop Color:", form.backdropcolor);
-    return form.backdroptype === "Sequins" && form.backdropcolor === "black" ? "/backdrop/sequins/black.jpg" : "";
+
+    if (form.backdroptype && form.backdropcolor) {
+        const matchingBackdrop = props.backdropColors.find(
+            (item) =>
+                item.backdroptype_name.toLowerCase() ===
+                    form.backdroptype.toLowerCase() &&
+                item.color.toLowerCase() === form.backdropcolor.toLowerCase()
+        );
+
+        if (matchingBackdrop) {
+            const imagePath = `/uploads/backdrop/${form.backdroptype.toLowerCase()}/${
+                matchingBackdrop.image
+            }`;
+            console.log("Constructed Image Path:", imagePath);
+            return imagePath;
+        }
+    }
+
+    // Default image if no match is found
+    // return "./backdrop/default.jpg";
 });
+
+// `/backdrop/${form.backdroptype}}/${form.backdropcolor}` : '';
 
 const packageSizeNoIDSelected = ref([]);
 const selectedPackageDetails = ref({});
@@ -352,12 +374,12 @@ watch(
                 selectedPackage.size3,
                 selectedPackage.size4,
                 selectedPackage.size5,
-            ].filter((size) => size);          
+            ].filter((size) => size);
             selectedPackageDetails.value = {
                 name: selectedPackage.name,
                 description: selectedPackage.description,
                 price: selectedPackage.price,
-            }
+            };
         }
     }
 );
@@ -743,6 +765,14 @@ watch(
                                         :message="form.errors.suggestion"
                                     />
                                 </div>
+
+                                <div>
+                                    <img
+                                        width="500px"
+                                        :src="backdropImage"
+                                        alt="backdropimage"
+                                    />
+                                </div>
                             </div>
                         </div>
 
@@ -833,18 +863,21 @@ watch(
                                     />
                                 </div>
 
-                            <div>
-                                <InputLabel for="selectedPackagePrice" value="Price" />
-                                <TextInput
-                                    id="selectedPackagePrice"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="selectedPackageDetails.price"
-                                    readonly
-                                    autocomplete="off"
-                                />
-                            </div>
-                                                            <div>
+                                <div>
+                                    <InputLabel
+                                        for="selectedPackagePrice"
+                                        value="Price"
+                                    />
+                                    <TextInput
+                                        id="selectedPackagePrice"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="selectedPackageDetails.price"
+                                        readonly
+                                        autocomplete="off"
+                                    />
+                                </div>
+                                <div>
                                     <InputLabel
                                         for="backdroptype"
                                         value="Backdrop Type"
@@ -923,11 +956,14 @@ watch(
                                         :message="form.errors.suggestion"
                                     />
                                 </div>
-                            
-                            <div>
-                                <img width="500px" :src="backdropImage" alt="backdropimage">
-                            </div>
 
+                                <div>
+                                    <img
+                                        width="500px"
+                                        :src="backdropImage"
+                                        alt="backdropimage"
+                                    />
+                                </div>
                             </div>
                         </div>
 
