@@ -329,10 +329,6 @@ const validateStep = () => {
 };
 
 const backdropImage = computed(() => {
-    console.log("Image:", props.backdropColors);
-    console.log("Backdrop Type:", form.backdroptype);
-    console.log("Backdrop Color:", form.backdropcolor);
-
     if (form.backdroptype && form.backdropcolor) {
         const matchingBackdrop = props.backdropColors.find(
             (item) =>
@@ -345,16 +341,12 @@ const backdropImage = computed(() => {
             const imagePath = `/uploads/backdrop/${form.backdroptype.toLowerCase()}/${
                 matchingBackdrop.image
             }`;
-            console.log("Constructed Image Path:", imagePath);
             return imagePath;
         }
     }
 
-    // Default image if no match is found
     // return "./backdrop/default.jpg";
 });
-
-// `/backdrop/${form.backdroptype}}/${form.backdropcolor}` : '';
 
 const packageSizeNoIDSelected = ref([]);
 const selectedPackageDetails = ref({});
