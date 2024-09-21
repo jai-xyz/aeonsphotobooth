@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Log;
 
 class BackdropController extends Controller
 {
@@ -22,8 +23,6 @@ class BackdropController extends Controller
             ->join('backdropcolors', 'backdroptypes.id', '=', 'backdropcolors.backdroptype_id')
             ->select('backdropcolors.*', 'backdroptypes.name as backdroptype')
             ->get();
-
-        // dd($backdrops);
 
         return Inertia::render('Admin/BackdropList', [
             'backdrops' => $backdrops
@@ -53,7 +52,7 @@ class BackdropController extends Controller
 
         BackdropType::create($request->all());
 
-        return redirect()->route('backdrop.index');
+        return redirect()->route('backdroptype.index');
     }
 
 
@@ -99,6 +98,18 @@ class BackdropController extends Controller
 
         return redirect()->route('backdrop.create');
     }
+
+    // BACKDROP TYPE CRUD
+    
+    public function indexType(): Response
+    {
+
+        $backdroptypes = DB::table('backdroptypes')->get();
+
+        return Inertia::render('Admin/BackdropTypeList', [ 
+            'backdroptypes' => $backdroptypes
+        ]);
+}
 
     /**
      * Display the specified resource.

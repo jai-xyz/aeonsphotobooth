@@ -8,18 +8,42 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.{vue,js,ts,jsx,tsx}',
+        './node_modules/flowbite/**/*.js',  
     ],
 
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                'body': ['Lato', 'sans-serif' ],
+                 'sans': ['Roboto', ...defaultTheme.fontFamily.sans],
             },
+            fontSize: {
+                'xxs': '0.675rem',
+            },
+            colors: {
+                primary: {
+                    "50": "#f9f4f4",
+                    "100": "#f9e7ed",
+                    "200": "#fccce0",
+                    "300": "#F8B1CB",
+                    "400": "#f2bdd5"
+                },
+                light: {
+                    "50": "#ffffff" 
+                },
+            }
         },
     },
     plugins: [forms,
-        require('daisyui')],
-        daisyui: {
-            themes: ["emerald"],
-          },
+        require('flowbite/plugin'),
+       
+    ],
+    // content: [
+    //     "./node_modules/flowbite/**/*.js"
+    // ]
+        // forms,
+        // require('daisyui')],
+        // daisyui: {
+        //     themes: ["emerald"],
+        //   },
 };
