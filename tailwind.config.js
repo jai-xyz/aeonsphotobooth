@@ -31,6 +31,21 @@ export default {
                 light: {
                     "50": "#ffffff" 
                 },
+            },
+            screens: {
+                'xxs': '320px',
+                'xxs-xs' : {'min': '320px', 'max': '479px'},
+                'xs' : '480px',
+                'xs-sm' : {'min': '480px', 'max': '639px'},
+                'sm' : '640px',
+                'sm-md' : {'min': '640px', 'max': '767px'},
+                'md' : '768px',
+                'md-lg' : {'min': '760px', 'max': '1023px'},
+                'lg' : '1024px',
+                'lg-xl' : {'min': '1024px', 'max': '1279px'},
+                'xl' : '1280px',
+                'xl-2xl' : {'min': '1280px', 'max': '1535px'},
+                '2xl': '1536px', 
             }
         },
     },
