@@ -34,28 +34,20 @@ const submit = () => {
 </script>
 
 <template>
-    <!-- <img
-            id="background"
-            class="absolute -left-20 top-0 max-w-[877px]"
-            src="https://laravel.com/assets/img/welcome/background.svg"
-        /> -->
     <GuestLayout>
         <Head title="Log in" />
-        <div
-            class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0"
-            :style="{
-                backgroundImage: `url(${loginBg})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-            }"
-        >
+
+        <div class="relative min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+            <img
+                id="background"
+                class="absolute inset-0 w-full h-full object-cover"
+                :src="loginBg"
+                alt="Background"
+            />
             <div
-                class="w-[325px] mt-6 px-4 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px]"
+                class="relative w-[325px] mt-6 px-4 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px]"
             >
-                <div
-                    v-if="status"
-                    class="mb-4 font-medium text-sm text-green-600"
-                >
+                <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
                     {{ status }}
                 </div>
 
@@ -69,13 +61,13 @@ const submit = () => {
                         <InputLabel
                             for="email"
                             value="Email"
-                            class="text-pink-900"
+                            class="text-pink-800"
                         />
 
                         <TextInput
                             id="email"
                             type="email"
-                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-pink-500 dark:focus:border-pink-500"
+                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             v-model="form.email"
                             required
                             autofocus
@@ -95,16 +87,13 @@ const submit = () => {
                         <TextInput
                             id="password"
                             type="password"
-                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-pink-500 dark:focus:border-pink-500"
+                              class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             v-model="form.password"
                             required
                             autocomplete="current-password"
                         />
 
-                        <InputError
-                            class="mt-2"
-                            :message="form.errors.password"
-                        />
+                        <InputError class="mt-2" :message="form.errors.password" />
                     </div>
 
                     <div class="block mt-2">
@@ -141,13 +130,9 @@ const submit = () => {
                         class="flex items-center justify-center mt-4 text-xs text-gray-400"
                     >
                         <div class="flex items-center w-full">
-                            <div
-                                class="flex-grow border-t border-gray-300"
-                            ></div>
+                            <div class="flex-grow border-t border-gray-300"></div>
                             <span class="mx-2">OR</span>
-                            <div
-                                class="flex-grow border-t border-gray-300"
-                            ></div>
+                            <div class="flex-grow border-t border-gray-300"></div>
                         </div>
                     </div>
 
@@ -157,11 +142,11 @@ const submit = () => {
                         :disabled="form.processing"
                     >
                         <svg
-                            class="w-5 h-5 text-gray-800 dark:text-white"
+                            class="w-4 h-4 text-gray-800 dark:text-white"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
+                            width="20"
+                            height="20"
                             fill="currentColor"
                             viewBox="0 0 24 24"
                         >
@@ -176,9 +161,12 @@ const submit = () => {
 
                     <div class="text-center mt-3 text-xxs text-gray-400">
                         Don't have an account?
-                        <Link class="text-pink-900 font-bold"
-                            >Register for free</Link
+                        <Link
+                            :href="route('register')"
+                            class="text-pink-800 font-bold"
                         >
+                            Register here
+                        </Link>
                     </div>
                 </form>
             </div>
