@@ -37,7 +37,7 @@ const submit = () => {
     <GuestLayout>
         <Head title="Log in" />
 
-        <div class="relative min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+        <div class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0">
             <img
                 id="background"
                 class="absolute inset-0 w-full h-full object-cover"
@@ -45,7 +45,7 @@ const submit = () => {
                 alt="Background"
             />
             <div
-                class="relative w-[325px] mt-6 px-4 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px]"
+                class="relative w-[325px] mt-6 px-4 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-0" 
             >
                 <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
                     {{ status }}
@@ -159,11 +159,11 @@ const submit = () => {
                         <span class="ms-2">Continue with Google</span>
                     </SecondaryButton>
 
-                    <div class="text-center mt-3 text-xxs text-gray-400">
+                    <div class="text-center mt-3 text-xs text-gray-400">
                         Don't have an account?
                         <Link
                             :href="route('register')"
-                            class="text-pink-800 font-bold"
+                            class="text-pink-800 font-bold hover:text-pink-600 active:text-pink-400"
                         >
                             Register here
                         </Link>

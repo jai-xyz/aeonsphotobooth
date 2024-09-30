@@ -28,7 +28,7 @@ const submit = () => {
     <GuestLayout>
         <Head title="Forgot Password" />
         <div
-            class="relative min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0"
+            class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0"
         >
             <img
                 id="background"
