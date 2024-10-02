@@ -37,7 +37,9 @@ const submit = () => {
     <GuestLayout>
         <Head title="Log in" />
 
-        <div class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0">
+        <div
+            class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0"
+        >
             <img
                 id="background"
                 class="absolute inset-0 w-full h-full object-cover"
@@ -45,9 +47,12 @@ const submit = () => {
                 alt="Background"
             />
             <div
-                class="relative w-[325px] mt-6 px-4 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-0" 
+                class="relative w-[325px] mt-6 px-6  background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-0"
             >
-                <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+                <div
+                    v-if="status"
+                    class="mb-4 font-medium text-sm text-green-600"
+                >
                     {{ status }}
                 </div>
 
@@ -55,7 +60,7 @@ const submit = () => {
                     <div
                         class="flex align-center justify-center mb-2 text-pink-900 font-bold text-xl"
                     >
-                        LOGIN
+                        Login
                     </div>
                     <div>
                         <InputLabel
@@ -70,7 +75,6 @@ const submit = () => {
                             class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             v-model="form.email"
                             required
-                            autofocus
                             autocomplete="username"
                         />
 
@@ -87,34 +91,35 @@ const submit = () => {
                         <TextInput
                             id="password"
                             type="password"
-                              class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             v-model="form.password"
                             required
                             autocomplete="current-password"
                         />
 
-                        <InputError class="mt-2" :message="form.errors.password" />
+                        <InputError
+                            class="mt-2"
+                            :message="form.errors.password"
+                        />
                     </div>
 
-                    <div class="block mt-2">
+                    <div class="flex items-center justify-between mt-2">
                         <label class="flex items-center">
                             <Checkbox
                                 name="remember"
                                 v-model:checked="form.remember"
                             />
-                            <span class="ms-1 text-xs text-gray-600"
+                            <span class="ms-1 mt-1 text-xs text-gray-600"
                                 >Remember me</span
                             >
                         </label>
-                    </div>
 
-                    <div class="flex items-center justify-end mt-3">
                         <Link
                             v-if="canResetPassword"
                             :href="route('password.request')"
-                            class="no-underline text-xs text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:text-blue-500"
+                            class="text-xs mt-1 text-pink-800 font-bold hover:text-pink-600 active:text-pink-400"
                         >
-                            Forgot your password?
+                            Forgot Password?
                         </Link>
                     </div>
 
@@ -130,9 +135,13 @@ const submit = () => {
                         class="flex items-center justify-center mt-4 text-xs text-gray-400"
                     >
                         <div class="flex items-center w-full">
-                            <div class="flex-grow border-t border-gray-300"></div>
+                            <div
+                                class="flex-grow border-t border-gray-300"
+                            ></div>
                             <span class="mx-2">OR</span>
-                            <div class="flex-grow border-t border-gray-300"></div>
+                            <div
+                                class="flex-grow border-t border-gray-300"
+                            ></div>
                         </div>
                     </div>
 
@@ -159,7 +168,7 @@ const submit = () => {
                         <span class="ms-2">Continue with Google</span>
                     </SecondaryButton>
 
-                    <div class="text-center mt-3 text-xs text-gray-400">
+                    <div class="text-center mt-3 text-xs text-gray-500">
                         Don't have an account?
                         <Link
                             :href="route('register')"

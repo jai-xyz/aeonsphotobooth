@@ -151,14 +151,15 @@ const submit = () => {
                             Register
                         </PrimaryButton>
 
-                       <div class="text-center mt-3 text-xs text-gray-400">
+                       <div class="text-center mt-3 text-xs text-gray-500">
                         Already have an account?
                         <Link
                             :href="route('login')"
                             class="text-pink-800 font-bold hover:text-pink-600 active:text-pink-400"
                         >
                             Login here
-                        </Link>
+                        </Link> 
+                        instead.
                     </div>
                     </form>
                 </div>

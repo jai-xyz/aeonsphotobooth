@@ -39,10 +39,12 @@ const submit = () => {
             <div
                 class="relative w-[430px] mt-6 p-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px]"
             >
+                <div class="mb-1 text-pink-900 font-bold text-xl">
+                    Forgot your password?
+                </div>
                 <div class="mb-4 text-sm text-gray-600">
-                    Forgot your password? No problem. Just let us know your
-                    email address and we will email you a password reset link
-                    that will allow you to choose a new one.
+                    Just let us know your email address and we will email you a
+                    password reset link that will allow you to choose a new one.
                 </div>
 
                 <div
@@ -54,8 +56,8 @@ const submit = () => {
 
                 <form @submit.prevent="submit">
                     <div>
-                        <InputLabel for="email" value="Email" />
-                        <div class="relative mb-6">
+                        <InputLabel for="email" value="Email address" />
+                        <div class="relative mb-4">
                             <div
                                 class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
                             >
@@ -89,34 +91,24 @@ const submit = () => {
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>
 
-                    <div class="flex items-center justify-between mt-4">
-                        <Link :href="route('login')" class="flex-1 mr-2 flex">
-                            <svg
-                                class="w-7 h-7 text-black hover:text-blue-500 active:text-blue-700"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke="currentColor"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M5 12h14M5 12l4-4m-4 4 4 4"
-                                />
-                            </svg>
-                        </Link>
+                    <PrimaryButton
+                        class="flex align-center justify-center w-full mt-0"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Send Password Reset Link
+                    </PrimaryButton>
 
-                        <PrimaryButton
-                            class="flex-2 ml-2 flex align-center justify-center"
-                            :class="{ 'opacity-25': form.processing }"
-                            :disabled="form.processing"
-                        >
-                            Email Password Reset Link
-                        </PrimaryButton>
+                    <div class="flex items-center justify-center ">
+                        <div class="text-center mt-3 text-sm text-gray-500">
+                            Or go back to
+                            <Link
+                                :href="route('login')"
+                                class="text-pink-800 font-bold hover:text-pink-600 active:text-pink-400"
+                            >
+                                login<span class="text-center mt-3 text-sm text-gray-500">.</span>
+                            </Link>
+                        </div>
                     </div>
                 </form>
             </div>
