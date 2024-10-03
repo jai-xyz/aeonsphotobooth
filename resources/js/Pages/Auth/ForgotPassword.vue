@@ -28,24 +28,22 @@ const submit = () => {
     <GuestLayout>
         <Head title="Forgot Password" />
         <div
-            class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0"
+            class="relative min-h-screen flex flex-col justify-center items-center pt-6"
         >
             <img
                 id="background"
-                class="absolute inset-0 w-full h-full object-cover"
+                class="absolute inset-0 w-full h-full object-center"
                 :src="loginBg"
                 alt="Background"
             />
-            <div
-                class="relative w-[430px] mt-6 p-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px]"
-            >
+          <div class="relative w-full max-w-[300px] xs:max-w-md sm:max-w-md md:max-w-md lg:max-w-md mt-6 p-6 background-blur shadow-sm overflow-hidden rounded-2xl mx-4">
                 <div class="mb-1 text-pink-900 font-bold text-xl">
                     Forgot your password?
                 </div>
-                <div class="mb-4 text-sm text-gray-600">
+                <div class="mb-3 text-sm text-gray-500 font-thin">
                     Just let us know your email address and we will email you a
                     password reset link that will allow you to choose a new one.
-                </div>
+                </div>  
 
                 <div
                     v-if="status"
@@ -92,7 +90,7 @@ const submit = () => {
                     </div>
 
                     <PrimaryButton
-                        class="flex align-center justify-center w-full mt-0"
+                        class="text-xs xs:flex align-center justify-center w-full mt-0"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >

@@ -38,16 +38,16 @@ const submit = () => {
         <Head title="Log in" />
 
         <div
-            class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0"
+            class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0 "
         >
             <img
                 id="background"
-                class="absolute inset-0 w-full h-full object-cover"
+                class="absolute inset-0 w-full h-full object-cove"
                 :src="loginBg"
                 alt="Background"
             />
             <div
-                class="relative w-[325px] mt-6 px-6  background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-0"
+                class="relative w-[325px] mt-6 px-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-0"
             >
                 <div
                     v-if="status"
@@ -57,6 +57,16 @@ const submit = () => {
                 </div>
 
                 <form @submit.prevent="submit" class="m-6">
+                    <div class="flex align-center justify-center">
+                        <img
+                            id="logo"
+                            src=""
+                            alt="Logo"
+                            width="50px"
+                            class=""
+                        />
+                    </div>
+
                     <div
                         class="flex align-center justify-center mb-2 text-pink-900 font-bold text-xl"
                     >
@@ -146,26 +156,12 @@ const submit = () => {
                     </div>
 
                     <SecondaryButton
-                        class="mt-3 w-full flex align-center justify-center"
+                        class="mt-3 w-full flex align-center justify-center px-0"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
-                        <svg
-                            class="w-4 h-4 text-gray-800 dark:text-white"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M12.037 21.998a10.313 10.313 0 0 1-7.168-3.049 9.888 9.888 0 0 1-2.868-7.118 9.947 9.947 0 0 1 3.064-6.949A10.37 10.37 0 0 1 12.212 2h.176a9.935 9.935 0 0 1 6.614 2.564L16.457 6.88a6.187 6.187 0 0 0-4.131-1.566 6.9 6.9 0 0 0-4.794 1.913 6.618 6.618 0 0 0-2.045 4.657 6.608 6.608 0 0 0 1.882 4.723 6.891 6.891 0 0 0 4.725 2.07h.143c1.41.072 2.8-.354 3.917-1.2a5.77 5.77 0 0 0 2.172-3.41l.043-.117H12.22v-3.41h9.678c.075.617.109 1.238.1 1.859-.099 5.741-4.017 9.6-9.746 9.6l-.215-.002Z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                        <span class="ms-2">Continue with Google</span>
+                      <img src="/images/google_icon_logo.svg" alt="" width="20px">
+                        <span class="text-xs ms-2">Continue with Google</span>
                     </SecondaryButton>
 
                     <div class="text-center mt-3 text-xs text-gray-500">
@@ -174,7 +170,7 @@ const submit = () => {
                             :href="route('register')"
                             class="text-pink-800 font-bold hover:text-pink-600 active:text-pink-400"
                         >
-                            Register here
+                            Register for free
                         </Link>
                     </div>
                 </form>
