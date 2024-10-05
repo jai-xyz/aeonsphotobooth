@@ -38,7 +38,7 @@ const submit = () => {
         <Head title="Log in" />
 
         <div
-            class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0 "
+            class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0"
         >
             <img
                 id="background"
@@ -82,7 +82,7 @@ const submit = () => {
                         <TextInput
                             id="email"
                             type="email"
-                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                             v-model="form.email"
                             required
                             autocomplete="username"
@@ -101,7 +101,7 @@ const submit = () => {
                         <TextInput
                             id="password"
                             type="password"
-                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                             v-model="form.password"
                             required
                             autocomplete="current-password"
@@ -127,7 +127,7 @@ const submit = () => {
                         <Link
                             v-if="canResetPassword"
                             :href="route('password.request')"
-                            class="text-xs mt-1 text-pink-800 font-bold hover:text-pink-600 active:text-pink-400"
+                            class="text-xs mt-1 text-pink-800 font-bold hover:underline active:text-pink-400"
                         >
                             Forgot Password?
                         </Link>
@@ -160,7 +160,11 @@ const submit = () => {
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
-                      <img src="/images/google_icon_logo.svg" alt="" width="20px">
+                        <img
+                            src="/images/google_icon_logo.svg"
+                            alt=""
+                            width="20px"
+                        />
                         <span class="text-xs ms-2">Continue with Google</span>
                     </SecondaryButton>
 
@@ -168,7 +172,7 @@ const submit = () => {
                         Don't have an account?
                         <Link
                             :href="route('register')"
-                            class="text-pink-800 font-bold hover:text-pink-600 active:text-pink-400"
+                            class="text-pink-800 font-bold hover:underline active:text-pink-400"
                         >
                             Register for free
                         </Link>

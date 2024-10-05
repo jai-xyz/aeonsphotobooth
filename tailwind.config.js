@@ -50,9 +50,7 @@ export default {
                 xl: "1280px",
                 "xl-2xl": { min: "1280px", max: "1535px" },
                 "2xl": "1536px",
-            },
-            fontWeight: {
-                50: "50",
+
             },
         },
     },

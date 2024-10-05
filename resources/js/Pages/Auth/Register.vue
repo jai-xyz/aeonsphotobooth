@@ -46,7 +46,9 @@ const submit = () => {
                         <div class="mb-1 text-pink-900 font-bold text-xl">
                             Create an Account
                         </div>
-                        <div class="text-xs xs:text-sm mb-2 text-gray-500  font-thin">
+                        <div
+                            class="text-xs xs:text-sm mb-2 text-gray-500 font-thin"
+                        >
                             Fun awaits. Join the photo booth party! <br />
                             Capture the moment. Sign up now.
                         </div>
@@ -56,7 +58,7 @@ const submit = () => {
                             <TextInput
                                 id="fullname"
                                 type="text"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.fullname"
                                 required
                                 autofocus
@@ -75,7 +77,7 @@ const submit = () => {
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.email"
                                 required
                                 autocomplete="off"
@@ -93,7 +95,7 @@ const submit = () => {
                             <NumberInput
                                 id="contactno"
                                 type="text"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.contactno"
                                 required
                                 autocomplete="off"
@@ -113,7 +115,7 @@ const submit = () => {
                             <TextInput
                                 id="password"
                                 type="password"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.password"
                                 required
                                 autocomplete="off"
@@ -134,7 +136,7 @@ const submit = () => {
                             <TextInput
                                 id="password_confirmation"
                                 type="password"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.password_confirmation"
                                 required
                                 autocomplete="off"
@@ -158,7 +160,7 @@ const submit = () => {
                             Already have an account?
                             <Link
                                 :href="route('login')"
-                                class="text-pink-800 font-bold hover:text-pink-600 active:text-pink-400"
+                                class="text-pink-800 font-bold hover:underline active:text-pink-400"
                             >
                                 Login here
                             </Link>
