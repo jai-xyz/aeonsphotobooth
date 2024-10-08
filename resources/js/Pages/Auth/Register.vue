@@ -37,7 +37,7 @@ const submit = () => {
                     id="background"
                     class="absolute inset-0 w-full h-full object-cover"
                     :src="trialBg"
-                    alt="Background"
+                    alt=""
                 />
             </div>
             <div class="w-full md:w-3/5 flex justify-center items-center">

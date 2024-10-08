@@ -42,9 +42,9 @@ const submit = () => {
         >
             <img
                 id="background"
-                class="absolute inset-0 w-full h-full object-cove"
+                class="absolute inset-0 w-full h-full object-cover"
                 :src="loginBg"
-                alt="Background"
+                alt=""
             />
             <div
                 class="relative w-[325px] mt-6 px-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-0"
