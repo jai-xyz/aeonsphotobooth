@@ -41,7 +41,7 @@ const submit = () => {
                 />
             </div>
             <div class="w-full md:w-3/5 flex justify-center items-center">
-                <div class="w-[350px] px-4 overflow-hidden rounded-2xl">
+                <div class="w-[400px] px-4 overflow-hidden rounded-2xl">
                     <form @submit.prevent="submit" class="mx-6">
                         <div class="mb-1 text-pink-900 font-bold text-xl">
                             Create an Account

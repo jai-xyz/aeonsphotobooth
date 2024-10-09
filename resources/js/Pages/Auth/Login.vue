@@ -47,7 +47,7 @@ const submit = () => {
                 alt=""
             />
             <div
-                class="relative w-[325px] mt-6 px-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-0"
+                class="relative w-[325px] mt-6 px-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-4"
             >
                 <div
                     v-if="status"
