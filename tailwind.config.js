@@ -20,9 +20,6 @@ export default {
             fontSize: {
                 xxs: "0.675rem",
             },
-            fontWeight: {
-                semi: "600",
-            },
             colors: {
                 primary: {
                     50: "#f9f4f4",
