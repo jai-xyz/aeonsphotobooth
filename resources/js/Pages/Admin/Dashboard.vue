@@ -7,7 +7,7 @@ import { Head } from "@inertiajs/vue3";
     <Head title="Dashboard" />
 
     <AdminAuthenticatedLayout>
-        <template #breadcrumbs>
+        <!-- <template #breadcrumbs>
             <div class="pb-2">
                 <nav class="flex">
                     <ol
@@ -56,7 +56,7 @@ import { Head } from "@inertiajs/vue3";
                     </ol>
                 </nav>
             </div>
-        </template>
+        </template> -->
 
         <template #header>
             <h2 class="font-semibold text-4xl pb-2 text-gray-800 leading-tight">
