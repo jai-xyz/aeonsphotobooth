@@ -15,7 +15,18 @@ export default {
         extend: {
             fontFamily: {
                 body: ["Lato", "sans-serif"],
-                sans: ["Roboto", ...defaultTheme.fontFamily.sans],
+                sans: ["Lato", ...defaultTheme.fontFamily.sans],
+            },
+            fontWeight: {
+                hairline: 100,
+                thin: 200,
+                light: 300,
+                normal: 400,
+                medium: 500,
+                semibold: 600,
+                bold: 700,
+                extrabold: 800,
+                black: 900,
             },
             fontSize: {
                 xxs: "0.675rem",
