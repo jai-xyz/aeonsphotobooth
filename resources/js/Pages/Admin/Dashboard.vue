@@ -16,7 +16,7 @@ import { Head } from "@inertiajs/vue3";
                         <li class="inline-flex items-center">
                             <a
                                 :href="route('admin.dashboard')"
-                                class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                                class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                             >
                                 <svg
                                     class="w-4 h-4 me-2.5"  
@@ -59,13 +59,13 @@ import { Head } from "@inertiajs/vue3";
         </template>
 
         <template #header>
-            <h2 class="font-semibold text-5xl pb-4 text-gray-800 leading-tight">
+            <h2 class="font-semibold text-4xl pb-2 text-gray-800 leading-tight">
                 Dashboard
             </h2>
         </template>
 
         <div>
-            <div class="max-w-7xl mx-auto">
+            <div class="mx-auto">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">You're logged in!</div>
                 </div>

@@ -67,7 +67,7 @@ onBeforeUnmount(() => {
             <nav
                 class="fixed z-30 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
             >
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center h-16">
                         <div class="flex items-center">
                             <button
@@ -390,7 +390,7 @@ onBeforeUnmount(() => {
                 <!-- Page Heading -->
 
                 <header v-if="$slots.header">
-                    <div class="max-w-7xl mx-auto">
+                    <div class="mx-auto">
                         <slot name="header" />
                     </div>
                 </header>
