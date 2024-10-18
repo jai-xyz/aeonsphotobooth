@@ -2,6 +2,7 @@
 import { Head } from "@inertiajs/vue3";
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 import AButton from "@/Components/AButton.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 defineProps({
     packages: {
@@ -59,7 +60,7 @@ defineProps({
                                     <span
                                         class="ml-1 text-gray-400 md:ml-2 dark:text-gray-500"
                                         aria-current="page"
-                                        >Products</span
+                                        >Packages</span
                                     >
                                 </div>
                             </li>
@@ -68,7 +69,7 @@ defineProps({
                     <h1
                         class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white"
                     >
-                        All products
+                        All packages
                     </h1>
                 </div>
                 <div
@@ -85,22 +86,24 @@ defineProps({
                                     name="email"
                                     id="products-search"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    placeholder="Search for products"
+                                    placeholder="Search for packages"
                                 />
                             </div>
                         </form>
                     </div>
-                    <button
+                    <!-- <button
                         id="createProductButton"
-                        class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                        class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
                         type="button"
                         data-drawer-target="drawer-create-product-default"
                         data-drawer-show="drawer-create-product-default"
                         aria-controls="drawer-create-product-default"
                         data-drawer-placement="right"
-                    >
-                        Add new product
-                    </button>
+                    > -->
+                    <PrimaryButton class="normal-case">
+                        Add new package
+                    </PrimaryButton>
+                    <!-- </button> -->
                 </div>
             </div>
         </div>
@@ -262,10 +265,10 @@ defineProps({
                                             data-drawer-show="drawer-update-product-default"
                                             aria-controls="drawer-update-product-default"
                                             data-drawer-placement="right"
-                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                                            class="inline-flex items-center p-2 text-sm font-medium text-center text-white rounded-md bg-yellow-300 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-200"
                                         >
                                             <svg
-                                                class="w-4 h-4 mr-2"
+                                                class="w-4 h-4"
                                                 fill="currentColor"
                                                 viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -279,7 +282,6 @@ defineProps({
                                                     clip-rule="evenodd"
                                                 ></path>
                                             </svg>
-                                            Update
                                         </button>
                                         <button
                                             type="button"
@@ -288,10 +290,10 @@ defineProps({
                                             data-drawer-show="drawer-delete-product-default"
                                             aria-controls="drawer-delete-product-default"
                                             data-drawer-placement="right"
-                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
+                                            class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-700 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-7 00 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900"
                                         >
                                             <svg
-                                                class="w-4 h-4 mr-2"
+                                                class="w-4 h-4"
                                                 fill="currentColor"
                                                 viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -302,7 +304,6 @@ defineProps({
                                                     clip-rule="evenodd"
                                                 ></path>
                                             </svg>
-                                            Delete item
                                         </button>
                                     </td>
                                 </tr>
@@ -319,89 +320,105 @@ defineProps({
             class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700"
         >
             <div class="flex items-center mb-4 sm:mb-0">
-                <a
-                    href="#"
-                    class="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                    <svg
-                        class="w-7 h-7"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                            clip-rule="evenodd"
-                        ></path>
-                    </svg>
-                </a>
-                <a
-                    href="#"
-                    class="inline-flex justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                    <svg
-                        class="w-7 h-7"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd"
-                        ></path>
-                    </svg>
-                </a>
                 <span
                     class="text-sm font-normal text-gray-500 dark:text-gray-400"
                     >Showing
                     <span class="font-semibold text-gray-900 dark:text-white"
-                        >1-20</span
+                        >1 to 10</span
                     >
                     of
                     <span class="font-semibold text-gray-900 dark:text-white"
-                        >2290</span
+                        >100</span
                     ></span
                 >
             </div>
             <div class="flex items-center space-x-3">
-                <a
-                    href="#"
-                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                >
-                    <svg
-                        class="w-5 h-5 mr-1 -ml-1"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                            clip-rule="evenodd"
-                        ></path>
-                    </svg>
-                    Previous
-                </a>
-                <a
-                    href="#"
-                    class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                >
-                    Next
-                    <svg
-                        class="w-5 h-5 ml-1 -mr-1"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd"
-                        ></path>
-                    </svg>
-                </a>
+                <nav aria-label="Page navigation example">
+                    <ul class="flex items-center -space-x-px h-10 text-base">
+                        <li>
+                            <a
+                                href="#"
+                                class="flex items-center justify-center px-4 h-10 ms-0 leading-tight disabled: text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                            >
+                                <span class="sr-only">Previous</span>
+                                <svg
+                                    class="w-3 h-3 rtl:rotate-180"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 6 10"
+                                >
+                                    <path
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M5 1 1 5l4 4"
+                                    />
+                                </svg>
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="#"
+                                class="flex items-center justify-center px-4 h-10 leading-tight text-pink-600 border border-pink-300 bg-pink-50 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                >1</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#"
+                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                >2</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#"
+                                aria-current="page"
+                                class="z-10 flex items-center justify-center px-4 h-10 leading-tight  text-gray-500 bg-white border border-gray-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                                >3</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#"
+                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                >4</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#"
+                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                >5</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#"
+                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                            >
+                                <span class="sr-only">Next</span>
+                                <svg
+                                    class="w-3 h-3 rtl:rotate-180"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 6 10"
+                                >
+                                    <path
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="m1 9 4-4-4-4"
+                                    />
+                                </svg>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </AdminAuthenticatedLayout>
