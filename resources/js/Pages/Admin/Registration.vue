@@ -114,7 +114,7 @@ const isSameStatus = computed(() => {
                                     </span>
                                 </td>
 
-                                  <td>
+                                <td>
                                     <PrimaryButton @click="() => updateEventStatus(event)">
                                         Update Status
                                     </PrimaryButton>

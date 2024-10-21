@@ -1,8 +1,16 @@
 <script setup>
-import { Head } from "@inertiajs/vue3";
+import { Head, useForm } from "@inertiajs/vue3";
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 import AButton from "@/Components/AButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import InputError from "@/Components/InputError.vue";
+import NumberInput from "@/Components/NumberInput.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
+import TextArea from "@/Components/TextArea.vue";
+import TextInput from "@/Components/TextInput.vue";
+import Modal from "@/Components/Modal.vue";
+import { computed, ref } from "vue";
 
 defineProps({
     packages: {
@@ -10,6 +18,44 @@ defineProps({
         required: true,
     },
 });
+
+const addingNewProduct = ref(false);
+
+const form = useForm({
+    name: "",
+    price: "",
+    duration: "",
+    size: "",
+    inclusion: "",
+    note: "",
+    extension: "",
+});
+
+const addNewProduct = (event) => {
+    // form.id = event.id;
+    // form.user_id = event.user_id;
+    // form.status = event.status;
+    // form.originalStatus = event.status;
+    // updatingEventStatus.value = true;
+    addingNewProduct.value = true;
+};
+
+const addProduct = () => {
+    // form.patch(route("event.update", { event: form.id }), {
+    //     preserveScroll: true,
+    //     onSuccess: () => closeModal(),
+    //     onFinish: () => form.reset(),
+    // });
+};
+
+const submit = () => {
+    form.post(route("package.store"));
+};
+
+const closeModal = () => {
+    addingNewProduct.value = false;
+    // form.reset();
+};
 </script>
 
 <template>
@@ -91,16 +137,10 @@ defineProps({
                             </div>
                         </form>
                     </div>
-                    <!-- <button
-                        id="createProductButton"
-                        class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
-                        type="button"
-                        data-drawer-target="drawer-create-product-default"
-                        data-drawer-show="drawer-create-product-default"
-                        aria-controls="drawer-create-product-default"
-                        data-drawer-placement="right"
-                    > -->
-                    <PrimaryButton class="normal-case">
+                    <PrimaryButton
+                        @click="() => addNewProduct(event)"
+                        class="normal-case"
+                    >
                         Add new package
                     </PrimaryButton>
                     <!-- </button> -->
@@ -182,7 +222,7 @@ defineProps({
                                 </tr>
                             </thead>
                             <tbody
-                                class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
+                                class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700" 
                             >
                                 <!-- {{< products.inline >}}
                         {{- range (index $.Site.Data "products") }} -->
@@ -290,7 +330,7 @@ defineProps({
                                             data-drawer-show="drawer-delete-product-default"
                                             aria-controls="drawer-delete-product-default"
                                             data-drawer-placement="right"
-                                            class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-700 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-7 00 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900"
+                                            class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-700 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900"
                                         >
                                             <svg
                                                 class="w-4 h-4"
@@ -376,7 +416,7 @@ defineProps({
                             <a
                                 href="#"
                                 aria-current="page"
-                                class="z-10 flex items-center justify-center px-4 h-10 leading-tight  text-gray-500 bg-white border border-gray-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                                class="z-10 flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
                                 >3</a
                             >
                         </li>
@@ -421,5 +461,292 @@ defineProps({
                 </nav>
             </div>
         </div>
+
+        <Modal :show="addingNewProduct" @close="closeModal">
+            <!-- <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900">
+                    modal
+                </h2>
+            </div> -->
+
+            <!-- 
+        <div class="py-12">
+            <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">Add new package</div>
+                    
+                    <form @submit.prevent="submit" class="px-12 mb-10">
+                        <div>
+                            <InputLabel for="name" value="Name" />
+
+                            <TextInput
+                                id="name"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.name"
+                                required
+                                autofocus
+                                autocomplete="off"
+                                placeholder="e.g. Package A"
+                            />
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.name"
+                            />
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel for="price" value="Price" />
+
+                            <NumberInput
+                                id="price"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.price"
+                                required
+                                autocomplete="off"
+                                placeholder="e.g. ₱3500"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.price"
+                            />
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel for="duration" value="Duration" />
+
+                            <TextInput
+                                id="duration"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.duration"
+                                required
+                                autocomplete="off"
+                                placeholder="e.g. 2hrs"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.duration"
+                            />
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel for="size" value="Size" />
+
+                            <TextInput
+                                id="size"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.size"
+                                required
+                                autocomplete="off"
+                                placeholder="e.g. 4r"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.size"
+                            />
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel for="inclusion" value="Inclusion" />
+
+                            <TextArea
+                                id="inclusion"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.inclusion"
+                                required
+                                autocomplete="off"
+                                placeholder="e.g. 2 HOURS of Unlimited shots - 4 shot template (Single Printing)"
+
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.inclusion"
+                            />
+                        </div>
+
+
+                           <div class="mt-4">
+                            <InputLabel for="note" value="Note" />
+
+                            <TextInput
+                                id="note"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.note"
+                                required
+                                autocomplete="off"
+                                placeholder="e.g. transportation charge not included yet."
+
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.note"
+                            />
+                        </div>
+
+
+                           <div class="mt-4">
+                            <InputLabel for="extension" value="Extension" />
+
+                            <TextInput
+                                id="extension"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.extension"
+                                required
+                                autocomplete="off"
+                                placeholder="e.g. ₱1000.00 / hour extension"
+
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.extension"
+                            />
+                        </div>
+
+                        <PrimaryButton
+                            class="mt-6 mb-6 flex float-right"
+                            :class="{ 'opacity-25': form.processing }"
+                            :disabled="form.processing"
+                        >
+                            Add package
+                        </PrimaryButton>
+                    </form>
+                </div>
+            </div>
+        </div> -->
+                    <!-- Modal content -->
+                <div
+                    class="relative bg-white rounded-lg shadow dark:bg-gray-800"
+                >
+                    <!-- Modal header -->
+                    <div
+                        class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
+                    >
+                        <h3 class="text-xl font-semibold dark:text-white">
+                            Add new user
+                        </h3>
+                        <button
+                            type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                        @click="closeModal"
+                        >
+                            <svg
+                                class="w-5 h-5"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-6">
+                        <form action="#">
+                            <div class="grid grid-cols-6 gap-6">
+                                <div class="col-span-6 sm:col-span-3">
+                                    <label
+                                        for="first-name"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >First Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        name="first-name"
+                                        id="first-name"
+                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                        placeholder="Bonnie"
+                                        required
+                                    />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <label
+                                        for="last-name"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >Last Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        name="last-name"
+                                        id="last-name"
+                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                        placeholder="Green"
+                                        required
+                                    />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <label
+                                        for="email"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >Email</label
+                                    >
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        id="email"
+                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                        placeholder="example@company.com"
+                                        required
+                                    />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <label
+                                        for="position"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >Position</label
+                                    >
+                                    <input
+                                        type="text"
+                                        name="position"
+                                        id="position"
+                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                        placeholder="e.g. React developer"
+                                        required
+                                    />
+                                </div>
+                                <div class="col-span-6">
+                                    <label
+                                        for="biography"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >Biography</label
+                                    >
+                                    <textarea
+                                        id="biography"
+                                        rows="4"
+                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                        placeholder="👨‍💻Full-stack web developer. Open-source contributor."
+                                    ></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Modal footer -->
+                    <div
+                        class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700"
+                    >
+                        <button
+                            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                            type="submit"
+                        >
+                            Add user
+                        </button>
+                    </div>
+                </div>
+        </Modal>
     </AdminAuthenticatedLayout>
 </template>

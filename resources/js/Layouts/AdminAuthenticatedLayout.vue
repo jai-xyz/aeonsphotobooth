@@ -213,7 +213,7 @@ onBeforeUnmount(() => {
                 </div>
             </nav>
         </div>
-        <div class="flex pt-16 overflow-hidden bg-gray-50 dark:bg-gray-900">
+        <div class="flex pt-16 bg-gray-50 dark:bg-gray-900">
             <!-- SIDEBAR -->
 
             <aside
@@ -260,7 +260,7 @@ onBeforeUnmount(() => {
                                             d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
                                         ></path>
                                     </svg>
-                                    <span class="ml-3 font-medium">Dashboard</span>
+                                    <span class="ml-3">Dashboard</span>
                                 </AdminNavLink>
 
                                 <AdminNavLink
@@ -292,7 +292,7 @@ onBeforeUnmount(() => {
                                             d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
                                         ></path>
                                     </svg>
-                                    <span class="ml-3 font-medium">Packages </span>
+                                    <span class="ml-3">Packages </span>
                                 </AdminNavLink>
 
                                 <AdminNavLink
@@ -324,7 +324,7 @@ onBeforeUnmount(() => {
                                             d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
                                         ></path>
                                     </svg>
-                                    <span class="ml-3 font-medium">Events </span>
+                                    <span class="ml-3">Events </span>
                                 </AdminNavLink>
 
                                 <AdminNavLink
@@ -356,7 +356,7 @@ onBeforeUnmount(() => {
                                             d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"
                                         ></path>
                                     </svg>
-                                    <span class="ml-3 font-medium">Backdrops </span>
+                                    <span class="ml-3">Backdrops </span>
                                 </AdminNavLink>
 
                                 <li>
