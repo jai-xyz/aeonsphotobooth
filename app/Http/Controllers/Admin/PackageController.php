@@ -90,12 +90,12 @@ class PackageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Packages $package) : Response
-    {
-        return Inertia::render('Admin/EditPackage', [
-            'package' => $package,
-        ]);
-    }
+    // public function edit(Packages $package) : Response
+    // {
+    //     return Inertia::render('Admin/EditPackage', [
+    //         'package' => $package,
+    //     ]);
+    // }
 
     /**
      * Update the specified resource in storage.
@@ -153,8 +153,12 @@ class PackageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Packages $package) : RedirectResponse
     {
-        //
+        if($package->delete()) {
+            return redirect()->route('package.index');
+        } else {
+            return redirect()->back();
+        }
     }
 }

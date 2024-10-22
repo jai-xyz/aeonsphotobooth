@@ -9,7 +9,7 @@ import TextArea from "@/Components/TextArea.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
-    package: Object
+    package: Array
 });
 
 

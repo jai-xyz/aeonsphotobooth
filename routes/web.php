@@ -49,8 +49,9 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
     Route::get('/admin/package', [PackageController::class, 'index'])->name('package.index');
     Route::get('/admin/package/add', [PackageController::class, 'create'])->name('package.create');
     Route::post('/admin/package/add', [PackageController::class, 'store'])->name('package.store');
-    Route::get('/admin/package/edit/{package}', [PackageController::class, 'edit'])->name('package.edit');
+    // Route::get('/admin/package/edit/{package}', [PackageController::class, 'edit'])->name('package.edit');
     Route::patch('/admin/package/edit/{package}', [PackageController::class, 'update'])->name('package.update');
+    Route::delete('/admin/package/delete/{package}', [PackageController::class, 'destroy'])->name('package.destroy');
 
     Route::get('/admin/backdrop', [BackdropController::class, 'index'])->name('backdrop.index');
     Route::get('/admin/backdrop/add', [BackdropController::class, 'create'])->name('backdrop.create');

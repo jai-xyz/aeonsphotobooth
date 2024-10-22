@@ -10,7 +10,9 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextArea from "@/Components/TextArea.vue";
 import TextInput from "@/Components/TextInput.vue";
 import Modal from "@/Components/Modal.vue";
+import DeleteModal from "@/Components/DeleteModal.vue";
 import { computed, ref } from "vue";
+import DangerButton from "@/Components/DangerButton.vue";
 
 defineProps({
     packages: {
@@ -19,9 +21,8 @@ defineProps({
     },
 });
 
-const addingNewProduct = ref(false);
-
-const form = useForm({
+// ADD
+const addForm = useForm({
     name: "",
     price: "",
     duration: "",
@@ -31,31 +32,122 @@ const form = useForm({
     extension: "",
 });
 
-const addNewProduct = (event) => {
-    // form.id = event.id;
-    // form.user_id = event.user_id;
-    // form.status = event.status;
-    // form.originalStatus = event.status;
-    // updatingEventStatus.value = true;
+const addingNewProduct = ref(false);
+
+const addNewProduct = (product) => {
+    addForm.name = product.name;
+    addForm.price = product.price;
+    addForm.duration = product.duration;
+    addForm.size = product.size;
+    addForm.inclusion = product.inclusion;
+    addForm.note = product.note;
+    addForm.extension = product.extension;
     addingNewProduct.value = true;
 };
 
-const addProduct = () => {
-    // form.patch(route("event.update", { event: form.id }), {
-    //     preserveScroll: true,
-    //     onSuccess: () => closeModal(),
-    //     onFinish: () => form.reset(),
-    // });
+const submitAdd = () => {
+    addForm.post(route("package.store"), {
+        preserveScroll: true,
+        onSuccess: () => closeAddModal(),
+        onFinish: () => addForm.reset(),
+    });
 };
 
-const submit = () => {
-    form.post(route("package.store"));
-};
-
-const closeModal = () => {
+const closeAddModal = () => {
     addingNewProduct.value = false;
-    // form.reset();
+    addForm.reset();
 };
+
+// EDIT
+const editingProduct = ref(false);
+const currentPackage = ref(null);
+
+const editForm = useForm({
+    id: null,
+    name: "",
+    price: "",
+    duration: "",
+    size: "",
+    inclusion: "",
+    note: "",
+    extension: "",
+});
+
+const openEditModal = (pkg) => {
+    currentPackage.value = pkg;
+    editForm.id = pkg.id;
+    editForm.name = pkg.name;
+    editForm.price = pkg.price;
+    editForm.duration = pkg.duration;
+    editForm.size = [pkg.size, pkg.size2, pkg.size3, pkg.size4, pkg.size5]
+        .filter((size) => size)
+        .join(", ");
+    editForm.inclusion = pkg.inclusion;
+    editForm.note = pkg.note;
+    editForm.extension = pkg.extension;
+
+    // for checking if there are changes
+    editForm.OrigId = pkg.id;
+    editForm.OrigName = pkg.name;
+    editForm.OrigPrice = pkg.price;
+    editForm.OrigDuration = pkg.duration;
+    editForm.OrigSize = [pkg.size, pkg.size2, pkg.size3, pkg.size4, pkg.size5]
+        .filter((size) => size)
+        .join(", ");
+    editForm.OrigInclusion = pkg.inclusion;
+    editForm.OrigNote = pkg.note;
+    editForm.OrigExtension = pkg.extension;
+    editingProduct.value = true;
+};
+
+const submitEdit = () => {
+    editForm.patch(route("package.update", editForm.id), {
+        preserveScroll: true,
+        onSuccess: () => closeEditModal(),
+        onFinish: () => editForm.reset(),
+    });
+};
+
+const closeEditModal = () => {
+    editingProduct.value = false;
+    editForm.reset();
+};
+
+const noChanges = computed(() => {
+    return (
+        editForm.OrigId === editForm.id &&
+        editForm.OrigName === editForm.name &&
+        editForm.OrigPrice === editForm.price &&
+        editForm.OrigDuration === editForm.duration &&
+        editForm.OrigSize === editForm.size &&
+        editForm.OrigInclusion === editForm.inclusion &&
+        editForm.OrigNote === editForm.note &&
+        editForm.OrigExtension === editForm.extension
+    );
+});
+
+// DELETE
+const deletingProduct = ref(false);
+
+const openDeleteModal = (pkg) => {
+    currentPackage.value = pkg;
+    deletingProduct.value = true;
+};
+
+const closeDeleteModal = () => {
+    deletingProduct.value = false;
+    deleteForm.reset();
+};
+
+const deleteForm = useForm({});
+
+const submitDelete = () => {
+    deleteForm.delete(route("package.destroy", currentPackage.value.id), {
+        preserveScroll: true,
+        onSuccess: () => closeDeleteModal(),
+    });
+}
+
 </script>
 
 <template>
@@ -138,12 +230,22 @@ const closeModal = () => {
                         </form>
                     </div>
                     <PrimaryButton
-                        @click="() => addNewProduct(event)"
+                        @click="
+                            () =>
+                                addNewProduct({
+                                    name: '',
+                                    price: '',
+                                    duration: '',
+                                    size: '',
+                                    inclusion: '',
+                                    note: '',
+                                    extension: '',
+                                })
+                        "
                         class="normal-case"
                     >
-                        Add new package
+                        Add new product
                     </PrimaryButton>
-                    <!-- </button> -->
                 </div>
             </div>
         </div>
@@ -222,10 +324,8 @@ const closeModal = () => {
                                 </tr>
                             </thead>
                             <tbody
-                                class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700" 
+                                class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
                             >
-                                <!-- {{< products.inline >}}
-                        {{- range (index $.Site.Data "products") }} -->
                                 <tr
                                     v-for="pkg in packages"
                                     :key="pkg.id"
@@ -263,7 +363,7 @@ const closeModal = () => {
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                     >
-                                        {{ pkg.price }}
+                                        ₱{{ pkg.price }}
                                     </td>
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -301,10 +401,7 @@ const closeModal = () => {
                                         <button
                                             type="button"
                                             id="updateProductButton"
-                                            data-drawer-target="drawer-update-product-default"
-                                            data-drawer-show="drawer-update-product-default"
-                                            aria-controls="drawer-update-product-default"
-                                            data-drawer-placement="right"
+                                            @click="openEditModal(pkg)"
                                             class="inline-flex items-center p-2 text-sm font-medium text-center text-white rounded-md bg-yellow-300 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-200"
                                         >
                                             <svg
@@ -326,10 +423,7 @@ const closeModal = () => {
                                         <button
                                             type="button"
                                             id="deleteProductButton"
-                                            data-drawer-target="drawer-delete-product-default"
-                                            data-drawer-show="drawer-delete-product-default"
-                                            aria-controls="drawer-delete-product-default"
-                                            data-drawer-placement="right"
+                                            @click="openDeleteModal(pkg)"
                                             class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-700 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900"
                                         >
                                             <svg
@@ -347,8 +441,6 @@ const closeModal = () => {
                                         </button>
                                     </td>
                                 </tr>
-                                <!-- {{ end -}}
-                        {{< /products.inline >}}                        -->
                             </tbody>
                         </table>
                     </div>
@@ -462,184 +554,443 @@ const closeModal = () => {
             </div>
         </div>
 
-        <Modal :show="addingNewProduct" @close="closeModal">
-            <!-- <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900">
-                    modal
-                </h2>
-            </div> -->
-
-            <!-- 
-        <div class="py-12">
-            <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">Add new package</div>
-                    
-                    <form @submit.prevent="submit" class="px-12 mb-10">
-                        <div>
-                            <InputLabel for="name" value="Name" />
-
-                            <TextInput
-                                id="name"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.name"
-                                required
-                                autofocus
-                                autocomplete="off"
-                                placeholder="e.g. Package A"
-                            />
-                            <InputError
-                                class="mt-2"
-                                :message="form.errors.name"
-                            />
-                        </div>
-
-                        <div class="mt-4">
-                            <InputLabel for="price" value="Price" />
-
-                            <NumberInput
-                                id="price"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.price"
-                                required
-                                autocomplete="off"
-                                placeholder="e.g. ₱3500"
-                            />
-
-                            <InputError
-                                class="mt-2"
-                                :message="form.errors.price"
-                            />
-                        </div>
-
-                        <div class="mt-4">
-                            <InputLabel for="duration" value="Duration" />
-
-                            <TextInput
-                                id="duration"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.duration"
-                                required
-                                autocomplete="off"
-                                placeholder="e.g. 2hrs"
-                            />
-
-                            <InputError
-                                class="mt-2"
-                                :message="form.errors.duration"
-                            />
-                        </div>
-
-                        <div class="mt-4">
-                            <InputLabel for="size" value="Size" />
-
-                            <TextInput
-                                id="size"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.size"
-                                required
-                                autocomplete="off"
-                                placeholder="e.g. 4r"
-                            />
-
-                            <InputError
-                                class="mt-2"
-                                :message="form.errors.size"
-                            />
-                        </div>
-
-                        <div class="mt-4">
-                            <InputLabel for="inclusion" value="Inclusion" />
-
-                            <TextArea
-                                id="inclusion"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.inclusion"
-                                required
-                                autocomplete="off"
-                                placeholder="e.g. 2 HOURS of Unlimited shots - 4 shot template (Single Printing)"
-
-                            />
-
-                            <InputError
-                                class="mt-2"
-                                :message="form.errors.inclusion"
-                            />
-                        </div>
-
-
-                           <div class="mt-4">
-                            <InputLabel for="note" value="Note" />
-
-                            <TextInput
-                                id="note"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.note"
-                                required
-                                autocomplete="off"
-                                placeholder="e.g. transportation charge not included yet."
-
-                            />
-
-                            <InputError
-                                class="mt-2"
-                                :message="form.errors.note"
-                            />
-                        </div>
-
-
-                           <div class="mt-4">
-                            <InputLabel for="extension" value="Extension" />
-
-                            <TextInput
-                                id="extension"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.extension"
-                                required
-                                autocomplete="off"
-                                placeholder="e.g. ₱1000.00 / hour extension"
-
-                            />
-
-                            <InputError
-                                class="mt-2"
-                                :message="form.errors.extension"
-                            />
-                        </div>
-
-                        <PrimaryButton
-                            class="mt-6 mb-6 flex float-right"
-                            :class="{ 'opacity-25': form.processing }"
-                            :disabled="form.processing"
+        <!-- ADD PRODUCT MODAL -->
+        <Modal :show="addingNewProduct" @close="closeAddModal">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+                <!-- Modal header -->
+                <div
+                    class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
+                >
+                    <h3 class="text-xl font-semibold dark:text-white">
+                        Add new package
+                    </h3>
+                    <button
+                        type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                        @click="closeAddModal"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
                         >
-                            Add package
-                        </PrimaryButton>
+                            <path
+                                fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Modal body -->
+
+                <div class="p-6 space-y-6">
+                    <form @submit.prevent="submitAdd">
+                        <div class="grid grid-cols-6 gap-6 mb-6">
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="name"
+                                    value="Name"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+
+                                <TextInput
+                                    id="name"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="addForm.name"
+                                    required
+                                    autofocus
+                                    autocomplete="off"
+                                    placeholder="e.g. Package A"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="addForm.errors.name"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="price"
+                                    value="Price"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <NumberInput
+                                    id="price"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="addForm.price"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. ₱3500"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="addForm.errors.price"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="duration"
+                                    value="Duration"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="duration"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="addForm.duration"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. 2hrs"
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="addForm.errors.duration"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="size"
+                                    value="Size"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="size"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="addForm.size"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. 4r"
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="addForm.errors.size"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="note"
+                                    value="Note"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="note"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="addForm.note"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. transportation charge not included yet."
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="addForm.errors.note"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="extension"
+                                    value="Extension"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="extension"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="addForm.extension"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. ₱1000.00 / hour extension"
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="addForm.errors.extension"
+                                />
+                            </div>
+
+                            <div class="col-span-6">
+                                <InputLabel
+                                    for="inclusion"
+                                    value="Inclusion"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+
+                                <TextArea
+                                    id="inclusion"
+                                    type="text"
+                                    rows="4"
+                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    v-model="addForm.inclusion"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. 2 HOURS of Unlimited shots - 4 shot template (Single Printing)"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="addForm.errors.inclusion"
+                                />
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="mt-6 flex justify-start gap-6">
+                            <PrimaryButton
+                                class="normal-case"
+                                :class="{ 'opacity-25': addForm.processing }"
+                                :disabled="addForm.processing"
+                            >
+                                Add package
+                            </PrimaryButton>
+
+                            <SecondaryButton
+                                class="normal-case py-2.5 px-5"
+                                @click="closeAddModal"
+                            >
+                                Cancel
+                            </SecondaryButton>
+                        </div>
                     </form>
                 </div>
             </div>
-        </div> -->
-                    <!-- Modal content -->
+        </Modal>
+
+        <!-- EDIT PRODUCT MODAL -->
+        <Modal :show="editingProduct" @close="closeEditModal">
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+                <div
+                    class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
+                >
+                    <h3 class="text-xl font-semibold dark:text-white">
+                        Edit package
+                    </h3>
+                    <button
+                        type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                        @click="closeEditModal"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
+                    <form @submit.prevent="submitEdit">
+                        <div class="grid grid-cols-6 gap-6 mb-6">
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="name"
+                                    value="Name"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+
+                                <TextInput
+                                    id="name"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="editForm.name"
+                                    required
+                                    autofocus
+                                    autocomplete="off"
+                                    placeholder="e.g. Package A"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.name"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="price"
+                                    value="Price"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <NumberInput
+                                    id="price"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="editForm.price"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. ₱3500"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.price"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="duration"
+                                    value="Duration"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="duration"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="editForm.duration"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. 2hrs"
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.duration"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="size"
+                                    value="Size"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="size"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="editForm.size"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. 4r"
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.size"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="note"
+                                    value="Note"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="note"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="editForm.note"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. transportation charge not included yet."
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.note"
+                                />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="extension"
+                                    value="Extension"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="extension"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="editForm.extension"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. ₱1000.00 / hour extension"
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.extension"
+                                />
+                            </div>
+
+                            <div class="col-span-6">
+                                <InputLabel
+                                    for="inclusion"
+                                    value="Inclusion"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+
+                                <TextArea
+                                    id="inclusion"
+                                    type="text"
+                                    rows="6"
+                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    v-model="editForm.inclusion"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. 2 HOURS of Unlimited shots - 4 shot template (Single Printing)"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.inclusion"
+                                />
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="mt-6 flex justify-start gap-6">
+                            <PrimaryButton
+                                class="normal-case"
+                                :class="{
+                                    'opacity-25':
+                                        editForm.processing || noChanges,
+                                }"
+                                :disabled="editForm.processing || noChanges"
+                            >
+                                Update
+                            </PrimaryButton>
+
+                            <SecondaryButton
+                                class="normal-case px-5"
+                                @click="closeEditModal"
+                            >
+                                Cancel
+                            </SecondaryButton>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </Modal>
+
+        <!-- DELETE PRODUCT MODAL -->
+
+        <DeleteModal :show="deletingProduct" @close="closeDeleteModal">
+            <div class="relative w-full h-full max-w-md md:h-auto">
+                <!-- Modal content -->
                 <div
                     class="relative bg-white rounded-lg shadow dark:bg-gray-800"
                 >
                     <!-- Modal header -->
-                    <div
-                        class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
-                    >
-                        <h3 class="text-xl font-semibold dark:text-white">
-                            Add new user
-                        </h3>
+                    <div class="flex justify-end p-2">
                         <button
                             type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
-                        @click="closeModal"
+                            @click="closeDeleteModal"
                         >
                             <svg
                                 class="w-5 h-5"
@@ -656,97 +1007,63 @@ const closeModal = () => {
                         </button>
                     </div>
                     <!-- Modal body -->
-                    <div class="p-6 space-y-6">
-                        <form action="#">
-                            <div class="grid grid-cols-6 gap-6">
-                                <div class="col-span-6 sm:col-span-3">
-                                    <label
-                                        for="first-name"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        >First Name</label
-                                    >
-                                    <input
-                                        type="text"
-                                        name="first-name"
-                                        id="first-name"
-                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                        placeholder="Bonnie"
-                                        required
-                                    />
-                                </div>
-                                <div class="col-span-6 sm:col-span-3">
-                                    <label
-                                        for="last-name"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        >Last Name</label
-                                    >
-                                    <input
-                                        type="text"
-                                        name="last-name"
-                                        id="last-name"
-                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                        placeholder="Green"
-                                        required
-                                    />
-                                </div>
-                                <div class="col-span-6 sm:col-span-3">
-                                    <label
-                                        for="email"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        >Email</label
-                                    >
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                        placeholder="example@company.com"
-                                        required
-                                    />
-                                </div>
-                                <div class="col-span-6 sm:col-span-3">
-                                    <label
-                                        for="position"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        >Position</label
-                                    >
-                                    <input
-                                        type="text"
-                                        name="position"
-                                        id="position"
-                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                        placeholder="e.g. React developer"
-                                        required
-                                    />
-                                </div>
-                                <div class="col-span-6">
-                                    <label
-                                        for="biography"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        >Biography</label
-                                    >
-                                    <textarea
-                                        id="biography"
-                                        rows="4"
-                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                        placeholder="👨‍💻Full-stack web developer. Open-source contributor."
-                                    ></textarea>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- Modal footer -->
-                    <div
-                        class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700"
-                    >
-                        <button
-                            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                            type="submit"
+                    <div class="p-6 pt-0 text-center">
+                        <svg
+                            class="w-16 h-16 mx-auto text-red-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
                         >
-                            Add user
-                        </button>
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            ></path>
+                        </svg>
+                        <h3
+                            class="mt-5 mb-6 text-lg text-gray-500 dark:text-gray-400"
+                        >
+                            Are you sure you want to delete this package? This action cannot be undone.
+                        </h3>
+                          <!-- Modal footer -->
+                        <div class="mt-6 flex justify-center gap-6">
+                            <DangerButton
+                                class="normal-case bg-danger"
+                                :class="{
+                                    'opacity-25':
+                                        deleteForm.processing
+                                }"
+                                :disabled="deleteForm.processing"
+                                 @click="submitDelete"
+                            >
+                                Yes, I'm sure
+                            </DangerButton>
+
+                            <SecondaryButton
+                                class="normal-case px-5"
+                                @click="closeDeleteModal"
+                            >
+                                No, cancel
+                            </SecondaryButton>
+                        </div>
+                        <!-- <a
+                            href="#"
+                            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-red-800"
+                        >
+                            Yes, I'm sure
+                        </a>
+                        <a
+                            href="#"
+                            class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-primary-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-base px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                            data-modal-hide="delete-user-modal"
+                        >
+                            No, cancel
+                        </a> -->
                     </div>
                 </div>
-        </Modal>
+            </div>
+        </DeleteModal>
     </AdminAuthenticatedLayout>
 </template>
