@@ -16,7 +16,7 @@ class PackageController extends Controller
      */
     public function index(): Response
     {
-        $packages = Packages::all();
+        $packages = Packages::paginate(10);
 
         return Inertia::render('Admin/Package', [
             'packages' => $packages,
@@ -76,7 +76,7 @@ class PackageController extends Controller
             'extension' => $request->extension,
         ]);
 
-        return redirect()->route('package.index');
+        return redirect()->back();
     }
 
     /**
@@ -142,10 +142,7 @@ class PackageController extends Controller
             'extension' => $request->extension]
         );
         
-        
         if ($package->save()) {
-            return redirect()->route('package.index');
-        } else {
             return redirect()->back();
         }
     }

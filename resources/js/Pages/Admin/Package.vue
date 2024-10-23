@@ -11,15 +11,63 @@ import TextArea from "@/Components/TextArea.vue";
 import TextInput from "@/Components/TextInput.vue";
 import Modal from "@/Components/Modal.vue";
 import DeleteModal from "@/Components/DeleteModal.vue";
-import { computed, ref } from "vue";
+import { watch, computed, ref } from "vue";
 import DangerButton from "@/Components/DangerButton.vue";
+import { Inertia } from "@inertiajs/inertia";
+    
+// TODO: SEARCH BAR
 
-defineProps({
+const props = defineProps({
     packages: {
-        type: Array,
+        type: [Array, Object],
         required: true,
     },
 });
+
+// PAGINATION
+const paginationpackages = ref(props.packages.data);
+const currentPage = ref(1);
+
+const pagination = ref({
+    total: props.packages.total,
+    per_page: props.packages.per_page,
+    current_page: props.packages.current_page,
+    last_page: props.packages.last_page,
+    from: props.packages.from,
+    to: props.packages.to,
+});
+
+const changePage = (page) => {
+    Inertia.get(
+        route("package.index", { page }),
+        {},
+        {
+            preserveScroll: true,
+            preserveState: true,
+        }
+    );
+};
+
+const activePage = computed(() => {
+    const activePageItem = props.packages.links.find(link => link.active);
+    return activePageItem ? new URL(activePageItem.url).searchParams.get('page') : 1;
+});
+
+watch(
+    () => props.packages,
+    (newPackages) => {
+        paginationpackages.value = newPackages.data;
+        pagination.value = {
+            total: newPackages.total,
+            per_page: newPackages.per_page,
+            current_page: newPackages.current_page,
+            last_page: newPackages.last_page,
+            from: newPackages.from,
+            to: newPackages.to,
+        };
+         currentPage.value = activePage.value;
+    }
+);
 
 // ADD
 const addForm = useForm({
@@ -46,8 +94,9 @@ const addNewProduct = (product) => {
 };
 
 const submitAdd = () => {
-    addForm.post(route("package.store"), {
+    addForm.post(route("package.store", { page: currentPage.value }), {
         preserveScroll: true,
+        preserveState: true,
         onSuccess: () => closeAddModal(),
         onFinish: () => addForm.reset(),
     });
@@ -101,8 +150,9 @@ const openEditModal = (pkg) => {
 };
 
 const submitEdit = () => {
-    editForm.patch(route("package.update", editForm.id), {
+    editForm.patch(route('package.update', { id: editForm.id, page: currentPage.value }), {
         preserveScroll: true,
+        preserveState: true,
         onSuccess: () => closeEditModal(),
         onFinish: () => editForm.reset(),
     });
@@ -146,8 +196,7 @@ const submitDelete = () => {
         preserveScroll: true,
         onSuccess: () => closeDeleteModal(),
     });
-}
-
+};
 </script>
 
 <template>
@@ -327,7 +376,7 @@ const submitDelete = () => {
                                 class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
                             >
                                 <tr
-                                    v-for="pkg in packages"
+                                    v-for="pkg in packages.data"
                                     :key="pkg.id"
                                     class="hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
@@ -455,24 +504,30 @@ const submitDelete = () => {
                 <span
                     class="text-sm font-normal text-gray-500 dark:text-gray-400"
                     >Showing
-                    <span class="font-semibold text-gray-900 dark:text-white"
-                        >1 to 10</span
+                    <span class="font-semibold text-gray-700 dark:text-white"
+                        >{{ pagination.from }} to {{ pagination.to }}</span
                     >
                     of
-                    <span class="font-semibold text-gray-900 dark:text-white"
-                        >100</span
-                    ></span
+                    <span class="font-semibold text-gray-700 dark:text-white">
+                        {{ pagination.total }}   
+                    </span>
+                    results</span
                 >
             </div>
             <div class="flex items-center space-x-3">
-                <nav aria-label="Page navigation example">
+                <nav>
                     <ul class="flex items-center -space-x-px h-10 text-base">
                         <li>
-                            <a
-                                href="#"
-                                class="flex items-center justify-center px-4 h-10 ms-0 leading-tight disabled: text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                            <button
+                                @click="changePage(pagination.current_page - 1)"
+                                :disabled="pagination.current_page === 1"
+                                :class="[
+                                    'flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg',
+                                    pagination.current_page === 1
+                                        ? 'cursor-default opacity-50'
+                                        : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white',
+                                ]"
                             >
-                                <span class="sr-only">Previous</span>
                                 <svg
                                     class="w-3 h-3 rtl:rotate-180"
                                     aria-hidden="true"
@@ -488,50 +543,36 @@ const submitDelete = () => {
                                         d="M5 1 1 5l4 4"
                                     />
                                 </svg>
-                            </a>
+                            </button>
+                        </li>
+                        <li v-for="page in pagination.last_page" :key="page">
+                            <button
+                                @click="changePage(page)"
+                                :class="[
+                                    'flex items-center justify-center px-4 h-10 leading-tight text-gray-500 border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400',
+                                    page === pagination.current_page
+                                        ? 'bg-pink-400 text-white border-pink-400'
+                                        : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white',
+                                ]"
+                            >
+                                {{ page }}
+                            </button>
                         </li>
                         <li>
-                            <a
-                                href="#"
-                                class="flex items-center justify-center px-4 h-10 leading-tight text-pink-600 border border-pink-300 bg-pink-50 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                                >1</a
+                            <button
+                                @click="changePage(pagination.current_page + 1)"
+                                :disabled="
+                                    pagination.current_page ===
+                                    pagination.last_page
+                                "
+                                :class="[
+                                    'flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg ',
+                                    pagination.current_page ===
+                                    pagination.last_page
+                                        ? 'cursor-default opacity-50'
+                                        : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white',
+                                ]"
                             >
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                                >2</a
-                            >
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                aria-current="page"
-                                class="z-10 flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                                >3</a
-                            >
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                                >4</a
-                            >
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                                >5</a
-                            >
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                            >
-                                <span class="sr-only">Next</span>
                                 <svg
                                     class="w-3 h-3 rtl:rotate-180"
                                     aria-hidden="true"
@@ -547,7 +588,7 @@ const submitDelete = () => {
                                         d="m1 9 4-4-4-4"
                                     />
                                 </svg>
-                            </a>
+                            </button>
                         </li>
                     </ul>
                 </nav>
@@ -1025,18 +1066,18 @@ const submitDelete = () => {
                         <h3
                             class="mt-5 mb-6 text-lg text-gray-500 dark:text-gray-400"
                         >
-                            Are you sure you want to delete this package? This action cannot be undone.
+                            Are you sure you want to delete this package? This
+                            action cannot be undone.
                         </h3>
-                          <!-- Modal footer -->
+                        <!-- Modal footer -->
                         <div class="mt-6 flex justify-center gap-6">
                             <DangerButton
                                 class="normal-case bg-danger"
                                 :class="{
-                                    'opacity-25':
-                                        deleteForm.processing
+                                    'opacity-25': deleteForm.processing,
                                 }"
                                 :disabled="deleteForm.processing"
-                                 @click="submitDelete"
+                                @click="submitDelete"
                             >
                                 Yes, I'm sure
                             </DangerButton>
