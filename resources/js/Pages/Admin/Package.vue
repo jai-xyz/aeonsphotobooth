@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, useForm, router, usePage } from "@inertiajs/vue3";
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 import AButton from "@/Components/AButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -14,7 +14,7 @@ import DeleteModal from "@/Components/DeleteModal.vue";
 import { watch, computed, ref } from "vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import { Inertia } from "@inertiajs/inertia";
-    
+
 // TODO: SEARCH BAR
 
 const props = defineProps({
@@ -49,8 +49,10 @@ const changePage = (page) => {
 };
 
 const activePage = computed(() => {
-    const activePageItem = props.packages.links.find(link => link.active);
-    return activePageItem ? new URL(activePageItem.url).searchParams.get('page') : 1;
+    const activePageItem = props.packages.links.find((link) => link.active);
+    return activePageItem
+        ? new URL(activePageItem.url).searchParams.get("page")
+        : 1;
 });
 
 watch(
@@ -65,7 +67,7 @@ watch(
             from: newPackages.from,
             to: newPackages.to,
         };
-         currentPage.value = activePage.value;
+        currentPage.value = activePage.value;
     }
 );
 
@@ -150,12 +152,15 @@ const openEditModal = (pkg) => {
 };
 
 const submitEdit = () => {
-    editForm.patch(route('package.update', { id: editForm.id, page: currentPage.value }), {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: () => closeEditModal(),
-        onFinish: () => editForm.reset(),
-    });
+    editForm.patch(
+        route("package.update", { id: editForm.id, page: currentPage.value }),
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => closeEditModal(),
+            onFinish: () => editForm.reset(),
+        }
+    );
 };
 
 const closeEditModal = () => {
@@ -197,6 +202,32 @@ const submitDelete = () => {
         onSuccess: () => closeDeleteModal(),
     });
 };
+
+// SEARCH
+let search = ref(usePage().props.search),
+    pageNumber = ref(1);
+
+let packageUrl = computed(() => {
+    let url = new URL(route("package.index"));
+    url.searchParams.append("page", pageNumber.value);
+
+    if (search.value) {
+        url.searchParams.append("search", search.value);
+    }
+
+    return url;
+});
+
+watch(
+    () => packageUrl.value,
+    (updatedPackageUrl) => {
+        router.visit(updatedPackageUrl, {
+            preserveScroll: true,
+            preserveState: true,
+            replace: true,
+        });
+    }
+);
 </script>
 
 <template>
@@ -208,7 +239,7 @@ const submitDelete = () => {
         >
             <div class="w-full mb-1">
                 <div class="mb-4">
-                    <nav class="flex mb-5" aria-label="Breadcrumb">
+                    <nav class="flex mb-5">
                         <ol
                             class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2"
                         >
@@ -246,7 +277,6 @@ const submitDelete = () => {
                                     </svg>
                                     <span
                                         class="ml-1 text-gray-400 md:ml-2 dark:text-gray-500"
-                                        aria-current="page"
                                         >Packages</span
                                     >
                                 </div>
@@ -263,20 +293,58 @@ const submitDelete = () => {
                     class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700"
                 >
                     <div class="flex items-center mb-4 sm:mb-0">
-                        <form class="sm:pr-3" action="#" method="GET">
-                            <label for="products-search" class="sr-only"
-                                >Search</label
+                        <div class="relative w-48 mt-1 sm:w-64 xl:w-96">
+                            <div
+                                class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
                             >
-                            <div class="relative w-48 mt-1 sm:w-64 xl:w-96">
-                                <input
-                                    type="text"
-                                    name="email"
-                                    id="products-search"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    placeholder="Search for packages"
-                                />
+                                <svg
+                                    class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                                    />
+                                </svg>
                             </div>
-                        </form>
+                            <input
+                                type="text"
+                                name="email"
+                                id="search"
+                                v-model="search"
+                                autocomplete="off"
+                                class="ps-10 pr-10 bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                placeholder="Search for packages"
+                            />
+                            <div
+                                v-show="search !== ''"
+                                class="absolute inset-y-0 end-0 flex items-center pe-3 cursor-pointer"
+                                @click="search = ''"
+                            >
+                                <svg
+                                    class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M6 18 17.94 6M18 18 6.06 6"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                     <PrimaryButton
                         @click="
@@ -298,6 +366,7 @@ const submitDelete = () => {
                 </div>
             </div>
         </div>
+
         <div class="flex flex-col">
             <div class="overflow-x-auto">
                 <div class="inline-block min-w-full align-middle">
@@ -490,6 +559,14 @@ const submitDelete = () => {
                                         </button>
                                     </td>
                                 </tr>
+                                 <tr v-if="packages.data.length === 0">
+                                    <td
+                                        colspan="12"
+                                        class="p-4 text-center text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                    >
+                                        No records found
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -509,7 +586,7 @@ const submitDelete = () => {
                     >
                     of
                     <span class="font-semibold text-gray-700 dark:text-white">
-                        {{ pagination.total }}   
+                        {{ pagination.total }}
                     </span>
                     results</span
                 >
@@ -549,7 +626,7 @@ const submitDelete = () => {
                             <button
                                 @click="changePage(page)"
                                 :class="[
-                                    'flex items-center justify-center px-4 h-10 leading-tight text-gray-500 border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400',
+                                    'flex items-center justify-center px-4 h-10 leading-tight text-gray-500 border border-gray-300  dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400',
                                     page === pagination.current_page
                                         ? 'bg-pink-400 text-white border-pink-400'
                                         : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white',

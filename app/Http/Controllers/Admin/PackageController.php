@@ -14,13 +14,32 @@ class PackageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $packages = Packages::paginate(10);
+        $packagesQuery = Packages::query();
+
+        $this->applySearch($packagesQuery, $request->search);
+
+        $packages = $packagesQuery->paginate(10);
 
         return Inertia::render('Admin/Package', [
             'packages' => $packages,
+            'search' => $request->search ?? '',
         ]);
+    }
+
+    protected function applySearch($query, $search)
+    {
+        return $query->when($search, function($query, $search){
+            $query->where('name', 'LIKE', '%'.$search.'%')
+            ->orWhere('price', 'LIKE', '%'.$search.'%')
+            ->orWhere('duration', 'LIKE', '%'.$search.'%')
+            ->orWhere('size', 'LIKE', '%'.$search.'%')
+            ->orWhere('size2', 'LIKE', '%'.$search.'%')
+            ->orWhere('size3', 'LIKE', '%'.$search.'%')
+            ->orWhere('size4', 'LIKE', '%'.$search.'%')
+            ->orWhere('size5', 'LIKE', '%'.$search.'%') ;
+        });
     }
 
     /**
@@ -153,8 +172,6 @@ class PackageController extends Controller
     public function destroy(Packages $package) : RedirectResponse
     {
         if($package->delete()) {
-            return redirect()->route('package.index');
-        } else {
             return redirect()->back();
         }
     }
