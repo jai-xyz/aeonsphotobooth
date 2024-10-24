@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use DateTime;
 use App\Models\Registration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,13 +17,36 @@ class RegistrationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() : Response
+    public function index(Request $request) : Response
     {
-        $events = Registration::orderBy('created_at', 'desc')->get();
+        $registrationQuery = Registration::query();
+
+        $this->applySearch($registrationQuery, $request->search);
+
+        $events = $registrationQuery->orderBy('created_at', 'desc')->paginate(10);
+
+        $events->getCollection()->transform(function ($event) {
+            $event->user = DB::table('users')->where('id', $event->user_id)->first();   
+            $event->date = (new DateTime($event->date))->format('m-d-Y');
+            $event->time = (new DateTime($event->time))->format('g:i A');
+            return $event;
+        }); 
 
         return Inertia::render('Admin/Registration', [
             'events' => $events,
+            'search' => $request->search ?? '',
         ]);
+    }
+
+    protected function applySearch($query, $search)
+    {
+        return $query->when($search, function($query, $search){
+            $query->where('event', 'LIKE', '%'.$search.'%')
+            ->orWhere('contactperson', 'LIKE', '%'.$search.'%')
+            ->orWhere('address', 'LIKE', '%'.$search.'%')
+            ->orWhere('date', 'LIKE', '%'.$search.'%')
+            ->orWhere('time', 'LIKE', '%'.$search.'%');
+        });
     }
 
     /**
