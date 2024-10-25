@@ -215,7 +215,7 @@ watch(
                                 id="search"
                                 v-model="search"
                                 autocomplete="off"
-                                class="ps-10 pr-10 bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                class="ps-10 pr-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                 placeholder="Search for events"
                             />
                             <div
@@ -454,11 +454,11 @@ watch(
                                     >
                                         <span
                                             :class="{
-                                                'bg-yellow-100 text-yellow-800 font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300':
+                                                'bg-yellow-7 text-yellow-77 font-semibold me-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-7 dark:text-yellow-77':
                                                     event.status === 'Pending',
-                                                'bg-green-100 text-green-800  font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300':
+                                                'bg-green-7 text-green-77  font-semibold me-2 px-2.5 py-0.5 rounded-full dark:bg-green-7 dark:text-green-77':
                                                     event.status === 'Accepted',
-                                                'bg-red-100 text-red-800 font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300':
+                                                'bg-red-7 text-red-77 font-semibold me-2 px-2.5 py-0.5 rounded-full dark:bg-red-7900 dark:text-red-77':
                                                     event.status === 'Declined',
                                             }"
                                             class="px-2 py-1 rounded"
@@ -511,7 +511,7 @@ watch(
                                         </button> -->
                                     </td>
                                 </tr>
-                                 <!-- <tr v-if="events == 0">
+                                <!-- <tr v-if="events == 0">
                                 <td
                                     colspan="12"
                                     class="text-center bg-gray-300"
@@ -519,7 +519,7 @@ watch(
                                     No events booked so far
                                 </td>
                             </tr> -->
-                             <tr v-if="events.data.length === 0">
+                                <tr v-if="events.data.length === 0">
                                     <td
                                         colspan="12"
                                         class="p-4 text-center text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
@@ -534,7 +534,7 @@ watch(
             </div>
         </div>
 
-         <div
+        <div
             class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700"
         >
             <div class="flex items-center mb-4 sm:mb-0">
@@ -631,9 +631,6 @@ watch(
                 </nav>
             </div>
         </div>
-
-
-      
 
         <Modal :show="updatingEventStatus" @close="closeModal">
             <div class="p-6">

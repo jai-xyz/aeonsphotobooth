@@ -9,20 +9,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Log;
 
 class BackdropController extends Controller
 {
     /**
      * Display a listing of the resource.   
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $filter = $request->input('filter', 'all');
 
-        $backdrops = DB::table('backdroptypes')
+        $backdropsQuery = DB::table('backdroptypes')
             ->join('backdropcolors', 'backdroptypes.id', '=', 'backdropcolors.backdroptype_id')
-            ->select('backdropcolors.*', 'backdroptypes.name as backdroptype')
-            ->get();
+            ->select('backdropcolors.*', 'backdroptypes.name as backdroptype');
+
+        if ($filter == 'plain') {
+            $backdropsQuery->where('backdroptypes.name', '=', 'plain');
+        } else if ($filter == 'sequins') {
+            $backdropsQuery->where('backdroptypes.name', '=', 'sequins');
+        } else if ($filter == 'custom') {
+            $backdropsQuery->where('backdroptypes.name', '=', 'custom');
+        } else if ($filter != 'all') {
+            $backdropsQuery->where('backdroptypes.name', '=', $filter);
+        }
+        
+        $backdrops = $backdropsQuery->paginate(10);
 
         return Inertia::render('Admin/BackdropList', [
             'backdrops' => $backdrops
@@ -84,7 +95,7 @@ class BackdropController extends Controller
         $color = strtolower(preg_replace('/\s+/', '_', $request->color));
         $fileName = null;
 
-        if ($request->hasFIle('image')) {   
+        if ($request->hasFIle('image')) {
             $file = $request->file('image');
             $fileName = $color . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
@@ -100,16 +111,16 @@ class BackdropController extends Controller
     }
 
     // BACKDROP TYPE CRUD
-    
+
     public function indexType(): Response
     {
 
         $backdroptypes = DB::table('backdroptypes')->get();
 
-        return Inertia::render('Admin/BackdropTypeList', [ 
+        return Inertia::render('Admin/BackdropTypeList', [
             'backdroptypes' => $backdroptypes
         ]);
-}
+    }
 
     /**
      * Display the specified resource.
