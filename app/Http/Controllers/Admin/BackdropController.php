@@ -17,22 +17,13 @@ class BackdropController extends Controller
      */
     public function index(Request $request): Response
     {
-        $filter = $request->input('filter', 'all');
+
 
         $backdropsQuery = DB::table('backdroptypes')
             ->join('backdropcolors', 'backdroptypes.id', '=', 'backdropcolors.backdroptype_id')
             ->select('backdropcolors.*', 'backdroptypes.name as backdroptype');
 
-        if ($filter == 'plain') {
-            $backdropsQuery->where('backdroptypes.name', '=', 'plain');
-        } else if ($filter == 'sequins') {
-            $backdropsQuery->where('backdroptypes.name', '=', 'sequins');
-        } else if ($filter == 'custom') {
-            $backdropsQuery->where('backdroptypes.name', '=', 'custom');
-        } else if ($filter != 'all') {
-            $backdropsQuery->where('backdroptypes.name', '=', $filter);
-        }
-        
+    
         $backdrops = $backdropsQuery->paginate(10);
 
         return Inertia::render('Admin/BackdropList', [

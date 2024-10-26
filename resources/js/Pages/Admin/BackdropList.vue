@@ -9,12 +9,8 @@ import { Inertia } from "@inertiajs/inertia";
 
 const props = defineProps({
     backdrops: {
-        type: [Array, Object],
+        type: Object,
         required: true,
-    },
-      filter: {
-        type: String,
-        default: 'all',
     },
 });
 
@@ -29,17 +25,6 @@ const pagination = ref({
     from: props.backdrops.from,
     to: props.backdrops.to,
 });
-
-const changePage = (page) => {
-    Inertia.get(
-        route("backdrop.index", { page }),
-        {},
-        {
-            preserveScroll: true,
-            preserveState: true,
-        }
-    );
-};
 
 watch(
     () => props.backdrops,
@@ -60,30 +45,30 @@ watch(
 // FILTER & COUNT
 const backdrops = ref(props.backdrops);
 
-const allCount = computed(() => backdrops.value.data.length);
-const plainCount = computed(() => backdrops.value.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'plain').length);
-const sequinsCount = computed(() => backdrops.value.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'sequins').length);
-const customCount = computed(() => backdrops.value.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'custom').length);
+const allCount = computed(() => props.backdrops.data.length);
+const plainCount = computed(() => props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'plain').length);
+const sequinsCount = computed(() => props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'sequins').length);
+const customCount = computed(() => props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'custom').length);
+
+const currentFilter = ref('all');
 
 const filterTable = (type) => {
-    Inertia.get(route('backdrop.index', { filter: type }), {}, {
-        preserveScroll: true,
-        preserveState: true,
-    });
+    currentFilter.value = type;
 };
 
 const filteredBackdrops = computed(() => {
-    if (filter.value === 'all') {
-        return props.backdrops;
+    if (currentFilter.value === 'plain') {
+        return props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'plain');
+    } else if (currentFilter.value === 'sequins') {
+        return props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'sequins');
+    } else if (currentFilter.value === 'custom') {
+        return props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'custom');
     }
-    return props.backdrops.filter(event => event.backdroptype.toLowerCase() === filter.value);
+
+    return props.backdrops.data;
 });
 
-const classes = computed(() =>
-    props.active
-        ? 'flex items-center justify-center shadow-sm border border-primary-600 bg-primary-600 text-white font-semibold me-2 px-3.5 pb-1 rounded-full dark:bg-primary-600 dark:text-white'
-        : 'flex items-center justify-center shadow-sm bg-white border border-pink-200 text-primary-600 font-semibold me-2 px-3.5 pb-1 rounded-full dark:bg-white dark:text-primary-600'
-);
+const filteredCount = computed(() => filteredBackdrops.value.length);
 
 </script>
 
@@ -154,38 +139,54 @@ const classes = computed(() =>
                     >
                         <div class="relative w-full">
                             <div class="flex flex-wrap items-center">
-                               <button
-                                    type="button"
-                                    :class="classes"
-                                    @click="filterTable('all')"
-                                       :active="route().current('backdrop.index')"
-                                >
-                                    All <span class="text-pink-500 ml-1">{{ allCount }}</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    :class="classes"
-                                    @click="filterTable('plain')"
-                                       :active="route().current('backdrop.index')"
-                                >
-                                    Plain <span class="text-pink-500 ml-1">{{ plainCount }}</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    :class="classes"
-                                    @click="filterTable('sequins')"
-                                       :active="route().current('backdrop.index')"
-                                >
-                                    Sequins <span class="text-pink-500 ml-1">{{ sequinsCount }}</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    :class="classes"
-                                    @click="filterTable('custom')"
-                                       :active="route().current('backdrop.index')"
-                                >
-                                    Custom <span class="text-pink-500 ml-1">{{ customCount }}</span>
-                                </button>
+                                      <button
+                type="button"
+                :class="[
+                'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
+                {
+                    'border-primary-600 bg-primary-600 text-white': currentFilter === 'all',
+                    'bg-white border-pink-200 text-primary-600': currentFilter !== 'all',
+                }]"
+                @click="filterTable('all')"
+            >
+                All <span class="text-pink-500 ml-1">{{ allCount }}</span>
+            </button>
+            <button
+                type="button"
+                :class="[
+                'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
+                {
+                    'border-primary-600 bg-primary-600 text-white': currentFilter === 'plain',
+                    'bg-white border-pink-200 text-primary-600': currentFilter !== 'plain',
+                }]"
+                @click="filterTable('plain')"
+            >
+                Plain <span class="text-pink-500 ml-1">{{ plainCount }}</span>
+            </button>
+            <button
+                type="button"
+                  :class="[
+                'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
+                {
+                    'border-primary-600 bg-primary-600 text-white': currentFilter === 'sequins',
+                    'bg-white border-pink-200 text-primary-600': currentFilter !== 'sequins',
+                }]"
+                @click="filterTable('sequins')"
+            >
+                Sequins <span class="text-pink-500 ml-1">{{ sequinsCount }}</span>
+            </button>
+            <button
+                type="button"
+                  :class="[
+                'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
+                {
+                    'border-primary-600 bg-primary-600 text-white': currentFilter === 'custom',
+                    'bg-white border-pink-200 text-primary-600': currentFilter !== 'custom',
+                }]"
+                @click="filterTable('custom')"
+            >
+                Custom <span class="text-pink-500 ml-1">{{ customCount }}</span>
+            </button>
                             </div>
                         </div>
                     </div>
@@ -264,7 +265,7 @@ const classes = computed(() =>
                                 class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
                             >
                                 <tr
-                                    v-for="backdrop in backdrops.data"
+                                    v-for="backdrop in filteredBackdrops"
                                     :key="backdrop.id"
                                     class="hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
@@ -406,8 +407,8 @@ const classes = computed(() =>
                     class="text-sm font-normal text-gray-500 dark:text-gray-400"
                     >Showing
                     <span class="font-semibold text-gray-700 dark:text-white"
-                        >{{ pagination.from }} to {{ pagination.to }}</span
-                    >
+                        >{{ filteredCount }}</span
+                    > to 
                     of
                     <span class="font-semibold text-gray-700 dark:text-white">
                         {{ pagination.total }}
