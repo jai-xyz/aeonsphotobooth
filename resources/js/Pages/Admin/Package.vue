@@ -214,7 +214,6 @@ let packageUrl = computed(() => {
     if (search.value) {
         url.searchParams.append("search", search.value);
     }
-
     return url;
 });
 
@@ -582,7 +581,7 @@ watch(
                     class="text-sm font-normal text-gray-500 dark:text-gray-400"
                     >Showing
                     <span class="font-semibold text-gray-700 dark:text-white"
-                        >{{ pagination.from }} to {{ pagination.to }}</span
+                        >{{ pagination.from ? 0 : '0' }} to {{ pagination.to ? 0 : '0' }}</span
                     >
                     of
                     <span class="font-semibold text-gray-700 dark:text-white">
