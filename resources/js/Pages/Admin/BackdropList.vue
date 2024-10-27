@@ -45,6 +45,8 @@ watch(
 // FILTER & COUNT
 const backdrops = ref(props.backdrops);
 
+console.log(backdrops.value);
+
 const allCount = computed(() => props.backdrops.data.length);
 const plainCount = computed(() => props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'plain').length);
 const sequinsCount = computed(() => props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'sequins').length);
@@ -64,11 +66,22 @@ const filteredBackdrops = computed(() => {
     } else if (currentFilter.value === 'custom') {
         return props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'custom');
     }
-
     return props.backdrops.data;
 });
 
 const filteredCount = computed(() => filteredBackdrops.value.length);
+
+const displayCount = computed(() => {
+    if (currentFilter.value === 'plain') {
+        return plainCount.value === 0 ? 0 : plainCount.value;
+    } else if (currentFilter.value === 'sequins') {
+        return sequinsCount.value === 0 ? 0 : sequinsCount.value;
+    } else if (currentFilter.value === 'custom') {
+        return customCount.value === 0 ? 0 : customCount.value;
+    } else {
+        return allCount.value === 0 ? 0 : allCount.value;
+    }
+});
 
 </script>
 
@@ -407,11 +420,12 @@ const filteredCount = computed(() => filteredBackdrops.value.length);
                     class="text-sm font-normal text-gray-500 dark:text-gray-400"
                     >Showing
                     <span class="font-semibold text-gray-700 dark:text-white"
-                        >{{ filteredCount }}</span
+                        >{{ filteredCount ? 1 : 0
+                        }}</span
                     > to 
                     of
                     <span class="font-semibold text-gray-700 dark:text-white">
-                        {{ pagination.total }}
+                      {{ displayCount }}
                     </span>
                     results</span
                 >
