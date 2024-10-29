@@ -1,15 +1,19 @@
 <script setup>
-import { Head } from "@inertiajs/vue3";
+import { Head, useForm } from "@inertiajs/vue3";
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 import AButton from "@/Components/AButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { computed, ref, watch } from "vue";
 import { Inertia } from "@inertiajs/inertia";
+import InputLabel from "@/Components/InputLabel.vue";
+import InputError from "@/Components/InputError.vue";
+import Modal from "@/Components/Modal.vue";
+import TextInput from "@/Components/TextInput.vue";
 
 const props = defineProps({
     backdrops: {
-        type: Object,
+        type: [Array, Object],
         required: true,
     },
 });
@@ -24,6 +28,24 @@ const pagination = ref({
     last_page: props.backdrops.last_page,
     from: props.backdrops.from,
     to: props.backdrops.to,
+});
+
+const changePage = (page) => {
+    Inertia.get(
+        route("backdrop.index", { page }),
+        {},
+        {
+            preserveScroll: true,
+            preserveState: true,
+        }
+    );
+};
+
+const activePage = computed(() => {
+    const activePageItem = props.backdrops.links.find((link) => link.active);
+    return activePageItem
+        ? new URL(activePageItem.url).searchParams.get("page")
+        : 1;
 });
 
 watch(
@@ -48,23 +70,44 @@ const backdrops = ref(props.backdrops);
 console.log(backdrops.value);
 
 const allCount = computed(() => props.backdrops.data.length);
-const plainCount = computed(() => props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'plain').length);
-const sequinsCount = computed(() => props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'sequins').length);
-const customCount = computed(() => props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'custom').length);
+const plainCount = computed(
+    () =>
+        props.backdrops.data.filter(
+            (backdrop) => backdrop.backdroptype.toLowerCase() === "plain"
+        ).length
+);
+const sequinsCount = computed(
+    () =>
+        props.backdrops.data.filter(
+            (backdrop) => backdrop.backdroptype.toLowerCase() === "sequins"
+        ).length
+);
+const customCount = computed(
+    () =>
+        props.backdrops.data.filter(
+            (backdrop) => backdrop.backdroptype.toLowerCase() === "custom"
+        ).length
+);
 
-const currentFilter = ref('all');
+const currentFilter = ref("all");
 
 const filterTable = (type) => {
     currentFilter.value = type;
 };
 
 const filteredBackdrops = computed(() => {
-    if (currentFilter.value === 'plain') {
-        return props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'plain');
-    } else if (currentFilter.value === 'sequins') {
-        return props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'sequins');
-    } else if (currentFilter.value === 'custom') {
-        return props.backdrops.data.filter(backdrop => backdrop.backdroptype.toLowerCase() === 'custom');
+    if (currentFilter.value === "plain") {
+        return props.backdrops.data.filter(
+            (backdrop) => backdrop.backdroptype.toLowerCase() === "plain"
+        );
+    } else if (currentFilter.value === "sequins") {
+        return props.backdrops.data.filter(
+            (backdrop) => backdrop.backdroptype.toLowerCase() === "sequins"
+        );
+    } else if (currentFilter.value === "custom") {
+        return props.backdrops.data.filter(
+            (backdrop) => backdrop.backdroptype.toLowerCase() === "custom"
+        );
     }
     return props.backdrops.data;
 });
@@ -72,17 +115,46 @@ const filteredBackdrops = computed(() => {
 const filteredCount = computed(() => filteredBackdrops.value.length);
 
 const displayCount = computed(() => {
-    if (currentFilter.value === 'plain') {
+    if (currentFilter.value === "plain") {
         return plainCount.value === 0 ? 0 : plainCount.value;
-    } else if (currentFilter.value === 'sequins') {
+    } else if (currentFilter.value === "sequins") {
         return sequinsCount.value === 0 ? 0 : sequinsCount.value;
-    } else if (currentFilter.value === 'custom') {
+    } else if (currentFilter.value === "custom") {
         return customCount.value === 0 ? 0 : customCount.value;
     } else {
         return allCount.value === 0 ? 0 : allCount.value;
     }
 });
 
+// ADD BACKDROP TYPE & MODALS
+const addBackdropTypeForm = useForm({
+    name: "",
+});
+
+const addingBackdropType = ref(false);
+
+const addNewBackdropType = (type) => {
+    addBackdropTypeForm.name = type.name;
+    addingBackdropType.value = true;
+};
+
+const closeAddBackdropTypeModal = () => {
+    addingBackdropType.value = false;
+    addBackdropTypeForm.reset();
+};
+
+const submitAddBackdropType = () => {
+    addBackdropTypeForm.post(
+        route("backdroptype.store", { page: currentPage.value }),
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => closeAddBackdropTypeModal(),
+            onFinish: () => addBackdropTypeForm.reset(),
+        }
+    );
+    console.log("success");
+};
 </script>
 
 <template>
@@ -144,82 +216,117 @@ const displayCount = computed(() => {
                         All backdrops
                     </h1>
                 </div>
-                <div
-                    class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700"
-                >
+                <div class="items-center justify-between block sm:flex">
                     <div
                         class="flex flex-wrap items-center mb-4 sm:mb-0 w-full sm:w-auto"
                     >
                         <div class="relative w-full">
                             <div class="flex flex-wrap items-center">
-                                      <button
-                type="button"
-                :class="[
-                'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
-                {
-                    'border-primary-600 bg-primary-600 text-white': currentFilter === 'all',
-                    'bg-white border-pink-200 text-primary-600': currentFilter !== 'all',
-                }]"
-                @click="filterTable('all')"
-            >
-                All <span class="text-pink-500 ml-1">{{ allCount }}</span>
-            </button>
-            <button
-                type="button"
-                :class="[
-                'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
-                {
-                    'border-primary-600 bg-primary-600 text-white': currentFilter === 'plain',
-                    'bg-white border-pink-200 text-primary-600': currentFilter !== 'plain',
-                }]"
-                @click="filterTable('plain')"
-            >
-                Plain <span class="text-pink-500 ml-1">{{ plainCount }}</span>
-            </button>
-            <button
-                type="button"
-                  :class="[
-                'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
-                {
-                    'border-primary-600 bg-primary-600 text-white': currentFilter === 'sequins',
-                    'bg-white border-pink-200 text-primary-600': currentFilter !== 'sequins',
-                }]"
-                @click="filterTable('sequins')"
-            >
-                Sequins <span class="text-pink-500 ml-1">{{ sequinsCount }}</span>
-            </button>
-            <button
-                type="button"
-                  :class="[
-                'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
-                {
-                    'border-primary-600 bg-primary-600 text-white': currentFilter === 'custom',
-                    'bg-white border-pink-200 text-primary-600': currentFilter !== 'custom',
-                }]"
-                @click="filterTable('custom')"
-            >
-                Custom <span class="text-pink-500 ml-1">{{ customCount }}</span>
-            </button>
+                                <button
+                                    type="button"
+                                    :class="[
+                                        'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
+                                        {
+                                            'border-primary-600 bg-primary-600 text-white':
+                                                currentFilter === 'all',
+                                            'bg-white border-pink-200 text-primary-600':
+                                                currentFilter !== 'all',
+                                        },
+                                    ]"
+                                    @click="filterTable('all')"
+                                >
+                                    All
+                                    <span class="text-pink-500 ml-1">{{
+                                        allCount
+                                    }}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    :class="[
+                                        'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
+                                        {
+                                            'border-primary-600 bg-primary-600 text-white':
+                                                currentFilter === 'plain',
+                                            'bg-white border-pink-200 text-primary-600':
+                                                currentFilter !== 'plain',
+                                        },
+                                    ]"
+                                    @click="filterTable('plain')"
+                                >
+                                    Plain
+                                    <span class="text-pink-500 ml-1">{{
+                                        plainCount
+                                    }}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    :class="[
+                                        'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
+                                        {
+                                            'border-primary-600 bg-primary-600 text-white':
+                                                currentFilter === 'sequins',
+                                            'bg-white border-pink-200 text-primary-600':
+                                                currentFilter !== 'sequins',
+                                        },
+                                    ]"
+                                    @click="filterTable('sequins')"
+                                >
+                                    Sequins
+                                    <span class="text-pink-500 ml-1">{{
+                                        sequinsCount
+                                    }}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    :class="[
+                                        'flex items-center justify-center shadow-sm border font-semibold me-2 px-3.5 pb-1 rounded-full',
+                                        {
+                                            'border-primary-600 bg-primary-600 text-white':
+                                                currentFilter === 'custom',
+                                            'bg-white border-pink-200 text-primary-600':
+                                                currentFilter !== 'custom',
+                                        },
+                                    ]"
+                                    @click="filterTable('custom')"
+                                >
+                                    Custom
+                                    <span class="text-pink-500 ml-1">{{
+                                        customCount
+                                    }}</span>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <PrimaryButton
-                        @click="
-                            () =>
-                                addNewProduct({
-                                    name: '',
-                                    price: '',
-                                    duration: '',
-                                    size: '',
-                                    inclusion: '',
-                                    note: '',
-                                    extension: '',
-                                })
-                        "
-                        class="normal-case shadow-sm"
-                    >
-                        Add new product
-                    </PrimaryButton>
+                    <div class="flex justify-between w-full gap-1 sm:w-auto">
+                        <PrimaryButton
+                            @click="
+                                () =>
+                                    addNewBackdropType({
+                                        name: '',
+                                    })
+                            "
+                            class="normal-case"
+                        >
+                            Add backdrop type
+                        </PrimaryButton>
+                        <!-- <SecondaryButton
+                            @click="
+                                () =>
+                                    addNewProduct({
+                                        name: '',
+                                        price: '',
+                                        duration: '',
+                                        size: '',
+                                        inclusion: '',
+                                        note: '',
+                                        extension: '',
+                                    })
+                            "
+                            class="normal-case"
+                        >
+                            Add backdrop color
+                        </SecondaryButton> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -419,13 +526,16 @@ const displayCount = computed(() => {
                 <span
                     class="text-sm font-normal text-gray-500 dark:text-gray-400"
                     >Showing
-                    <span class="font-semibold text-gray-700 dark:text-white"
-                        >{{ filteredCount ? 1 : 0
-                        }}</span
-                    > to 
+                    <span class="font-semibold text-gray-700 dark:text-white">{{
+                        filteredCount ? 1 : 0
+                    }}</span>
+                    to
+                    <span class="font-semibold text-gray-700 dark:text-white">
+                        {{ filteredCount ? filteredCount : 0 }}</span
+                    >
                     of
                     <span class="font-semibold text-gray-700 dark:text-white">
-                      {{ displayCount }}
+                        {{ displayCount }}
                     </span>
                     results</span
                 >
@@ -512,5 +622,88 @@ const displayCount = computed(() => {
         </div>
 
         <!-- <td><AButton :href="`/admin/backdrop/edit/${backdrop.id}`">Edit</AButton></td> -->
+
+        <!-- ADD BACKDROP TYPE MODAL -->
+        <Modal :show="addingBackdropType" @close="closeAddBackdropTypeModal">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+                <!-- Modal header -->
+                <div
+                    class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
+                >
+                    <h3 class="text-xl font-semibold dark:text-white">
+                        Add new backdrop type
+                    </h3>
+                    <button
+                        type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                        @click="closeAddBackdropTypeModal"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Modal body -->
+
+                <div class="p-6 space-y-6">
+                    <form @submit.prevent="submitAddBackdropType">
+                        <div class="mb-6">
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="name"
+                                    value="Name"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+
+                                <TextInput
+                                    id="name"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="addBackdropTypeForm.name"
+                                    required
+                                    autofocus
+                                    autocomplete="off"
+                                    placeholder="e.g. Plain"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="addBackdropTypeForm.errors.name"
+                                />
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="mt-6 flex justify-end">
+                            <SecondaryButton
+                                class="normal-case py-2.5 px-5"
+                                @click="closeAddBackdropTypeModal"
+                            >
+                                Cancel
+                            </SecondaryButton>
+
+                            <PrimaryButton
+                                class="normal-case ms-3"
+                                :class="{
+                                    'opacity-25':
+                                        addBackdropTypeForm.processing,
+                                }"
+                                :disabled="addBackdropTypeForm.processing"
+                            >
+                                Add Backdrop Type
+                            </PrimaryButton>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </Modal>
     </AdminAuthenticatedLayout>
 </template>

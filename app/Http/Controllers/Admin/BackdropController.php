@@ -17,8 +17,7 @@ class BackdropController extends Controller
      */
     public function index(Request $request): Response
     {
-
-
+        // TODO: filter by backdroptype plain - sequins - custom
         $backdropsQuery = DB::table('backdroptypes')
             ->join('backdropcolors', 'backdroptypes.id', '=', 'backdropcolors.backdroptype_id')
             ->select('backdropcolors.*', 'backdroptypes.name as backdroptype');
@@ -26,8 +25,14 @@ class BackdropController extends Controller
     
         $backdrops = $backdropsQuery->paginate(10);
 
+        
+        $backdroptypes = DB::table('backdroptypes')->get();
+
+
+
         return Inertia::render('Admin/BackdropList', [
-            'backdrops' => $backdrops
+            'backdrops' => $backdrops,
+            'backdroptypes' => $backdroptypes
         ]);
     }
 
@@ -36,11 +41,11 @@ class BackdropController extends Controller
      */
     public function create()
     {
-        $backdropTypes = BackdropType::all();
+        // $backdropTypes = BackdropType::all();
 
-        return Inertia::render('Admin/AddBackdrop', [
-            'backdroptypes' => $backdropTypes
-        ]);
+        // return Inertia::render('Admin/AddBackdrop', [
+        //     'backdroptypes' => $backdropTypes
+        // ]);
     }
 
     /**
@@ -54,7 +59,8 @@ class BackdropController extends Controller
 
         BackdropType::create($request->all());
 
-        return redirect()->route('backdroptype.index');
+        // return redirect()->route('backdroptype.index');
+        return redirect()->back();
     }
 
 
@@ -103,15 +109,15 @@ class BackdropController extends Controller
 
     // BACKDROP TYPE CRUD
 
-    public function indexType(): Response
-    {
+    // public function indexType(): Response
+    // {
 
-        $backdroptypes = DB::table('backdroptypes')->get();
+    //     $backdroptypes = DB::table('backdroptypes')->get();
 
-        return Inertia::render('Admin/BackdropTypeList', [
-            'backdroptypes' => $backdroptypes
-        ]);
-    }
+    //     return Inertia::render('Admin/BackdropTypeList', [
+    //         'backdroptypes' => $backdroptypes
+    //     ]);
+    // }
 
     /**
      * Display the specified resource.

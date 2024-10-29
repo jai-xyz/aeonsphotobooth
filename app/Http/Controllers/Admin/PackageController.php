@@ -47,7 +47,7 @@ class PackageController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/AddPackage');
+        // return Inertia::render('Admin/AddPackage');
     }
 
     /**
