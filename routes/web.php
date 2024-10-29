@@ -55,7 +55,7 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
 
     Route::get('/admin/backdrop', [BackdropController::class, 'index'])->name('backdrop.index');
     Route::get('/admin/backdrop/add', [BackdropController::class, 'create'])->name('backdrop.create');
-    Route::post('/admin/backdrop/addtype', [BackdropController::class, 'storeType'])->name('backdroptype.store');
+    Route::post('/admin/backdrop', [BackdropController::class, 'storeType'])->name('backdroptype.store');
     // Route::get('/admin/backdrop/color/add', [BackdropController::class, 'createColor'])->name('backdropcolor.create');
     Route::post('/admin/backdrop/addcolor', [BackdropController::class, 'storeColor'])->name('backdropcolor.store');
     Route::get('/admin/backdrop/type/{backdroptype}', [BackdropController::class, 'editType'])->name('backdroptype.edit');

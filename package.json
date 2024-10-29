@@ -16,6 +16,7 @@
     "flowbite": "^2.5.1",
     "roboto-fontface": "*",
     "vue-cal": "^4.9.0",
+    "vue-router": "^4.0.13",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
