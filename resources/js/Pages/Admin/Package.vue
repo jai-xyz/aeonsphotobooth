@@ -82,6 +82,7 @@ const addForm = useForm({
     extension: "",
 });
 
+// add package not product
 const addingNewProduct = ref(false);
 
 const addNewProduct = (product) => {
