@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BackdropColor;
 use App\Models\BackdropType;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,61 +20,24 @@ class BackdropController extends Controller
     public function index(Request $request): Response
     {
         // TODO: filter by backdroptype plain - sequins - custom
+
         $backdropsQuery = DB::table('backdroptypes')
             ->join('backdropcolors', 'backdroptypes.id', '=', 'backdropcolors.backdroptype_id')
             ->select('backdropcolors.*', 'backdroptypes.name as backdroptype');
 
-    
         $backdrops = $backdropsQuery->paginate(10);
-
-        
         $backdroptypes = DB::table('backdroptypes')->get();
 
-
-
         return Inertia::render('Admin/BackdropList', [
-            'backdrops' => $backdrops,
+            'backdrops' => $backdrops,  
             'backdroptypes' => $backdroptypes
         ]);
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        // $backdropTypes = BackdropType::all();
-
-        // return Inertia::render('Admin/AddBackdrop', [
-        //     'backdroptypes' => $backdropTypes
-        // ]);
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function storeType(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string'
-        ]);
-
-        BackdropType::create($request->all());
-
-        // return redirect()->route('backdroptype.index');
-        return redirect()->back();
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function createColor() {}
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function storeColor(Request $request)
+    public function storeBackdrop(Request $request)
     {
         $request->validate([
             'backdroptype_id' => 'required|exists:backdroptypes,id',
@@ -104,20 +69,69 @@ class BackdropController extends Controller
             'image' => $fileName
         ]);
 
-        return redirect()->route('backdrop.create');
+        return redirect()->back();
     }
 
-    // BACKDROP TYPE CRUD
+    public function updateBackdrop(Request $request, BackdropColor $backdrop)
+    {
+        $request->validate([
+            'backdroptype_id' => 'required|exists:backdroptypes,id',
+            'color' => 'required|string',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
+        ]);
 
-    // public function indexType(): Response
-    // {
+        if ($request->backdroptype_id == 1) {
+            $directory = 'plain';
+        } elseif ($request->backdroptype_id == 2) {
+            $directory = 'sequins';
+        } else {
+            $directory = 'custom';
+        }
 
-    //     $backdroptypes = DB::table('backdroptypes')->get();
+            // small letters and replace space with underscore
+        $color = strtolower(preg_replace('/\s+/', '_', $request->color));
+        $fileName = null;
 
-    //     return Inertia::render('Admin/BackdropTypeList', [
-    //         'backdroptypes' => $backdroptypes
-    //     ]);
-    // }
+        if ($request->hasFIle('image')) {
+            $file = $request->file('image');
+            $fileName = $color . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
+        }
+
+        $backdrop->update([
+            'backdroptype_id' => $request->backdroptype_id,
+            'color' => $request->color,
+            'image' => $fileName
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function indexType(): Response
+    {
+
+        $backdroptypes = DB::table('backdroptypes')->paginate(10);
+
+        return Inertia::render('Admin/BackdropTypeList', [
+            'backdroptypes' => $backdroptypes
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function storeType(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string'
+        ]);
+
+        BackdropType::create($request->all());
+
+        // return redirect()->route('backdroptype.index');
+        return redirect()->back();
+    }
+
 
     /**
      * Display the specified resource.
@@ -138,10 +152,7 @@ class BackdropController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+   
 
     /**
      * Remove the specified resource from storage.
