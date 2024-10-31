@@ -149,6 +149,7 @@ const openEditModal = (pkg) => {
     editForm.OrigInclusion = pkg.inclusion;
     editForm.OrigNote = pkg.note;
     editForm.OrigExtension = pkg.extension;
+    
     editingProduct.value = true;
 };
 
@@ -582,11 +583,11 @@ watch(
                     class="text-sm font-normal text-gray-500 dark:text-gray-400"
                     >Showing
                     <span class="font-semibold text-gray-700 dark:text-white"
-                        >{{ pagination.from ? 0 : '0' }} to {{ pagination.to ? 0 : '0' }}</span
+                        >{{ pagination.from ? pagination.from : 0 }} to {{ pagination.to ? pagination.to : 0 }}</span
                     >
                     of
                     <span class="font-semibold text-gray-700 dark:text-white">
-                        {{ pagination.total }}
+                        {{ pagination.total ? pagination.total : 0 }}
                     </span>
                     results</span
                 >

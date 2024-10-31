@@ -46,27 +46,27 @@ Route::get('/admin', function () {
 })->middleware(['auth', 'verified', AdminMiddleware::class])->name('admin.dashboard');
 
 Route::middleware('auth', AdminMiddleware::class)->group(function () {
+    // PACKAGES ROUTES
     Route::get('/admin/package', [PackageController::class, 'index'])->name('package.index');
     Route::get('/admin/package/add', [PackageController::class, 'create'])->name('package.create');
     Route::post('/admin/package/add', [PackageController::class, 'store'])->name('package.store');
-    // Route::get('/admin/package/edit/{package}', [PackageController::class, 'edit'])->name('package.edit');
     Route::patch('/admin/package/edit/{package}', [PackageController::class, 'update'])->name('package.update');
     Route::delete('/admin/package/delete/{package}', [PackageController::class, 'destroy'])->name('package.destroy');
 
-    Route::get('/admin/backdrop', [BackdropController::class, 'index'])->name('backdrop.index');
-    Route::get('/admin/backdrop/add', [BackdropController::class, 'create'])->name('backdrop.create');
-    Route::post('/admin/backdrop', [BackdropController::class, 'storeType'])->name('backdroptype.store');
-    // Route::get('/admin/backdrop/color/add', [BackdropController::class, 'createColor'])->name('backdropcolor.create');
-    Route::post('/admin/backdrop/addcolor', [BackdropController::class, 'storeColor'])->name('backdropcolor.store');
-    Route::get('/admin/backdrop/type/{backdroptype}', [BackdropController::class, 'editType'])->name('backdroptype.edit');
+    // BACKDROP ROUTES
+    Route::get('/admin/backdrop/list', [BackdropController::class, 'index'])->name('backdrop.index');
+    Route::post('/admin/backdrop/list', [BackdropController::class, 'storeBackdrop'])->name('backdrop.store');
+    Route::patch('/admin/backdrop/edit/{backdrop}', [BackdropController::class, 'updateBackdrop'])->name('backdrop.update');
+
+    // BACKDROP TYPE ROUTES
+    Route::get('/admin/backdrop/type', [BackdropController::class, 'indexType'])->name('backdroptype.index');
+    Route::post('/admin/backdrop/type', [BackdropController::class, 'storeType'])->name('backdroptype.store');
+
+    // Route::post('/admin/backdrop', [BackdropController::class, 'storeType'])->name('backdroptype.store');
+    // Route::get('/admin/backdrop/type/{backdroptype}', [BackdropController::class, 'editType'])->name('backdroptype.edit');
     Route::post('/admin/backdrop/type/{backdroptype}', [BackdropController::class, 'updateType'])->name('backdroptype.update');
 
-    // BACKDROPCOLORS ROUTES
-    
-    // BACKDROPTYPES ROUTES
-    Route::get('/admin/backdroptype', [BackdropController::class, 'indexType'])->name('backdroptype.index');
-    
-
+    // EVENTS ROUTES
     Route::get('/admin/events', [RegistrationController::class, 'index'])->name('event.index');
     Route::patch('/admin/events/{event}', [RegistrationController::class, 'update'])->name('event.update');
 
