@@ -178,6 +178,10 @@ const editForm = useForm({
     image: null,
 });
 
+const handleFileUploadEdit = (event) => {
+    editForm.image = event.target.files[0];
+};
+
 const openEditModal = (backdrop) => {
     currentBackdrop.value = backdrop;
     editForm.id = backdrop.id;
@@ -194,18 +198,6 @@ const openEditModal = (backdrop) => {
     editingBackdrop.value = true;
 };
 
-const submitEdit = () => {
-    editForm.patch(
-        route("backdrop.update", { id: editForm.id, page: currentPage.value }),
-        {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => closeEditModal(),
-            onFinish: () => editForm.reset(),
-        }
-    );
-};
-
 const closeEditModal = () => {
     editingBackdrop.value = false;
     editForm.reset();
@@ -217,10 +209,31 @@ const noChanges = computed(() => {
         editForm.Origbackdroptype_id === editForm.backdroptype_id &&
         editForm.OrigColor === editForm.color &&
         editForm.OrigImage === editForm.image
-    );
+    );  
 });
 
-
+const submitEdit = () => {
+    editForm.transform((data) => {
+        const formData = new FormData();
+        formData.append("id", data.id);
+        formData.append("backdroptype_id", data.backdroptype_id);
+        formData.append("color", data.color);
+        if (data.image) {
+            formData.append("image", data.image);
+        }
+        return formData;
+    }).patch(route("backdrop.update", { backdrop: editForm.id, page: currentPage.value }), {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => closeEditModal(),
+        onError: () => {
+            // Handle errors here
+        },
+        onFinish: () => {
+            // Do not reset the form here to preserve errors
+        },
+    });
+};
 </script>
 
 <template>
@@ -793,7 +806,7 @@ const noChanges = computed(() => {
         </Modal>
 
         <!-- EDIT BACKDROP MODAL -->
-            <Modal :show="editingBackdrop" @close="closeEditModal">
+               <Modal :show="editingBackdrop" @close="closeEditModal">
             <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
                 <div
                     class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
@@ -844,7 +857,7 @@ const noChanges = computed(() => {
                         </select>
                         <InputError
                             class="mt-2"
-                            :message="editForm.errors.backdroptype"
+                            :message="editForm.errors.backdroptype_id"
                         />
                     </div>
 
@@ -874,8 +887,9 @@ const noChanges = computed(() => {
                             class="file-input w-full mt-1 ps-0 border-gray-300 file-input-info"
                             name="image"
                             id="image"
-                            @change="handleFileUpload"
+                            @change="handleFileUploadEdit"
                         />
+                        <InputError class="mt-2" :message="editForm.errors.image" />
                     </div>
 
                             </div>
@@ -906,7 +920,6 @@ const noChanges = computed(() => {
                 </div>
             </div>
         </Modal>
-
 
     </AdminAuthenticatedLayout>
 </template>
