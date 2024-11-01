@@ -71,8 +71,8 @@ const addBackdropTypeForm = useForm({
 
 const addingBackdropType = ref(false);
 
-const addNewBackdropType = (type) => {
-    addBackdropTypeForm.name = type.name;
+const addNewBackdropType = (backdroptype) => {
+    addBackdropTypeForm.name = backdroptype.name;
     addingBackdropType.value = true;
 };
 
@@ -91,8 +91,49 @@ const submitAddBackdropType = () => {
             onFinish: () => addBackdropTypeForm.reset(),
         }
     );
-    console.log("success");
 };
+
+// EDIT BACKDROP TYPE & MODALS
+const currentBackdropType = ref(null);
+const editingBackdropType = ref(false);
+
+const editBackdropTypeForm = useForm({
+    id: null,
+    name: "",
+});
+
+const openEditModal = (type) => {
+    currentBackdropType.value = type;
+    editBackdropTypeForm.id = type.id;
+    editBackdropTypeForm.name = type.name;
+    editingBackdropType.value = true;
+}
+
+const closeEditBackdropTypeModal = () => {
+    editingBackdropType.value = false;
+    editBackdropTypeForm.reset();
+}
+
+const submitEditBackdropType = () => {
+    editBackdropTypeForm.patch(
+        route("backdroptype.update", { id: editBackdropTypeForm.id, page: currentPage.value }),
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => closeEditBackdropTypeModal(),
+            onFinish: () => editBackdropTypeForm.reset(),
+        }
+    );
+}
+
+const noChanges = computed(() => {
+    return (
+        editBackdropTypeForm.id === currentBackdropType.value.id &&
+        editBackdropTypeForm.name === currentBackdropType.value.name
+    )
+})
+
+
 </script>
 
 <template>
@@ -223,6 +264,7 @@ const submitAddBackdropType = () => {
                                         <button
                                             type="button"
                                             id="updateProductButton"
+                                            @click="openEditModal(backdroptype)"
                                             class="inline-flex items-center p-2 text-sm font-medium text-center text-white rounded-md bg-yellow-300 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-200"
                                         >
                                             <svg
@@ -374,40 +416,6 @@ const submitAddBackdropType = () => {
             </div>
         </div>
 
-        <!-- <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div
-                    class="bg-white overflow-hidden shadow-sm sm:rounded-lg flex justify-center flex-col"
-                >
-                    <div class="p-6 text-gray-900">List of backdrop type</div>
-
-                    <table
-                        class="border-separate border-spacing-2 border-2 border-slate-500 table-fixed"
-                    >
-                        <thead class="bg-slate-500">
-                            <tr>
-                                <th>Type</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        
-                        <tbody>
-                            <tr
-                                v-for="backdroptype in backdroptypes" 
-                                :key="backdroptype.id"
-                            >
-                                <td>{{ backdroptype.name }}</td>
-                                <td>
-                                    <AButton :href="`/admin/backdrop/edit/${backdroptype.id}`">Edit</AButton>
-                                    <SecondaryButton>Hide</SecondaryButton>
-                                    </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div> -->
-
               <!-- ADD BACKDROP TYPE MODAL -->
         <Modal :show="addingBackdropType" @close="closeAddBackdropTypeModal">
             <!-- Modal content -->
@@ -482,6 +490,88 @@ const submitAddBackdropType = () => {
                                         addBackdropTypeForm.processing,
                                 }"
                                 :disabled="addBackdropTypeForm.processing"
+                            >
+                                Add Backdrop Type
+                            </PrimaryButton>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </Modal>
+
+          <Modal :show="editingBackdropType" @close="closeEditBackdropTypeModal">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+                <!-- Modal header -->
+                <div
+                    class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
+                >
+                    <h3 class="text-xl font-semibold dark:text-white">
+                        Add new backdrop type
+                    </h3>
+                    <button
+                        type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                        @click="closeEditBackdropTypeModal"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Modal body -->
+
+                <div class="p-6 space-y-6">
+                    <form @submit.prevent="submitEditBackdropType">
+                        <div class="mb-6">
+                            <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="name"
+                                    value="Name"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+
+                                <TextInput
+                                    id="name"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="editBackdropTypeForm.name"
+                                    required
+                                    autofocus
+                                    autocomplete="off"
+                                    placeholder="e.g. Plain"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="editBackdropTypeForm.errors.name"
+                                />
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="mt-6 flex justify-end">
+                            <SecondaryButton
+                                class="normal-case py-2.5 px-5"
+                                @click="closeEditBackdropTypeModal"
+                            >
+                                Cancel
+                            </SecondaryButton>
+
+                            <PrimaryButton
+                                class="normal-case ms-3"
+                                :class="{
+                                    'opacity-25':
+                                        editBackdropTypeForm.processing || noChanges,
+                                }"
+                                :disabled="editBackdropTypeForm.processing || noChanges"
                             >
                                 Add Backdrop Type
                             </PrimaryButton>

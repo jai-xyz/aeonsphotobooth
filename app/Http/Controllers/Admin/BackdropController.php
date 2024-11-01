@@ -57,7 +57,7 @@ class BackdropController extends Controller
         $color = strtolower(preg_replace('/\s+/', '_', $request->color));
         $fileName = null;
 
-        if ($request->hasFIle('image')) {
+        if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileName = $color . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
@@ -92,19 +92,21 @@ class BackdropController extends Controller
         $color = strtolower(preg_replace('/\s+/', '_', $request->color));
         $fileName = null;
 
-        if ($request->hasFIle('image')) {
+        if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileName = $color . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
         }
 
-        $backdrop->update([
+        $backdrop->fill([
             'backdroptype_id' => $request->backdroptype_id,
             'color' => $request->color,
             'image' => $fileName
         ]);
 
-        return redirect()->back();
+        if ($backdrop->save()) {
+            return Redirect::route('backdrop.index');
+        }
     }
 
     public function indexType(): Response
@@ -128,8 +130,20 @@ class BackdropController extends Controller
 
         BackdropType::create($request->all());
 
-        // return redirect()->route('backdroptype.index');
         return redirect()->back();
+    }
+
+    public function updateBackdropType(Request $request, BackdropType $backdroptype)
+    {
+        $request->validate([
+            'name' => 'required|string'
+        ]);
+
+        $backdroptype->fill($request->all());
+
+        if ($backdroptype->save()) {
+            return redirect()->back();
+        }
     }
 
 
