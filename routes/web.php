@@ -56,7 +56,7 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
     // BACKDROP ROUTES
     Route::get('/admin/backdrop/list', [BackdropController::class, 'index'])->name('backdrop.index');
     Route::post('/admin/backdrop/list', [BackdropController::class, 'storeBackdrop'])->name('backdrop.store');
-    Route::patch('/admin/backdrop/edit/{backdrop}', [BackdropController::class, 'updateBackdrop'])->name('backdrop.update');
+    Route::put('/admin/backdrop/edit/{backdrop}', [BackdropController::class, 'updateBackdrop'])->name('backdrop.update');
 
     // BACKDROP TYPE ROUTES
     Route::get('/admin/backdrop/type', [BackdropController::class, 'indexType'])->name('backdroptype.index');

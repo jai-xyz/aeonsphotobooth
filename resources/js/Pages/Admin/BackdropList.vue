@@ -156,22 +156,19 @@ const closeAddBackdropModal = () => {
 };
 
 const submitAddBackdrop = () => {
-    addBackdropForm.post(
-        route("backdrop.store", { page: currentPage.value }),
-        {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => closeAddBackdropModal(),
-            onFinish: () => addBackdropForm.reset(),
-        }
-    );
+    addBackdropForm.post(route("backdrop.store", { page: currentPage.value }), {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => closeAddBackdropModal(),
+        onFinish: () => addBackdropForm.reset(),
+    });
 };
 
 // EDIT BACKDROP & MODALS
 const editingBackdrop = ref(false);
 const currentBackdrop = ref(null);
 
-const editForm = useForm({
+const editBackdropForm = useForm({
     id: null,
     backdroptype_id: "",
     color: "",
@@ -179,60 +176,71 @@ const editForm = useForm({
 });
 
 const handleFileUploadEdit = (event) => {
-    editForm.image = event.target.files[0];
+    editBackdropForm.image = event.target.files[0];
 };
 
 const openEditModal = (backdrop) => {
-    currentBackdrop.value = backdrop;
-    editForm.id = backdrop.id;
-    editForm.backdroptype_id = backdrop.backdroptype_id;
-    editForm.color = backdrop.color;
-    editForm.image = backdrop.image;
+    console.log("Backdrop object received:", backdrop);
 
-    // for checking if there are changes
-    editForm.OrigId = backdrop.id;
-    editForm.Origbackdroptype_id = backdrop.backdroptype_id;
-    editForm.OrigColor = backdrop.color;
-    editForm.OrigImage = backdrop.image;
-    
+    if (!backdrop || !backdrop.backdroptype_id || !backdrop.color) {
+        console.error("Backdrop object is missing required properties.");
+        return;
+    }
+
+    currentBackdrop.value = backdrop;
+    editBackdropForm.id = backdrop.id;
+    editBackdropForm.backdroptype_id = backdrop.backdroptype_id;
+    editBackdropForm.color = backdrop.color;
+    editBackdropForm.image = backdrop.image;
+
+    // checking if there's changes on the form
+    editBackdropForm.origId = backdrop.id;
+    editBackdropForm.origBackdroptypeId = backdrop.backdroptype_id;
+    editBackdropForm.origColor = backdrop.color;
+    editBackdropForm.origImage = backdrop.image;
+
     editingBackdrop.value = true;
+
+    console.log("Backdrop data loaded into form:", editBackdropForm);
 };
+
+const noChangesEdit = computed(() => {
+    return (
+        editBackdropForm.origId === editBackdropForm.id &&
+        editBackdropForm.origBackdroptypeId ===
+            editBackdropForm.backdroptype_id &&
+        editBackdropForm.origColor === editBackdropForm.color &&
+        editBackdropForm.origImage === editBackdropForm.image
+    );
+});
 
 const closeEditModal = () => {
     editingBackdrop.value = false;
-    editForm.reset();
+    editBackdropForm.reset();
 };
 
-const noChanges = computed(() => {
-    return (
-        editForm.OrigId === editForm.id &&
-        editForm.Origbackdroptype_id === editForm.backdroptype_id &&
-        editForm.OrigColor === editForm.color &&
-        editForm.OrigImage === editForm.image
-    );  
-});
+const submitEditBackdrop = () => {
+    console.log("Submitting form with data:", editBackdropForm);
 
-const submitEdit = () => {
-    editForm.transform((data) => {
-        const formData = new FormData();
-        formData.append("id", data.id);
-        formData.append("backdroptype_id", data.backdroptype_id);
-        formData.append("color", data.color);
-        if (data.image) {
-            formData.append("image", data.image);
+    editBackdropForm.put(
+        route("backdrop.update", {
+            id: editBackdropForm.id,
+            page: currentPage.value,
+        }),
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                closeEditModal();
+            },
+            onFinish: () => {
+                editBackdropForm.reset();
+            },
+            onError: (errors) => {
+                console.error("Form submission errors:", errors);
+            },
         }
-        return formData;
-    }).patch(route("backdrop.update", { backdrop: editForm.id, page: currentPage.value }), {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: () => closeEditModal(),
-        onError: () => {
-            // Handle errors here
-        },
-        onFinish: () => {
-            // Do not reset the form here to preserve errors
-        },
-    });
+    );
 };
 </script>
 
@@ -697,7 +705,7 @@ const submitEdit = () => {
                     class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
                 >
                     <h3 class="text-xl font-semibold dark:text-white">
-                        Add new backdrop 
+                        Add new backdrop
                     </h3>
                     <button
                         type="button"
@@ -725,59 +733,70 @@ const submitEdit = () => {
                         <div class="mb-6">
                             <div class="col-span-6 sm:col-span-3">
                                 <div>
-                        <InputLabel for="backdroptype" value="Backdrop Type" />
+                                    <InputLabel
+                                        for="backdroptype"
+                                        value="Backdrop Type"
+                                    />
 
-                        <select
-                            id="backdroptype"
-                            placeholder="Backdrop Type"
-                            class="select select-info rounded-lg border-gray-300 mt-1 block w-full"
-                            v-model="addBackdropForm.backdroptype_id"
-                        >
-                            <option disabled value="">Backdrop Type</option>
-                            <option
-                                v-for="backdroptype in backdroptypes"
-                                :key="backdroptype.id"
-                                :value="backdroptype.id"
-                            >
-                                {{ backdroptype.name }}
-                            </option>
-                        </select>
-                        <InputError
-                            class="mt-2"
-                            :message="addBackdropForm.errors.backdroptype"
-                        />
-                    </div>
+                                    <select
+                                        id="add-backdroptype"
+                                        placeholder="Backdrop Type"
+                                        class="select select-info rounded-lg border-gray-300 mt-1 block w-full"
+                                        v-model="
+                                            addBackdropForm.backdroptype_id
+                                        "
+                                    >
+                                        <option disabled value="">
+                                            Backdrop Type
+                                        </option>
+                                        <option
+                                            v-for="backdroptype in backdroptypes"
+                                            :key="backdroptype.id"
+                                            :value="backdroptype.id"
+                                        >
+                                            {{ backdroptype.name }}
+                                        </option>
+                                    </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="
+                                            addBackdropForm.errors.backdroptype
+                                        "
+                                    />
+                                </div>
 
-                    <div>
-                        <InputLabel for="color" value="Color" />
+                                <div>
+                                    <InputLabel for="color" value="Color" />
 
-                        <TextInput
-                            id="color"
-                            type="text"
-                            class="mt-1 block w-full"
-                            v-model="addBackdropForm.color"
-                            required
-                            autocomplete="off"
-                            placeholder="e.g. Black, White, Red, etc."
-                        />
-                        <InputError class="mt-2" :message="addBackdropForm.errors.color" />
-                    </div>
+                                    <TextInput
+                                        id="add-color"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="addBackdropForm.color"
+                                        required
+                                        autocomplete="off"
+                                        placeholder="e.g. Black, White, Red, etc."
+                                    />
+                                    <InputError
+                                        class="mt-2"
+                                        :message="addBackdropForm.errors.color"
+                                    />
+                                </div>
 
-                    <div>
-                        <InputLabel
-                            for="backdropimage"
-                            value="Backdrop Image"
-                        />
+                                <div>
+                                    <InputLabel
+                                        for="backdropimage"
+                                        value="Backdrop Image"
+                                    />
 
-                        <input
-                            type="file"
-                            class="file-input w-full mt-1 ps-0 border-gray-300 file-input-info"
-                            name="image"
-                            id="image"
-                            @change="handleFileUpload"
-                        />
-                    </div>
-
+                                    <input
+                                        type="file"
+                                        class="file-input w-full mt-1 ps-0 border-gray-300 file-input-info"
+                                        name="add-image"
+                                        id="add-image"
+                                        @change="handleFileUpload"
+                                    />
+                                </div>
                             </div>
                         </div>
                         <!-- Modal footer -->
@@ -792,8 +811,7 @@ const submitEdit = () => {
                             <PrimaryButton
                                 class="normal-case ms-3"
                                 :class="{
-                                    'opacity-25':
-                                        addBackdropForm.processing,
+                                    'opacity-25': addBackdropForm.processing,
                                 }"
                                 :disabled="addBackdropForm.processing"
                             >
@@ -806,7 +824,7 @@ const submitEdit = () => {
         </Modal>
 
         <!-- EDIT BACKDROP MODAL -->
-               <Modal :show="editingBackdrop" @close="closeEditModal">
+        <Modal :show="editingBackdrop" @close="closeEditModal">
             <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
                 <div
                     class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
@@ -834,84 +852,102 @@ const submitEdit = () => {
                     </button>
                 </div>
                 <div class="p-6 space-y-6">
-                    <form @submit.prevent="submitEdit">
-                         <div class="mb-6">
+                    <form @submit.prevent="submitEditBackdrop">
+                        <div class="mb-6">
                             <div class="col-span-6 sm:col-span-3">
                                 <div>
-                        <InputLabel for="backdroptype" value="Backdrop Type" />
+                                    <InputLabel
+                                        for="backdroptype"
+                                        value="Backdrop Type"
+                                    />
+                                    <select
+                                        id="edit-backdroptype"
+                                        placeholder="Backdrop Type"
+                                        required
+                                        class="select select-info rounded-lg border-gray-300 mt-1 block w-full"
+                                        v-model="
+                                            editBackdropForm.backdroptype_id
+                                        "
+                                    >
+                                        <option disabled value="">
+                                            Backdrop Type
+                                        </option>
+                                        <option
+                                            v-for="backdroptype in backdroptypes"
+                                            :key="backdroptype.id"
+                                            :value="backdroptype.id"
+                                        >
+                                            {{ backdroptype.name }}
+                                        </option>
+                                    </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="
+                                            editBackdropForm.errors
+                                                .backdroptype_id
+                                        "
+                                    />
+                                </div>
 
-                        <select
-                            id="backdroptype"
-                            placeholder="Backdrop Type"
-                            class="select select-info rounded-lg border-gray-300 mt-1 block w-full"
-                            v-model="editForm.backdroptype_id"
-                        >
-                            <option disabled value="">Backdrop Type</option>
-                            <option
-                                v-for="backdroptype in backdroptypes"
-                                :key="backdroptype.id"
-                                :value="backdroptype.id"
-                            >
-                                {{ backdroptype.name }}
-                            </option>
-                        </select>
-                        <InputError
-                            class="mt-2"
-                            :message="editForm.errors.backdroptype_id"
-                        />
-                    </div>
+                                <div>
+                                    <InputLabel for="color" value="Color" />
+                                    <TextInput
+                                        id="edit-color"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="editBackdropForm.color"
+                                        required
+                                        autocomplete="off"
+                                        placeholder="e.g. Black, White, Red, etc."
+                                    />
+                                    <InputError
+                                        class="mt-2"
+                                        :message="editBackdropForm.errors.color"
+                                    />
+                                </div>
 
-                    <div>
-                        <InputLabel for="color" value="Color" />
-
-                        <TextInput
-                            id="color"
-                            type="text"
-                            class="mt-1 block w-full"
-                            v-model="editForm.color"
-                            required
-                            autocomplete="off"
-                            placeholder="e.g. Black, White, Red, etc."
-                        />
-                        <InputError class="mt-2" :message="editForm.errors.color" />
-                    </div>
-
-                    <div>
-                        <InputLabel
-                            for="backdropimage"
-                            value="Backdrop Image"
-                        />
-
-                        <input
-                            type="file"
-                            class="file-input w-full mt-1 ps-0 border-gray-300 file-input-info"
-                            name="image"
-                            id="image"
-                            @change="handleFileUploadEdit"
-                        />
-                        <InputError class="mt-2" :message="editForm.errors.image" />
-                    </div>
-
+                                <div>
+                                    <InputLabel
+                                        for="backdropimage"
+                                        value="Backdrop Image"
+                                    />
+                                    <input
+                                        type="file"
+                                        class="file-input w-full mt-1 ps-0 border-gray-300 file-input-info"
+                                        name="edit-image"
+                                        id="edit-image"
+                                        @change="handleFileUploadEdit"
+                                    />
+                                    {{
+                                        editBackdropForm.image
+                                            ? editBackdropForm.image.name
+                                            : ""
+                                    }}
+                                    <InputError
+                                        class="mt-2"
+                                        :message="editBackdropForm.errors.image"
+                                    />
+                                </div>
                             </div>
                         </div>
-                    
-                        <!-- Modal footer -->
-                             <div class="mt-6 flex justify-end">
-                           
 
+                        <div class="mt-6 flex justify-end">
                             <SecondaryButton
                                 class="normal-case px-5"
                                 @click="closeEditModal"
                             >
                                 Cancel
                             </SecondaryButton>
-                             <PrimaryButton
-                                   class="normal-case ms-3" 
+                            <PrimaryButton
+                                class="normal-case ms-3"
                                 :class="{
                                     'opacity-25':
-                                        editForm.processing || noChanges,
+                                        editBackdropForm.processing ||
+                                        noChangesEdit,
                                 }"
-                                :disabled="editForm.processing || noChanges"
+                                :disabled="
+                                    editBackdropForm.processing || noChangesEdit
+                                "
                             >
                                 Update
                             </PrimaryButton>
@@ -920,6 +956,5 @@ const submitEdit = () => {
                 </div>
             </div>
         </Modal>
-
     </AdminAuthenticatedLayout>
 </template>

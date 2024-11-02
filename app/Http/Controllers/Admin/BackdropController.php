@@ -105,7 +105,7 @@ class BackdropController extends Controller
         ]);
 
         if ($backdrop->save()) {
-            return Redirect::route('backdrop.index');
+            return redirect()->back();
         }
     }
 
