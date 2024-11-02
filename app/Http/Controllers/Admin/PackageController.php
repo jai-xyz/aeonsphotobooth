@@ -95,7 +95,7 @@ class PackageController extends Controller
             'extension' => $request->extension,
         ]);
 
-        return redirect()->back();
+        return redirect()->back()->with('message', 'Package added successfully');
     }
 
     /**

@@ -14,6 +14,7 @@ import DeleteModal from "@/Components/DeleteModal.vue";
 import { watch, computed, ref } from "vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import { Inertia } from "@inertiajs/inertia";
+import "../../../css/custom-styles.css";
 
 // TODO: SEARCH BAR
 
@@ -149,7 +150,7 @@ const openEditModal = (pkg) => {
     editForm.OrigInclusion = pkg.inclusion;
     editForm.OrigNote = pkg.note;
     editForm.OrigExtension = pkg.extension;
-    
+
     editingProduct.value = true;
 };
 
@@ -229,12 +230,65 @@ watch(
         });
     }
 );
+
+const showToast = ref(false);
+let timer = null;
+
+const startTimer = () => {
+    timer = setTimeout(() => {
+        showToast.value = false;
+    }, 3000);
+};
+
+const clearTimer = () => {
+    clearTimeout(timer);
+};
+
+const page = usePage();
+
+watch(() => page.props.flash.message, (newValue) => {
+    if (newValue) {
+        showToast.value = true;
+    }
+}, { immediate: true });
 </script>
 
 <template>
     <Head title="Packages" />
 
     <AdminAuthenticatedLayout>
+
+        <transition
+            name="toast"
+            @after-enter="startTimer"
+            @before-leave="clearTimer"
+        >
+            <div
+                v-if="showToast"
+                id="toast-top-right"
+                class="fixed flex items-center w-full max-w-xs z-50 p-4 space-x-4 text-gray-500 bg-white rounded-lg shadow top-5 right-5 dark:text-gray-400 dark:divide-gray-700 dark:bg-gray-800"
+                role="alert"
+            >
+                <div
+                    class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200"
+                >
+                    <svg
+                        class="w-5 h-5"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                    >
+                        <path
+                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"
+                        />
+                    </svg>
+                </div>
+                <div class="ms-3 text-sm font-normal">{{ page.props.flash.message }}</div>
+            </div>
+        </transition>
+      
+
         <div
             class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         >
@@ -560,7 +614,7 @@ watch(
                                         </button>
                                     </td>
                                 </tr>
-                                 <tr v-if="packages.data.length === 0">
+                                <tr v-if="packages.data.length === 0">
                                     <td
                                         colspan="12"
                                         class="p-4 text-center text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
@@ -583,7 +637,8 @@ watch(
                     class="text-sm font-normal text-gray-500 dark:text-gray-400"
                     >Showing
                     <span class="font-semibold text-gray-700 dark:text-white"
-                        >{{ pagination.from ? pagination.from : 0 }} to {{ pagination.to ? pagination.to : 0 }}</span
+                        >{{ pagination.from ? pagination.from : 0 }} to
+                        {{ pagination.to ? pagination.to : 0 }}</span
                     >
                     of
                     <span class="font-semibold text-gray-700 dark:text-white">
