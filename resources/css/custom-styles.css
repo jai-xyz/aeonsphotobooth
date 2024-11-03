@@ -141,3 +141,9 @@
 .toast-leave-active {
     animation: fadeOut 1s forwards;
 }
+
+.toast-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust the gap between toasts */
+}

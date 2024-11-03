@@ -15,6 +15,7 @@ import { watch, computed, ref } from "vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import { Inertia } from "@inertiajs/inertia";
 import "../../../css/custom-styles.css";
+import Toast from "@/Components/Toast.vue";
 
 // TODO: SEARCH BAR
 
@@ -231,49 +232,72 @@ watch(
     }
 );
 
-const showToast = ref(false);
-let timer = null;
+// const showToast = ref(false);
+// let timer = null;
+// const message = ref('');
+// const isSuccess = ref(true);
 
-const startTimer = () => {
-    timer = setTimeout(() => {
-        showToast.value = false;
-    }, 3000);
-};
+// const startTimer = () => {
+//     timer = setTimeout(() => {
+//         showToast.value = false;
+//     }, 3000);
+// };
 
-const clearTimer = () => {
-    clearTimeout(timer);
-};
+// const clearTimer = () => {
+//     clearTimeout(timer);
+// };
 
-const page = usePage();
+// const page = usePage();
 
-watch(() => page.props.flash.message, (newValue) => {
-    if (newValue) {
-        showToast.value = true;
-    }
-}, { immediate: true });
+// watch(
+//     () => page.props.flash,
+//     (newFlash) => {
+//         if (newFlash.success || newFlash.error) {
+//             message.value = newFlash.success || newFlash.error;
+//             isSuccess.value = !!newFlash.success;
+//             showToast.value = true;
+//         }
+//     },
+//     { immediate: true }
+// );
+
+// const toastClass = computed(() => {
+//     return isSuccess.value
+//         ? 'bg-green-100 text-green-500 dark:text-gray-400 dark:bg-gray-800'
+//         : 'bg-red-100 text-red-500 dark:text-red-400 dark:bg-red-800';
+// });
+
+// const iconClass = computed(() => {
+//     return isSuccess.value
+//         ? 'bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200'
+//         : 'bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200';
+// });
+
+
 </script>
 
 <template>
     <Head title="Packages" />
 
     <AdminAuthenticatedLayout>
-
-        <transition
+             <!-- <transition
             name="toast"
             @after-enter="startTimer"
             @before-leave="clearTimer"
         >
             <div
                 v-if="showToast"
+                :class="toastClass"
                 id="toast-top-right"
-                class="fixed flex items-center w-full max-w-xs z-50 p-4 space-x-4 text-gray-500 bg-white rounded-lg shadow top-5 right-5 dark:text-gray-400 dark:divide-gray-700 dark:bg-gray-800"
+                class="fixed flex items-center w-full max-w-xs z-50 p-4 space-x-4 rounded-lg shadow top-5 right-5"
                 role="alert"
             >
                 <div
-                    class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200"
+                    :class="iconClass"
+                    class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg"
                 >
                     <svg
-                        class="w-5 h-5"
+                        class="w-7 h-7"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="currentColor"
@@ -281,13 +305,19 @@ watch(() => page.props.flash.message, (newValue) => {
                     >
                         <path
                             d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"
+                            v-if="isSuccess"
+                        />
+                        <path
+                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"
+                            v-if="!isSuccess"
                         />
                     </svg>
                 </div>
-                <div class="ms-3 text-sm font-normal">{{ page.props.flash.message }}</div>
+                <div class="ms-3 text-sm font-normal">{{ message }}</div>
             </div>
-        </transition>
-      
+        </transition> -->
+
+        <Toast />
 
         <div
             class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"

@@ -95,7 +95,7 @@ class PackageController extends Controller
             'extension' => $request->extension,
         ]);
 
-        return redirect()->back()->with('message', 'Package added successfully');
+        return redirect()->back()->with('success', 'Package added successfully');
     }
 
     /**
@@ -172,7 +172,7 @@ class PackageController extends Controller
     public function destroy(Packages $package) : RedirectResponse
     {
         if($package->delete()) {
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Package deleted successfully');
         }
     }
 }
