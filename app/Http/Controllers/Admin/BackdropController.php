@@ -69,14 +69,14 @@ class BackdropController extends Controller
             'image' => $fileName
         ]);
 
-        return redirect()->back();
+        return redirect()->back()->with('message', 'Backdrop added successfully');
     }
 
     public function updateBackdrop(Request $request, BackdropColor $backdrop)
     {
         $request->validate([
-            'backdroptype_id' => 'required|exists:backdroptypes,id',
-            'color' => 'required|string',
+            'backdroptype_id' => 'exists:backdroptypes,id',
+            'color' => 'string',
             'image' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
         ]);
 
