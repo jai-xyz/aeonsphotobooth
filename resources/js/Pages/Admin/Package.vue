@@ -157,7 +157,7 @@ const openEditModal = (pkg) => {
 
 const submitEdit = () => {
     editForm.patch(
-        route("package.update", { id: editForm.id, page: currentPage.value }),
+        route("package.update", { package: editForm.id, page: currentPage.value }),
         {
             preserveScroll: true,
             preserveState: true,

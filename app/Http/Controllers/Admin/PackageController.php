@@ -162,7 +162,7 @@ class PackageController extends Controller
         );
         
         if ($package->save()) {
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Package updated successfully');
         }
     }
 
