@@ -166,9 +166,10 @@ const submitAddBackdrop = () => {
 
 // EDIT BACKDROP & MODALS
 const editingBackdrop = ref(false);
-const currentBackdrop = ref(null);
+// const currentBackdrop = ref(null);
 
 const editBackdropForm = useForm({
+    forceFormData: true,
     id: null,
     backdroptype_id: "",
     color: "",
@@ -182,12 +183,12 @@ const handleFileUploadEdit = (event) => {
 const openEditModal = (backdrop) => {
     console.log("Backdrop object received:", backdrop);
 
-    if (!backdrop || !backdrop.backdroptype_id || !backdrop.color) {
+    if (!backdrop || !backdrop.id || !backdrop.image) {
         console.error("Backdrop object is missing required properties.");
         return;
     }
 
-    currentBackdrop.value = backdrop;
+    // currentBackdrop.value = backdrop;
     editBackdropForm.id = backdrop.id;
     editBackdropForm.backdroptype_id = backdrop.backdroptype_id;
     editBackdropForm.color = backdrop.color;
@@ -222,26 +223,24 @@ const closeEditModal = () => {
 const submitEditBackdrop = () => {
     console.log("Submitting form with data:", editBackdropForm);
 
-    editBackdropForm.put(
+    if (noChangesEdit.value) {
+        editBackdropForm.backdroptype_id = editBackdropForm.origBackdroptypeId;
+        editBackdropForm.color = editBackdropForm.origColor;
+        editBackdropForm.image = editBackdropForm.origImage;
+    }
+
+    editBackdropForm.post(
         route("backdrop.update", {
-            id: editBackdropForm.id,
-            page: currentPage.value,
+            backdrop: editBackdropForm.id, page: currentPage.value
         }),
-        {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => {
-                closeEditModal();
-            },
-            onFinish: () => {
-                editBackdropForm.reset();
-            },
-            onError: (errors) => {
-                console.error("Form submission errors:", errors);
-            },
-        }
-    );
+     {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => closeEditModal(),
+        onFinish: () => editBackdropForm.reset(),
+    });
 };
+
 </script>
 
 <template>
@@ -887,7 +886,7 @@ const submitEditBackdrop = () => {
                                                 .backdroptype_id
                                         "
                                     />
-                                </div>
+                                </div> 
 
                                 <div>
                                     <InputLabel for="color" value="Color" />
@@ -942,8 +941,8 @@ const submitEditBackdrop = () => {
                                 class="normal-case ms-3"
                                 :class="{
                                     'opacity-25':
-                                        editBackdropForm.processing ||
-                                        noChangesEdit,
+                                        editBackdropForm.processing || noChangesEdit
+                                        ,
                                 }"
                                 :disabled="
                                     editBackdropForm.processing || noChangesEdit

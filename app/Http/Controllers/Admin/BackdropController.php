@@ -73,41 +73,59 @@ class BackdropController extends Controller
     }
 
     public function updateBackdrop(Request $request, BackdropColor $backdrop)
-    {
-        $request->validate([
-            'backdroptype_id' => 'exists:backdroptypes,id',
-            'color' => 'string',
-            'image' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
-        ]);
+{
+    $request->validate([
+        'backdroptype_id' => 'required|exists:backdroptypes,id',
+        'color' => 'required|string',
+        'image' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
+    ]);
 
-        if ($request->backdroptype_id == 1) {
-            $directory = 'plain';
-        } elseif ($request->backdroptype_id == 2) {
-            $directory = 'sequins';
-        } else {
-            $directory = 'custom';
-        }
+    // $backdroptype_id = 3;
 
-            // small letters and replace space with underscore
-        $color = strtolower(preg_replace('/\s+/', '_', $request->color));
-        $fileName = null;
+    // $request->$backdroptype_id;
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $fileName = $color . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
-        }
-
-        $backdrop->fill([
-            'backdroptype_id' => $request->backdroptype_id,
-            'color' => $request->color,
-            'image' => $fileName
-        ]);
-
-        if ($backdrop->save()) {
-            return redirect()->back();
-        }
+    if ($request->backdroptype_id == 1) {
+        $directory = 'plain';
+    } elseif ($request->backdroptype_id == 2) {
+        $directory = 'sequins';
+    } else {
+        $directory = 'custom';
     }
+
+    // small letters and replace space with underscore
+    $color = strtolower(preg_replace('/\s+/', '_', $request->color));
+    $fileName = $backdrop->image; // Default to existing image
+
+    // Unlink the existing file if it exists and a new file is uploaded
+    if ($request->hasFile('image')) {
+        if ($backdrop->image) {
+            $existingFilePath = public_path('uploads/backdrop/' . $directory . '/' . $backdrop->image);
+            if (file_exists($existingFilePath)) {
+                unlink($existingFilePath);
+            }
+        }
+
+        // $color = 'sample';
+
+        $file = $request->file('image');
+        $fileName = $color . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
+    }
+
+    $backdrop->fill([
+        'backdroptype_id' => $request->backdroptype_id,
+        'color' => $request->color,
+        'image' => $fileName
+    ]);
+
+    // dd($backdrop);
+
+    if ($backdrop->save()) {
+        return redirect()->back()->with('success', 'Backdrop updated successfully.');
+    }
+
+    return redirect()->back()->with('error', 'Failed to update backdrop.');
+}
 
     public function indexType(): Response
     {
