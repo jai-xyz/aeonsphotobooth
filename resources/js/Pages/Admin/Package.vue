@@ -17,8 +17,6 @@ import { Inertia } from "@inertiajs/inertia";
 import "../../../css/custom-styles.css";
 import Toast from "@/Components/Toast.vue";
 
-// TODO: SEARCH BAR
-
 const props = defineProps({
     packages: {
         type: [Array, Object],
@@ -26,7 +24,10 @@ const props = defineProps({
     },
 });
 
-// PAGINATION
+/* #############################
+            PAGINATION
+   ############################# */  
+    
 const paginationpackages = ref(props.packages.data);
 const currentPage = ref(1);
 
@@ -157,7 +158,10 @@ const openEditModal = (pkg) => {
 
 const submitEdit = () => {
     editForm.patch(
-        route("package.update", { package: editForm.id, page: currentPage.value }),
+        route("package.update", {
+            package: editForm.id,
+            page: currentPage.value,
+        }),
         {
             preserveScroll: true,
             preserveState: true,
@@ -231,92 +235,12 @@ watch(
         });
     }
 );
-
-// const showToast = ref(false);
-// let timer = null;
-// const message = ref('');
-// const isSuccess = ref(true);
-
-// const startTimer = () => {
-//     timer = setTimeout(() => {
-//         showToast.value = false;
-//     }, 3000);
-// };
-
-// const clearTimer = () => {
-//     clearTimeout(timer);
-// };
-
-// const page = usePage();
-
-// watch(
-//     () => page.props.flash,
-//     (newFlash) => {
-//         if (newFlash.success || newFlash.error) {
-//             message.value = newFlash.success || newFlash.error;
-//             isSuccess.value = !!newFlash.success;
-//             showToast.value = true;
-//         }
-//     },
-//     { immediate: true }
-// );
-
-// const toastClass = computed(() => {
-//     return isSuccess.value
-//         ? 'bg-green-100 text-green-500 dark:text-gray-400 dark:bg-gray-800'
-//         : 'bg-red-100 text-red-500 dark:text-red-400 dark:bg-red-800';
-// });
-
-// const iconClass = computed(() => {
-//     return isSuccess.value
-//         ? 'bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200'
-//         : 'bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200';
-// });
-
-
 </script>
 
 <template>
     <Head title="Packages" />
 
     <AdminAuthenticatedLayout>
-             <!-- <transition
-            name="toast"
-            @after-enter="startTimer"
-            @before-leave="clearTimer"
-        >
-            <div
-                v-if="showToast"
-                :class="toastClass"
-                id="toast-top-right"
-                class="fixed flex items-center w-full max-w-xs z-50 p-4 space-x-4 rounded-lg shadow top-5 right-5"
-                role="alert"
-            >
-                <div
-                    :class="iconClass"
-                    class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg"
-                >
-                    <svg
-                        class="w-7 h-7"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                    >
-                        <path
-                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"
-                            v-if="isSuccess"
-                        />
-                        <path
-                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"
-                            v-if="!isSuccess"
-                        />
-                    </svg>
-                </div>
-                <div class="ms-3 text-sm font-normal">{{ message }}</div>
-            </div>
-        </transition> -->
-
         <Toast />
 
         <div
@@ -461,21 +385,6 @@ watch(
                         >
                             <thead class="bg-gray-100 dark:bg-gray-700">
                                 <tr>
-                                    <th scope="col" class="p-4">
-                                        <div class="flex items-center">
-                                            <input
-                                                id="checkbox-all"
-                                                aria-describedby="checkbox-1"
-                                                type="checkbox"
-                                                class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                                            />
-                                            <label
-                                                for="checkbox-all"
-                                                class="sr-only"
-                                                >checkbox</label
-                                            >
-                                        </div>
-                                    </th>
                                     <th
                                         scope="col"
                                         class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
@@ -534,21 +443,6 @@ watch(
                                     :key="pkg.id"
                                     class="hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
-                                    <td class="w-4 p-4">
-                                        <div class="flex items-center">
-                                            <input
-                                                id="checkbox-{{ .id }}"
-                                                aria-describedby="checkbox-1"
-                                                type="checkbox"
-                                                class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                                            />
-                                            <label
-                                                for="checkbox-{{ .id }}"
-                                                class="sr-only"
-                                                >checkbox</label
-                                            >
-                                        </div>
-                                    </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
                                     >

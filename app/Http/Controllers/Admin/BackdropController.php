@@ -14,9 +14,9 @@ use Inertia\Response;
 
 class BackdropController extends Controller
 {
-    /**
-     * Display a listing of the resource.   
-     */
+    /** #####################################
+           * BACKDROP LIST AND COLOR CRUD
+    */ ######################################
     public function index(Request $request): Response
     {
         // TODO: filter by backdroptype plain - sequins - custom
@@ -34,9 +34,6 @@ class BackdropController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function storeBackdrop(Request $request)
     {
         $request->validate([
@@ -69,7 +66,7 @@ class BackdropController extends Controller
             'image' => $fileName
         ]);
 
-        return redirect()->back()->with('message', 'Backdrop added successfully');
+        return redirect()->back()->with('success', 'Backdrop added successfully');
     }
 
     public function updateBackdrop(Request $request, BackdropColor $backdrop)
@@ -79,10 +76,6 @@ class BackdropController extends Controller
         'color' => 'required|string',
         'image' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
     ]);
-
-    // $backdroptype_id = 3;
-
-    // $request->$backdroptype_id;
 
     if ($request->backdroptype_id == 1) {
         $directory = 'plain';
@@ -105,8 +98,6 @@ class BackdropController extends Controller
             }
         }
 
-        // $color = 'sample';
-
         $file = $request->file('image');
         $fileName = $color . '.' . $file->getClientOriginalExtension();
         $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
@@ -118,14 +109,16 @@ class BackdropController extends Controller
         'image' => $fileName
     ]);
 
-    // dd($backdrop);
-
     if ($backdrop->save()) {
         return redirect()->back()->with('success', 'Backdrop updated successfully.');
     }
 
     return redirect()->back()->with('error', 'Failed to update backdrop.');
 }
+
+    /** #####################################
+             * BACKDROP TYPE CRUD
+    */ ######################################
 
     public function indexType(): Response
     {
@@ -137,30 +130,27 @@ class BackdropController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function storeType(Request $request)
     {
         $request->validate([
-            'name' => 'required|string'
+            'name' => 'required|string|unique:backdroptypes,name,'
         ]);
 
         BackdropType::create($request->all());
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Backdrop type added successfully.');
     }
 
     public function updateBackdropType(Request $request, BackdropType $backdroptype)
     {
         $request->validate([
-            'name' => 'required|string'
+            'name' => 'required|string|unique:backdroptypes,name,'
         ]);
 
         $backdroptype->fill($request->all());
 
         if ($backdroptype->save()) {
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Backdrop type updated successfully.');
         }
     }
 

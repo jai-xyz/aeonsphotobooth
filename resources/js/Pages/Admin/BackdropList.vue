@@ -10,6 +10,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import Modal from "@/Components/Modal.vue";
 import TextInput from "@/Components/TextInput.vue";
+import Toast from "@/Components/Toast.vue";
+import "../../../css/custom-styles.css";
 
 const props = defineProps({
     backdrops: {
@@ -247,6 +249,7 @@ const submitEditBackdrop = () => {
     <Head title="Backdrops" />
 
     <AdminAuthenticatedLayout>
+        <Toast />
         <div
             class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         >
@@ -411,21 +414,6 @@ const submitEditBackdrop = () => {
                         >
                             <thead class="bg-gray-100 dark:bg-gray-700">
                                 <tr>
-                                    <th scope="col" class="p-4">
-                                        <div class="flex items-center">
-                                            <input
-                                                id="checkbox-all"
-                                                aria-describedby="checkbox-1"
-                                                type="checkbox"
-                                                class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                                            />
-                                            <label
-                                                for="checkbox-all"
-                                                class="sr-only"
-                                                >checkbox</label
-                                            >
-                                        </div>
-                                    </th>
                                     <th
                                         scope="col"
                                         class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
@@ -460,21 +448,6 @@ const submitEditBackdrop = () => {
                                     :key="backdrop.id"
                                     class="hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
-                                    <td class="w-4 p-4">
-                                        <div class="flex items-center">
-                                            <input
-                                                id="checkbox-{{ .id }}"
-                                                aria-describedby="checkbox-1"
-                                                type="checkbox"
-                                                class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                                            />
-                                            <label
-                                                for="checkbox-{{ .id }}"
-                                                class="sr-only"
-                                                >checkbox</label
-                                            >
-                                        </div>
-                                    </td>
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                     >

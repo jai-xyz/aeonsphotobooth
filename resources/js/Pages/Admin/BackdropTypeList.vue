@@ -9,6 +9,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import Modal from "@/Components/Modal.vue";
 import TextInput from "@/Components/TextInput.vue";
+import Toast from "@/Components/Toast.vue";
+import "../../../css/custom-styles.css";
 
 const props = defineProps({
     backdroptypes: {
@@ -140,6 +142,7 @@ const noChanges = computed(() => {
     <Head title="Backdrop Types" />
 
     <AdminAuthenticatedLayout>
+        <Toast />
         <div
             class="px-4 pt-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         >
