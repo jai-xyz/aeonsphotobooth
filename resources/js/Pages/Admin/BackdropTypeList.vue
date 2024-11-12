@@ -11,6 +11,9 @@ import Modal from "@/Components/Modal.vue";
 import TextInput from "@/Components/TextInput.vue";
 import Toast from "@/Components/Toast.vue";
 import "../../../css/custom-styles.css";
+import { Inertia } from "@inertiajs/inertia";
+import DeleteModal from "@/Components/DeleteModal.vue";
+import DangerButton from "@/Components/DangerButton.vue";
 
 const props = defineProps({
     backdroptypes: {
@@ -19,7 +22,9 @@ const props = defineProps({
     },
 });
 
-// PAGINATION
+/* #############################
+            PAGINATION
+   ############################# */
 const paginationbackdroptypes = ref(props.backdroptypes.data);
 const currentPage = ref(1);
 
@@ -44,7 +49,9 @@ const changePage = (page) => {
 };
 
 const activePage = computed(() => {
-    const activePageItem = props.backdroptypes.links.find((link) => link.active);
+    const activePageItem = props.backdroptypes.links.find(
+        (link) => link.active
+    );
     return activePageItem
         ? new URL(activePageItem.url).searchParams.get("page")
         : 1;
@@ -66,7 +73,9 @@ watch(
     }
 );
 
-// ADD BACKDROP TYPE & MODALS
+/* #############################
+        ADD BACKDROP TYPE
+   ############################# */
 const addBackdropTypeForm = useForm({
     name: "",
 });
@@ -95,7 +104,9 @@ const submitAddBackdropType = () => {
     );
 };
 
-// EDIT BACKDROP TYPE & MODALS
+/* #############################
+        EDIT BACKDROP TYPE
+   ############################# */
 const currentBackdropType = ref(null);
 const editingBackdropType = ref(false);
 
@@ -109,16 +120,19 @@ const openEditModal = (type) => {
     editBackdropTypeForm.id = type.id;
     editBackdropTypeForm.name = type.name;
     editingBackdropType.value = true;
-}
+};
 
 const closeEditBackdropTypeModal = () => {
     editingBackdropType.value = false;
     editBackdropTypeForm.reset();
-}
+};
 
 const submitEditBackdropType = () => {
     editBackdropTypeForm.patch(
-        route("backdroptype.update", { id: editBackdropTypeForm.id, page: currentPage.value }),
+        route("backdroptype.update", {
+            id: editBackdropTypeForm.id,
+            page: currentPage.value,
+        }),
         {
             preserveScroll: true,
             preserveState: true,
@@ -126,16 +140,41 @@ const submitEditBackdropType = () => {
             onFinish: () => editBackdropTypeForm.reset(),
         }
     );
-}
+};
 
 const noChanges = computed(() => {
     return (
         editBackdropTypeForm.id === currentBackdropType.value.id &&
         editBackdropTypeForm.name === currentBackdropType.value.name
-    )
-})
+    );
+});
 
+/* #############################
+        DELETE BACKDROP TYPE
+   ############################# */
+const deletingBackdroptype = ref(false);
 
+const openDeleteModal = (type) => {
+    currentBackdropType.value = type;
+    deletingBackdroptype.value = true;
+};
+
+const closeDeleteModal = () => {
+    deletingBackdroptype.value = false;
+    deleteForm.reset();
+};
+
+const deleteForm = useForm({});
+
+const submitDelete = () => {
+    deleteForm.delete(
+        route("backdroptype.destroy", currentBackdropType.value.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => closeDeleteModal(),
+        }
+    );
+};
 </script>
 
 <template>
@@ -234,7 +273,7 @@ const noChanges = computed(() => {
                             class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600"
                         >
                             <thead class="bg-gray-100 dark:bg-gray-700">
-                                <tr> 
+                                <tr>
                                     <th
                                         scope="col"
                                         class="text-center p-4 text-xs font-medium text-gray-500 uppercase dark:text-gray-400"
@@ -263,7 +302,9 @@ const noChanges = computed(() => {
                                         {{ backdroptype.name }}
                                     </td>
 
-                                    <td class="text-center p-4 space-x-2 whitespace-nowrap">
+                                    <td
+                                        class="text-center p-4 space-x-2 whitespace-nowrap"
+                                    >
                                         <button
                                             type="button"
                                             id="updateProductButton"
@@ -289,6 +330,9 @@ const noChanges = computed(() => {
                                         <button
                                             type="button"
                                             id="deleteProductButton"
+                                            @click="
+                                                openDeleteModal(backdroptype)
+                                            "
                                             class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-700 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900"
                                         >
                                             <svg
@@ -321,7 +365,7 @@ const noChanges = computed(() => {
             </div>
         </div>
 
-         <div
+        <div
             class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700"
         >
             <div class="flex items-center mb-4 sm:mb-0">
@@ -329,7 +373,8 @@ const noChanges = computed(() => {
                     class="text-sm font-normal text-gray-500 dark:text-gray-400"
                     >Showing
                     <span class="font-semibold text-gray-700 dark:text-white"
-                        >{{ pagination.from ? pagination.from : 0 }} to {{ pagination.to ? pagination.to : 0 }}</span
+                        >{{ pagination.from ? pagination.from : 0 }} to
+                        {{ pagination.to ? pagination.to : 0 }}</span
                     >
                     of
                     <span class="font-semibold text-gray-700 dark:text-white">
@@ -419,7 +464,7 @@ const noChanges = computed(() => {
             </div>
         </div>
 
-              <!-- ADD BACKDROP TYPE MODAL -->
+        <!-- ADD BACKDROP TYPE MODAL -->
         <Modal :show="addingBackdropType" @close="closeAddBackdropTypeModal">
             <!-- Modal content -->
             <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
@@ -502,7 +547,8 @@ const noChanges = computed(() => {
             </div>
         </Modal>
 
-          <Modal :show="editingBackdropType" @close="closeEditBackdropTypeModal">
+        <!-- EDIT BACKDROP TYPE MODAL -->
+        <Modal :show="editingBackdropType" @close="closeEditBackdropTypeModal">
             <!-- Modal content -->
             <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
                 <!-- Modal header -->
@@ -572,9 +618,12 @@ const noChanges = computed(() => {
                                 class="normal-case ms-3"
                                 :class="{
                                     'opacity-25':
-                                        editBackdropTypeForm.processing || noChanges,
+                                        editBackdropTypeForm.processing ||
+                                        noChanges,
                                 }"
-                                :disabled="editBackdropTypeForm.processing || noChanges"
+                                :disabled="
+                                    editBackdropTypeForm.processing || noChanges
+                                "
                             >
                                 Add Backdrop Type
                             </PrimaryButton>
@@ -584,5 +633,92 @@ const noChanges = computed(() => {
             </div>
         </Modal>
 
+        <!-- DELETE BACKDROP TYPE MODAL -->
+        <DeleteModal :show="deletingBackdroptype" @close="closeDeleteModal">
+            <div class="relative w-full h-full max-w-md md:h-auto">
+                <!-- Modal content -->
+                <div
+                    class="relative bg-white rounded-lg shadow dark:bg-gray-800"
+                >
+                    <!-- Modal header -->
+                    <div class="flex justify-end p-2">
+                        <button
+                            type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                            @click="closeDeleteModal"
+                        >
+                            <svg
+                                class="w-5 h-5"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 pt-0 text-center">
+                        <svg
+                            class="w-16 h-16 mx-auto text-red-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            ></path>
+                        </svg>
+                        <h3
+                            class="mt-5 mb-6 text-lg text-gray-500 dark:text-gray-400"
+                        >
+                            Are you sure you want to delete this backdrop type?
+                            This action cannot be undone.
+                        </h3>
+                        <!-- Modal footer -->
+                        <div class="mt-6 flex justify-center gap-6">
+                            <DangerButton
+                                class="normal-case bg-danger"
+                                :class="{
+                                    'opacity-25': deleteForm.processing,
+                                }"
+                                :disabled="deleteForm.processing"
+                                @click="submitDelete"
+                            >
+                                Yes, I'm sure
+                            </DangerButton>
+
+                            <SecondaryButton
+                                class="normal-case px-5"
+                                @click="closeDeleteModal"
+                            >
+                                No, cancel
+                            </SecondaryButton>
+                        </div>
+                        <!-- <a
+                            href="#"
+                            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-red-800"
+                        >
+                            Yes, I'm sure
+                        </a>
+                        <a
+                            href="#"
+                            class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-primary-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-base px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                            data-modal-hide="delete-user-modal"
+                        >
+                            No, cancel
+                        </a> -->
+                    </div>
+                </div>
+            </div>
+        </DeleteModal>
     </AdminAuthenticatedLayout>
 </template>

@@ -57,11 +57,13 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
     Route::get('/admin/backdrop/list', [BackdropController::class, 'index'])->name('backdrop.index');
     Route::post('/admin/backdrop/list', [BackdropController::class, 'storeBackdrop'])->name('backdrop.store');
     Route::post('/admin/backdrop/list/edit/{backdrop}', [BackdropController::class, 'updateBackdrop'])->name('backdrop.update');
+    Route::delete('/admin/backdrop/type/delete/{backdrop}', [BackdropController::class, 'destroyBackdrop'])->name('backdrop.destroy');
 
     // BACKDROP TYPE ROUTES
     Route::get('/admin/backdrop/type', [BackdropController::class, 'indexType'])->name('backdroptype.index');
     Route::post('/admin/backdrop/type', [BackdropController::class, 'storeType'])->name('backdroptype.store');
     Route::patch('/admin/backdrop/type/edit/{backdroptype}', [BackdropController::class, 'updateBackdropType'])->name('backdroptype.update');
+    Route::delete('/admin/backdrop/type/delete/{backdroptype}', [BackdropController::class, 'destroyBackdropType'])->name('backdroptype.destroy');
 
     // Route::post('/admin/backdrop', [BackdropController::class, 'storeType'])->name('backdroptype.store');
     // Route::get('/admin/backdrop/type/{backdroptype}', [BackdropController::class, 'editType'])->name('backdroptype.edit');

@@ -116,6 +116,15 @@ class BackdropController extends Controller
     return redirect()->back()->with('error', 'Failed to update backdrop.');
 }
 
+    public function destroyBackdrop(BackdropColor $backdrop): RedirectResponse
+    {
+        if ($backdrop->delete()) {
+            return redirect()->back()->with('success', 'Backdrop deleted successfully.');
+        }
+        return redirect()->back()->with('error', 'Failed to delete this backdrop.');
+    }
+
+
     /** #####################################
              * BACKDROP TYPE CRUD
     */ ######################################
@@ -124,7 +133,7 @@ class BackdropController extends Controller
     {
 
         $backdroptypes = DB::table('backdroptypes')->paginate(10);
-
+        
         return Inertia::render('Admin/BackdropTypeList', [
             'backdroptypes' => $backdroptypes
         ]);
@@ -154,33 +163,11 @@ class BackdropController extends Controller
         }
     }
 
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function destroyBackdropType(BackdropType $backdroptype): RedirectResponse
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-   
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        if ($backdroptype->delete()) {
+            return redirect()->back()->with('success', 'Backdrop type deleted successfully.');
+        }
+        return redirect()->back()->with('error', 'Failed to delete this backdrop type.');
     }
 }

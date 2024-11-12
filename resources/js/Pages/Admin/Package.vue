@@ -74,7 +74,10 @@ watch(
     }
 );
 
-// ADD
+/* #############################
+            ADD PACKAGE
+   ############################# */  
+
 const addForm = useForm({
     name: "",
     price: "",
@@ -85,17 +88,16 @@ const addForm = useForm({
     extension: "",
 });
 
-// add package not product
 const addingNewProduct = ref(false);
 
-const addNewProduct = (product) => {
-    addForm.name = product.name;
-    addForm.price = product.price;
-    addForm.duration = product.duration;
-    addForm.size = product.size;
-    addForm.inclusion = product.inclusion;
-    addForm.note = product.note;
-    addForm.extension = product.extension;
+const addNewProduct = (pkg) => {
+    addForm.name = pkg.name;
+    addForm.price = pkg.price;
+    addForm.duration = pkg.duration;
+    addForm.size = pkg.size;
+    addForm.inclusion = pkg.inclusion;
+    addForm.note = pkg.note;
+    addForm.extension = pkg.extension;
     addingNewProduct.value = true;
 };
 
@@ -113,7 +115,10 @@ const closeAddModal = () => {
     addForm.reset();
 };
 
-// EDIT
+/* #############################
+            EDIT PACKAGE
+   ############################# */  
+
 const editingProduct = ref(false);
 const currentPackage = ref(null);
 
@@ -189,7 +194,9 @@ const noChanges = computed(() => {
     );
 });
 
-// DELETE
+/* #############################
+            DELETE PACKAGE
+   ############################# */  
 const deletingProduct = ref(false);
 
 const openDeleteModal = (pkg) => {
@@ -211,7 +218,9 @@ const submitDelete = () => {
     });
 };
 
-// SEARCH
+/* #############################
+            SEARCH
+   ############################# */  
 let search = ref(usePage().props.search),
     pageNumber = ref(1);
 

@@ -174,5 +174,6 @@ class PackageController extends Controller
         if($package->delete()) {
             return redirect()->back()->with('success', 'Package deleted successfully');
         }
+        return redirect()->back()->with('error', 'Failed to delete this package.');
     }
 }
