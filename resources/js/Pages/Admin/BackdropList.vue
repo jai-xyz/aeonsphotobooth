@@ -15,6 +15,8 @@ import "../../../css/custom-styles.css";
 import DeleteModal from "@/Components/DeleteModal.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 
+// TODO: FILTER BACKDROPS BY TYPE 
+
 const props = defineProps({
     backdrops: {
         type: [Array, Object],

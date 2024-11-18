@@ -17,6 +17,10 @@ const props = defineProps({
     },
 });
 
+/* #############################
+            PAGINATION
+   ############################# */
+
 const paginationevents = ref(props.events.data);
 const currentPage = ref(1);
 
@@ -63,6 +67,9 @@ watch(
     }
 );
 
+/* #############################
+        UPDATE EVENT STATUS
+   ############################# */
 const updatingEventStatus = ref(false);
 
 const form = useForm({
@@ -99,7 +106,9 @@ const isSameStatus = computed(() => {
     return form.status === form.originalStatus;
 });
 
-// SEARCH
+/* #############################
+            SEARCH
+   ############################# */
 let search = ref(usePage().props.search),
     pageNumber = ref(1);
 
