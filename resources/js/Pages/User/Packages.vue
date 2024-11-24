@@ -3,20 +3,23 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import AButton from "@/Components/AButton.vue";
 
-defineProps({
+const props = defineProps({
+    canLogin: Boolean,
+    canRegister: Boolean,
+    auth: Object,
     packages: {
         type: Array,
-    required: true,
-    }
+        required: true,
+    },
+});
 
-}); 
 
 </script>
 
 <template>
     <Head title="Dashboard" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :auth="auth"> 
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Packages

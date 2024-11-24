@@ -36,6 +36,10 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    auth: {
+        type: Object,
+        required: true,
+    },
 });
 
 const form = useForm({
@@ -380,7 +384,7 @@ watch(
 <template>
     <Head title="Registration" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :auth="auth" >
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Event Registration

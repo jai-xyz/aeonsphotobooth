@@ -8,6 +8,10 @@ defineProps({
         type: Array,
         required: true,
     },
+    auth: {
+        type: Object,
+        required: true,
+    },
 });
 
 </script>
@@ -17,7 +21,7 @@ defineProps({
 <template>
     <Head title="Events" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :auth="auth">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Events  <AButton :href="route('user.event.create')">Add</AButton> </h2>
         </template>
