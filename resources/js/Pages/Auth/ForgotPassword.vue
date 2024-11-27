@@ -39,10 +39,10 @@ const submit = () => {
             <div
                 class="relative w-full max-w-[300px] xs:max-w-md sm:max-w-md md:max-w-md lg:max-w-md mt-6 p-6 background-blur shadow-sm overflow-hidden rounded-2xl mx-4"
             >
-                <div class="mb-1 text-pink-900 font-bold text-xl">
+                <div class="mb-1 text-pink-900 font-bold text-xl xs:text-2xl">
                     Forgot your password?
                 </div>
-                <div class="mb-3 text-sm text-gray-500 font-thin">
+                <div class="mb-3 text-sm font-light text-gray-500">
                     Just let us know your email address and we will email you a
                     password reset link that will allow you to choose a new one.
                 </div>
@@ -56,7 +56,8 @@ const submit = () => {
 
                 <form @submit.prevent="submit">
                     <div>
-                        <InputLabel for="email" value="Email address" />
+                        <InputLabel value="Email" class="text-pink-800" />
+
                         <div class="relative mb-4">
                             <div
                                 class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
@@ -79,7 +80,7 @@ const submit = () => {
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="ps-10 text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                class="ps-10 text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.email"
                                 required
                                 autofocus
@@ -92,7 +93,7 @@ const submit = () => {
                     </div>
 
                     <PrimaryButton
-                        class="text-xs xs:flex align-center justify-center w-full mt-0"
+                        class="flex align-center justify-center w-full mt-0"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
@@ -101,15 +102,12 @@ const submit = () => {
 
                     <div class="flex items-center justify-center">
                         <div class="text-center mt-3 text-sm text-gray-500">
-                            Or go back to
+                            Or
                             <Link
                                 :href="route('login')"
-                                class="text-pink-800 font-bold hover:underline active:text-pink-400"
+                                class="text-pink-800 hover:underline active:text-pink-400"
                             >
-                                login<span
-                                    class="text-center mt-3 text-sm text-gray-500"
-                                    >.</span
-                                >
+                                go back to login.
                             </Link>
                         </div>
                     </div>

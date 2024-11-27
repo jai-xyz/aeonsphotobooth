@@ -12,7 +12,6 @@ import "../../../css/custom-styles.css";
 
 const form = useForm({
     fullname: "",
-    contactno: "",
     email: "",
     password: "",
     password_confirmation: "",
@@ -43,22 +42,26 @@ const submit = () => {
             <div class="w-full md:w-3/5 flex justify-center items-center">
                 <div class="w-[400px] px-4 overflow-hidden rounded-2xl">
                     <form @submit.prevent="submit" class="mx-6">
-                        <div class="mb-1 text-pink-900 font-bold text-xl">
+                        <div
+                            class="mb-1 text-pink-900 font-bold text-xl xs:text-2xl"
+                        >
                             Create an Account
                         </div>
-                        <div
-                            class="text-xs xs:text-sm mb-2 text-gray-500 font-thin"
-                        >
+                        <div class="mb-3 text-sm font-light text-gray-500">
                             Fun awaits. Join the photo booth party! <br />
                             Capture the moment. Sign up now.
                         </div>
                         <div>
-                            <InputLabel for="fullname" value="Fullname" />
+                            <InputLabel
+                                for="fullname"
+                                value="Fullname"
+                                class="text-pink-800"
+                            />
 
                             <TextInput
                                 id="fullname"
                                 type="text"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.fullname"
                                 required
                                 autofocus
@@ -72,12 +75,16 @@ const submit = () => {
                         </div>
 
                         <div class="mt-3">
-                            <InputLabel for="email" value="Email" />
+                            <InputLabel
+                                for="email"
+                                value="Email"
+                                class="text-pink-800"
+                            />
 
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.email"
                                 required
                                 autocomplete="off"
@@ -88,34 +95,18 @@ const submit = () => {
                                 :message="form.errors.email"
                             />
                         </div>
-
+     
                         <div class="mt-3">
-                            <InputLabel for="contactno" value="Phone Number" />
-
-                            <NumberInput
-                                id="contactno"
-                                type="text"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                                v-model="form.contactno"
-                                required
-                                autocomplete="off"
-                                minlength="11"
-                                maxlength="11"
+                            <InputLabel
+                                for="password"
+                                value="Password"
+                                class="text-pink-800"
                             />
-
-                            <InputError
-                                class="mt-2"
-                                :message="form.errors.contactno"
-                            />
-                        </div>
-
-                        <div class="mt-3">
-                            <InputLabel for="password" value="Password" />
 
                             <TextInput
                                 id="password"
                                 type="password"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.password"
                                 required
                                 autocomplete="off"
@@ -129,6 +120,7 @@ const submit = () => {
 
                         <div class="mt-3">
                             <InputLabel
+                                class="text-pink-800"
                                 for="password_confirmation"
                                 value="Confirm Password"
                             />
@@ -136,7 +128,7 @@ const submit = () => {
                             <TextInput
                                 id="password_confirmation"
                                 type="password"
-                                class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.password_confirmation"
                                 required
                                 autocomplete="off"
@@ -160,7 +152,7 @@ const submit = () => {
                             Already have an account?
                             <Link
                                 :href="route('login')"
-                                class="text-pink-800 font-bold hover:underline active:text-pink-400"
+                                class="text-pink-800 hover:underline active:text-pink-400"
                             >
                                 Login here
                             </Link>

@@ -20,10 +20,10 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-    // USER ROUTES
+// USER ROUTES
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', UserMiddleware::class])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', UserMiddleware::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('user.profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('user.profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('user.profile.destroy');
@@ -34,11 +34,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/event/registration', [UserRegistrationController::class, 'store'])->name('user.event.store');
 
     Route::get('/packages', [UserPackageController::class, 'index'])->name('user.package.index');
-    
 });
 
 
-    // ADMIN ROUTES
+// ADMIN ROUTES
 Route::get('/admin', function () {
     return Inertia::render('Admin/Dashboard');
 })->middleware(['auth', 'verified', AdminMiddleware::class])->name('admin.dashboard');
@@ -70,9 +69,8 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
     // EVENTS ROUTES
     Route::get('/admin/events', [RegistrationController::class, 'index'])->name('event.index');
     Route::patch('/admin/events/{event}', [RegistrationController::class, 'update'])->name('event.update');
-
 });
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

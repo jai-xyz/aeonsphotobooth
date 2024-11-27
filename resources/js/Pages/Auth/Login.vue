@@ -47,7 +47,7 @@ const submit = () => {
                 alt=""
             />
             <div
-                class="relative w-[325px] mt-6 px-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-4"
+                class="relative w-[350px] mt-6 px-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-4"
             >
                 <div
                     v-if="status"
@@ -68,7 +68,7 @@ const submit = () => {
                     </div>
 
                     <div
-                        class="flex align-center justify-center mb-2 text-pink-900 font-bold text-xl"
+                        class="flex align-center justify-center mb-4 text-pink-900 font-bold text-xl"
                     >
                         Login
                     </div>
@@ -82,7 +82,7 @@ const submit = () => {
                         <TextInput
                             id="email"
                             type="email"
-                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                            class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                             v-model="form.email"
                             required
                             autocomplete="username"
@@ -101,7 +101,7 @@ const submit = () => {
                         <TextInput
                             id="password"
                             type="password"
-                            class="text-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                            class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                             v-model="form.password"
                             required
                             autocomplete="current-password"
@@ -113,13 +113,15 @@ const submit = () => {
                         />
                     </div>
 
-                    <div class="flex items-center justify-between mt-2">
+                    <div
+                        class="block xs:flex items-center justify-between mt-2"
+                    >
                         <label class="flex items-center">
                             <Checkbox
                                 name="remember"
                                 v-model:checked="form.remember"
                             />
-                            <span class="ms-1 mt-1 text-xs text-gray-600"
+                            <span class="ms-1 mt-1 text-sm text-gray-600"
                                 >Remember me</span
                             >
                         </label>
@@ -127,7 +129,7 @@ const submit = () => {
                         <Link
                             v-if="canResetPassword"
                             :href="route('password.request')"
-                            class="text-xs mt-1 text-pink-800 font-bold hover:underline active:text-pink-400"
+                            class="text-sm mt-1 mb-3 text-pink-800 hover:underline active:text-pink-400 float-right xs:mb-0"
                         >
                             Forgot Password?
                         </Link>
@@ -162,17 +164,17 @@ const submit = () => {
                     >
                         <img
                             src="/images/google_icon_logo.svg"
-                            alt=""
+                            alt="google-icon"
                             width="20px"
                         />
-                        <span class="text-xs ms-2">Continue with Google</span>
+                        <span class="text-xs ms-2 ">Continue with Google</span>
                     </SecondaryButton>
 
-                    <div class="text-center mt-3 text-xs text-gray-500">
+                    <div class="text-center mt-3 text-sm text-gray-500">
                         Don't have an account?
                         <Link
                             :href="route('register')"
-                            class="text-pink-800 font-bold hover:underline active:text-pink-400"
+                            class="text-pink-800 hover:underline active:text-pink-400"
                         >
                             Register for free
                         </Link>

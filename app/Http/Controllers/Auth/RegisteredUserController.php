@@ -32,7 +32,6 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'fullname' => 'required|string|max:255',    
-            'contactno' => 'required|string|min:11',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -40,7 +39,6 @@ class RegisteredUserController extends Controller
 
         $user = User::create([
             'fullname' => $request->fullname,
-            'contactno' => $request->contactno,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
@@ -49,6 +47,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('verification.notice', absolute: false));
     }
 }

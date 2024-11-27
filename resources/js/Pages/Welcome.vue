@@ -8,7 +8,7 @@
 // import { Link } from "@inertiajs/vue3";
 // import AButton from "@/Components/AButton.vue";
 // import AButtonSecondary from "@/Components/AButtonSecondary.vue";
-
+import { Head } from "@inertiajs/vue3";
 
 // const showingNavigationDropdown = ref(false);
 import UserNavbar from "@/Components/UserNavbar.vue";
@@ -25,9 +25,12 @@ function handleImageError() {
     document.getElementById("docs-card-content")?.classList.add("!flex-row");
     document.getElementById("background")?.classList.add("!hidden");
 }
+
+console.log(props.auth);
 </script>
 
 <template>
+    <Head title="Welcome" />
     <!-- <div class="flex lg:justify-center lg:col-start-2">
                         <svg
                             class="h-12 w-auto text-white lg:h-16 lg:text-[#FF2D20]"
