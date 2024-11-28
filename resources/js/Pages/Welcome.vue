@@ -77,9 +77,9 @@ console.log(props.auth);
             <!-- BANNER -->
             <div class="">
                 <img
-                    src="/images/trailbanner.png"
+                    src="/images/bannerbg.png"
                     alt="banner image"
-                    class="inset-0 w-full object-fill"
+                   
                 />
             </div>
         </div>
