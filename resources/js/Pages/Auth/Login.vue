@@ -7,9 +7,9 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import loginBg from "/public/images/loginbg.png";
 import "../../../css/custom-styles.css";
 import { onMounted } from "vue";
+import Toast from "@/Components/Toast.vue";
 
 defineProps({
     canResetPassword: {
@@ -37,32 +37,28 @@ const submit = () => {
     <GuestLayout>
         <Head title="Log in" />
 
+        <Toast v-if="status">
+            {{ status }}
+        </Toast>
         <div
-            class="relative min-h-screen flex flex-col justify-center items-center pt-6 sm:pt-0"
+            class="relative min-h-screen flex flex-col justify-center items-center "
         >
             <img
                 id="background"
                 class="absolute inset-0 w-full h-full object-cover"
-                :src="loginBg"
+                src="images/backgroundbg.png"
                 alt=""
             />
             <div
-                class="relative w-[350px] mt-6 px-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[300px] xxs-xs:px-4"
+                class="relative w-[410px] px-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[310px] xxs-xs:px-4"
             >
-                <div
-                    v-if="status"
-                    class="mb-4 font-medium text-sm text-green-600"
-                >
-                    {{ status }}
-                </div>
-
-                <form @submit.prevent="submit" class="m-6">
+                <form @submit.prevent="submit" class="m-6 pb-6 max-w-[250px] xs:max-w-[285px] mx-auto">
                     <div class="flex align-center justify-center">
                         <img
                             id="logo"
-                            src=""
+                            src="/images/logo.png"
                             alt="Logo"
-                            width="50px"
+                            width="225px"
                             class=""
                         />
                     </div>
@@ -167,7 +163,7 @@ const submit = () => {
                             alt="google-icon"
                             width="20px"
                         />
-                        <span class="text-xs ms-2 ">Continue with Google</span>
+                        <span class="text-xs ms-2">Continue with Google</span>
                     </SecondaryButton>
 
                     <div class="text-center mt-3 text-sm text-gray-500">

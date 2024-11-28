@@ -6,7 +6,6 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import loginBg from "/public/images/loginbg.png";
 import "../../../css/custom-styles.css";
 
 defineProps({
@@ -28,21 +27,21 @@ const submit = () => {
     <GuestLayout>
         <Head title="Forgot Password" />
         <div
-            class="relative min-h-screen flex flex-col justify-center items-center pt-6"
+            class="relative min-h-screen flex flex-col justify-center items-center"
         >
             <img
                 id="background"
                 class="absolute inset-0 w-full h-full object-cover"
-                :src="loginBg"
+                src="images/backgroundbg.png"
                 alt=""
             />
             <div
-                class="relative w-full max-w-[300px] xs:max-w-md sm:max-w-md md:max-w-md lg:max-w-md mt-6 p-6 background-blur shadow-sm overflow-hidden rounded-2xl mx-4"
+                class="relative w-full max-w-[500px] xs-sm:max-w-[400px] xxs-xs:max-w-[310px] py-4 px-6 xxs:py-8 xs:px-12 background-blur shadow-sm overflow-hidden rounded-2xl"
             >
                 <div class="mb-1 text-pink-900 font-bold text-xl xs:text-2xl">
                     Forgot your password?
                 </div>
-                <div class="mb-3 text-sm font-light text-gray-500">
+                <div class="mb-3 text-sm text-gray-500">
                     Just let us know your email address and we will email you a
                     password reset link that will allow you to choose a new one.
                 </div>
@@ -58,7 +57,7 @@ const submit = () => {
                     <div>
                         <InputLabel value="Email" class="text-pink-800" />
 
-                        <div class="relative mb-4">
+                        <div class="relative mb-2">
                             <div
                                 class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
                             >
@@ -89,7 +88,7 @@ const submit = () => {
                             />
                         </div>
 
-                        <InputError class="mt-2" :message="form.errors.email" />
+                        <InputError class="my-2" :message="form.errors.email" />
                     </div>
 
                     <PrimaryButton

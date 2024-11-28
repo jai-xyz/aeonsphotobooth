@@ -6,8 +6,6 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import NumberInput from "@/Components/NumberInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import loginBg from "/public/images/loginbg.png";
-import trialBg from "/public/images/trial.png";
 import "../../../css/custom-styles.css";
 
 const form = useForm({
@@ -35,7 +33,7 @@ const submit = () => {
                 <img
                     id="background"
                     class="absolute inset-0 w-full h-full object-cover"
-                    :src="trialBg"
+                    src="/images/tryregisterbg.png"
                     alt=""
                 />
             </div>
@@ -47,7 +45,7 @@ const submit = () => {
                         >
                             Create an Account
                         </div>
-                        <div class="mb-3 text-sm font-light text-gray-500">
+                        <div class="mb-3 text-sm text-gray-500">
                             Fun awaits. Join the photo booth party! <br />
                             Capture the moment. Sign up now.
                         </div>
@@ -95,7 +93,7 @@ const submit = () => {
                                 :message="form.errors.email"
                             />
                         </div>
-     
+
                         <div class="mt-3">
                             <InputLabel
                                 for="password"
