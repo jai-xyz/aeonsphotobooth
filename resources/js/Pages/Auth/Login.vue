@@ -41,7 +41,7 @@ const submit = () => {
             {{ status }}
         </Toast>
         <div
-            class="relative min-h-screen flex flex-col justify-center items-center "
+            class="relative min-h-screen flex flex-col justify-center items-center"
         >
             <img
                 id="background"
@@ -50,9 +50,12 @@ const submit = () => {
                 alt=""
             />
             <div
-                class="relative w-[410px] px-6 background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[310px] xxs-xs:px-4"
+                class="relative w-[410px] background-blur shadow-sm overflow-hidden rounded-2xl xxs-xs:w-[310px]"
             >
-                <form @submit.prevent="submit" class="m-6 pb-6 max-w-[250px] xs:max-w-[285px] mx-auto">
+                <form
+                    @submit.prevent="submit"
+                    class="m-6 max-w-[250px] xs:max-w-[285px] mx-auto"
+                >
                     <div class="flex align-center justify-center">
                         <img
                             id="logo"

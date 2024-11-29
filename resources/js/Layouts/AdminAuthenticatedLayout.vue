@@ -8,6 +8,7 @@ import AdminNavLink from "@/Components/AdminNavLink.vue";
 import AdminDropdown from "@/Components/AdminDropdown.vue";
 import { Link } from "@inertiajs/vue3";
 import AdminDropdownLink from "@/Components/AdminDropdownLink.vue";
+import { Head } from '@inertiajs/vue3';
 
 const isSidebarVisible = ref(false);
 const showingNavigationDropdown = ref(false);
@@ -86,6 +87,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+ <Head>
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    </Head>
     <div class="min-h-screen bg-gray-100">
         <div :class="['flex flex-col flex-1 transition-all duration-300']">
             <nav

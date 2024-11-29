@@ -28,16 +28,16 @@ const submit = () => {
 
         <div class="flex min-h-screen">
             <div
-                class="hidden md:flex w-4/5 justify-center items-center relative"
+                class="relative hidden lg:flex w-4/5 justify-center items-center bg-[#f9e1ea]"
             >
                 <img
                     id="background"
-                    class="absolute inset-0 w-full h-full object-cover"
-                    src="/images/tryregisterbg.png"
+                    class="absolute inset-0 w-full h-full object-contain"
+                    src="/images/registerbg.png"
                     alt=""
                 />
             </div>
-            <div class="w-full md:w-3/5 flex justify-center items-center">
+            <div class="w-full lg:w-3/5 flex justify-center items-center">
                 <div class="w-[400px] px-4 overflow-hidden rounded-2xl">
                     <form @submit.prevent="submit" class="mx-6">
                         <div
