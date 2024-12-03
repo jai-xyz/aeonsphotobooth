@@ -35,7 +35,7 @@ const props = defineProps({
 
                         <!-- Navigation Links -->
                         <div
-                            class="hidden sm:flex flex-1 justify-center space-x-8"
+                            class="hidden md:flex flex-1 justify-center space-x-8"
                         >
                             <NavLink
                                 :href="route('home')"
@@ -64,7 +64,7 @@ const props = defineProps({
                         </div>
 
                         <!-- Navigation Buttons -->
-                        <div class="hidden sm:flex align-center m-auto">
+                        <div class="hidden md:flex align-center m-auto">
                             <template v-if="auth.user">
                                            <div class="me-2">
                                 <AButton :href="route('user.profile.edit')">
@@ -99,7 +99,7 @@ const props = defineProps({
                         </div>
 
                         <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
+                        <div class="-me-2 flex items-center md:hidden">
                             <button
                                 @click="
                                     showingNavigationDropdown =
@@ -147,7 +147,7 @@ const props = defineProps({
                         block: showingNavigationDropdown,
                         hidden: !showingNavigationDropdown,
                     }"
-                    class="sm:hidden"
+                    class="md:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink

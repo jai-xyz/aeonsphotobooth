@@ -2,6 +2,9 @@
 
 <template>
  <div>
-    <img src="" alt="Logo" />
+    <img 
+    src="/images/logo.png"
+    width="150px"
+    alt="Logo" />
   </div>
 </template>
