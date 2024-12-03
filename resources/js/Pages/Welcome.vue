@@ -26,11 +26,13 @@ function handleImageError() {
     document.getElementById("background")?.classList.add("!hidden");
 }
 
-console.log(props.auth);
 </script>
 
 <template>
     <Head title="Welcome" />
+    <Head>
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    </Head>
     <!-- <div class="flex lg:justify-center lg:col-start-2">
                         <svg
                             class="h-12 w-auto text-white lg:h-16 lg:text-[#FF2D20]"
