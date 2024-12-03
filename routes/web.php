@@ -36,7 +36,6 @@ Route::middleware('auth', UserMiddleware::class)->group(function () {
     Route::get('/packages', [UserPackageController::class, 'index'])->name('user.package.index');
 });
 
-
 // ADMIN ROUTES
 Route::get('/admin', function () {
     return Inertia::render('Admin/Dashboard');

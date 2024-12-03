@@ -6,6 +6,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
+import AButtonSecondary from "@/Components/AButtonSecondary.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import "../../../css/custom-styles.css";
 import { onMounted } from "vue";
@@ -30,6 +31,10 @@ const submit = () => {
     form.post(route("login"), {
         onFinish: () => form.reset("password"),
     });
+};
+
+const signInWithGoogle = () => {
+    window.location.href = route('google.auth');
 };
 </script>
 
@@ -160,13 +165,14 @@ const submit = () => {
                         class="mt-3 w-full flex align-center justify-center px-0"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
+                        @click="signInWithGoogle"
                     >
                         <img
                             src="/images/google_icon_logo.svg"
                             alt="google-icon"
                             width="20px"
                         />
-                        <span class="text-xs ms-2">Continue with Google</span>
+                        <span class="text-sm ms-2">Continue with Google</span>
                     </SecondaryButton>
 
                     <div class="text-center mt-3 text-sm text-gray-500">

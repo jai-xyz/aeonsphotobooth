@@ -3,6 +3,7 @@ import GuestLayout from "@/Layouts/GuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import NumberInput from "@/Components/NumberInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
@@ -19,6 +20,10 @@ const submit = () => {
     form.post(route("register"), {
         onFinish: () => form.reset("password", "password_confirmation"),
     });
+};
+
+const signInWithGoogle = () => {
+    window.location.href = route('google.auth');
 };
 </script>
 
@@ -145,6 +150,35 @@ const submit = () => {
                         >
                             Register
                         </PrimaryButton>
+                        
+                          <div
+                        class="flex items-center justify-center mt-4 text-xs text-gray-400"
+                    >
+                        <div class="flex items-center w-full">
+                            <div
+                                class="flex-grow border-t border-gray-300"
+                            ></div>
+                            <span class="mx-2">OR</span>
+                            <div
+                                class="flex-grow border-t border-gray-300"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <SecondaryButton
+                        class="mt-3 w-full flex align-center justify-center px-0"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                        @click="signInWithGoogle"
+                    >
+                        <img
+                            src="/images/google_icon_logo.svg"
+                            alt="google-icon"
+                            width="20px"
+                        />
+                        <span class="text-sm ms-2">Continue with Google</span>
+                    </SecondaryButton>
+
 
                         <div class="text-center mt-3 text-sm text-gray-500">
                             Already have an account?
