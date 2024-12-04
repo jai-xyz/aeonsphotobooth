@@ -37,7 +37,13 @@ class GoogleAuthController extends Controller
         } else {
             Auth::login($user);
 
-            return redirect()->intended('/');
+            $usertype = Auth::user()->usertype;
+
+            if($usertype == 'admin'){
+                return redirect()->intended('/admin');
+            } else if ($usertype == 'user'){
+                return redirect()->intended('/');
+            }
         }
 
        } catch (\Throwable $th) {
