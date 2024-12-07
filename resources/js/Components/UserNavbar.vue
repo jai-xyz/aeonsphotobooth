@@ -34,7 +34,7 @@ const props = defineProps({
 
                 <!-- Navigation Links -->
                 <div
-                    class="hidden lg:flex flex-1 ps-4 justify-left space-x-2 m-auto align-center lg:space-x-4"
+                    class="hidden lg:flex flex-1 ps-4 space-x-2 m-auto align-center lg:space-x-4"
                 >
                     <NavLink
                         :href="route('home')"
@@ -60,11 +60,9 @@ const props = defineProps({
                     >
                         Contact Us
                     </NavLink>
-                </div>
+                </div>  
 
-                <!-- Navigation Buttons -->
-                <div class="hidden lg:flex align-center m-auto">
-                    <template v-if="auth.user">
+                <div v-if="auth.user" class="hidden sm:flex align-center ms-auto">
                         <div class="flex align-center m-auto">
                             <Link
                                 :href="route('user.event.create')"
@@ -86,7 +84,7 @@ const props = defineProps({
                             </Link>
                         </div>
                         <div
-                            class="border-l border-gray-300 mx-2 my-auto h-8"
+                            class="border-l border-gray-300 mx-2 my-auto h-7"
                         ></div>
 
                         <div class="me-2 flex align-center m-auto">
@@ -94,15 +92,11 @@ const props = defineProps({
                                 Booked Events
                             </AButton>
                         </div>
+                </div>
 
-                        <!--  <AButtonSecondary
-                            :href="route('logout')"
-                            method="post"
-                            as="button"
-                            class="text-gray-800 bg-white"
-                        >
-                            Log Out
-                        </AButtonSecondary> -->
+                <!-- Navigation Buttons -->
+                <div class="hidden lg:flex align-center m-auto">
+                    <template v-if="auth.user">
                         <Dropdown align="right" width="56">
                             <template #trigger>
                                 <span class="inline-flex rounded-md">
@@ -258,16 +252,31 @@ const props = defineProps({
                 >
                     Contact Us
                 </ResponsiveNavLink>
+
+                 <ResponsiveNavLink
+                    :href="route('user.event.create')"
+                    :active="route().current('user.event.create')"
+                >
+                    Book Now
+                </ResponsiveNavLink>
+
+                 <ResponsiveNavLink
+                    :href="route('user.event.index')"
+                    :active="route().current('user.event.index')"
+                >
+                    Booked Events
+                </ResponsiveNavLink>
             </div>
 
             <!-- Responsive Settings Options -->
-            <div class="pb-1 border-t border-gray-200">
+
+            <div v-if="auth.user" class="pb-1 border-t border-gray-200">
                 <div class="pt-2 px-4">
                     <div class="font-medium text-base text-gray-800">
-                        {{ $page.props.auth.user.fullname }}
+                        {{ auth ? $props.auth.user.fullname : auth }}
                     </div>
                     <div class="font-medium text-sm text-gray-500">
-                        {{ $page.props.auth.user.email }}
+                        {{ auth ? $props.auth.user.email : auth }}
                     </div>
                 </div>
 
@@ -284,6 +293,24 @@ const props = defineProps({
                         as="button"
                     >
                         Log Out
+                    </ResponsiveNavLink>
+                </div>
+            </div>
+
+            <div v-else class="pb-1 border-t border-gray-200">
+                <div class="mt-3 space-y-1">
+                    <ResponsiveNavLink
+                        :href="route('register')"
+                        :active="route().current('register')"
+                    >
+                        Register
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink
+                        :href="route('login')"
+                        method="get"
+                        as="button"
+                    >
+                        Login
                     </ResponsiveNavLink>
                 </div>
             </div>
