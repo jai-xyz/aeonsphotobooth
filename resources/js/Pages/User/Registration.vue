@@ -44,9 +44,13 @@ const props = defineProps({
 
 const form = useForm({
     event: "",
-    address: "",
     contactperson: "",
     contactno: "",
+    region_id: "",
+    province_id: "",
+    city_id: "",
+    barangay_id: "",
+    street: "",
     date: "",
     hour: "",
     minute: "",
@@ -60,6 +64,7 @@ const form = useForm({
     user_id: userId,
 });
 
+
 const packageSizes = computed(() => {
     return [
         props.pkg.size,
@@ -69,6 +74,102 @@ const packageSizes = computed(() => {
         props.pkg.size5,
     ].filter((size) => size);
 });
+
+/* #############################
+    DEPENDED DROPDOWN FOR ADDRESS
+   ############################# */
+
+const regions = ref([]);
+const provinces = ref([]);
+const cities = ref([]);
+const barangays = ref([]);
+
+const fetchRegions = async () => {
+    try {
+        const response = await axios.get("/api/address/regions");
+        regions.value = response.data;
+        // console.log("Regions:", regions.value);
+    } catch (error) {
+        console.error("Error fetching regions:", error);
+    }
+};
+
+const fetchProvinces = async () => {
+    if (form.region_id) {
+        // console.log('Fetching provinces for region:', form.region);
+        const selectedRegion = regions.value.find(region => region.id === form.region_id);
+        // console.log('Selected region:', selectedRegion);
+        if (selectedRegion) {
+            const regionId = selectedRegion.region_id;
+            try {
+                const response = await axios.get(`/api/address/provinces/${regionId}`);
+                const data = response.data;
+                provinces.value = data;
+                // console.log('Provinces:', provinces.value);
+            } catch (error) {
+                console.error('Error fetching provinces:', error);
+            }
+        } else {
+            console.log('Selected region not found');
+        }
+    } else {
+        console.log('No region selected');
+    }
+};
+
+const fetchCities = async () => {
+    if (form.province_id) {
+        // console.log('Fetching cities for province:', form.province);
+        const selectedProvince = provinces.value.find(province => province.id === form.province_id);
+        // console.log('Selected province:', selectedProvince);
+        if (selectedProvince) {
+            const provinceId = selectedProvince.province_id;
+            try {
+                const response = await axios.get(`/api/address/cities/${provinceId}`);
+                const data = response.data;
+                cities.value = data;
+                // console.log('Cities:', cities.value);
+            } catch (error) {
+                console.error('Error fetching cities:', error);
+            }
+        } else {
+            console.log('Selected province not found');
+        }
+    } else {
+        console.log('No province selected');
+    }
+};
+
+
+const fetchBarangays = async () => {
+    if (form.city_id) {
+        // console.log('Fetching barangays for cities:', form.city);
+        const selectedCity = cities.value.find(city => city.id === form.city_id);
+        // console.log('Selected city:', selectedCity);
+        if (selectedCity) {
+            const cityId = selectedCity.city_id;
+            try {
+                const response = await axios.get(`/api/address/barangays/${cityId}`);
+                const data = response.data;
+                barangays.value = data;
+                // console.log('Barangay:', barangays.value);
+            } catch (error) {
+                console.error('Error fetching barangays:', error);
+            }
+        } else {
+            console.log('Selected cities not found');
+        }
+    } else {
+        console.log('No city selected');
+    }
+};
+
+
+onMounted(fetchRegions);
+
+watch(() => form.region_id, fetchProvinces);
+watch(() => form.province_id, fetchCities);
+watch(() => form.city_id, fetchBarangays);
 
 const submit = () => {
     if (validateStep()) {
@@ -108,7 +209,9 @@ const minutes = computed(() => {
 
 const ampmOptions = ref(["AM", "PM"]);
 
-// VUECAL CODES and BACKDROP
+/* #############################
+     VUECAL CODES and BACKDROP
+   ############################# */
 
 // MIN DATES FOR INPUT DATE
 const minInputDate = computed(() => {
@@ -238,7 +341,9 @@ const isDateTimeTaken = (date, hour, minute, ampm) => {
     });
 };
 
-// DEPENDENT DROPDOWN FOR BACKDROP TYPES AND COLORS
+/* #############################
+DEPENDENT DROPDOWN FOR BACKDROP TYPES AND COLORS
+   ############################# */
 const filterBackdropColors = (backdropType) => {
     return props.backdropColors.filter(
         (color) => color.backdroptype_name === backdropType
@@ -253,7 +358,9 @@ const isBackdropColorDisabled = computed(() => {
     return !form.backdroptype;
 });
 
-// STEPPER
+/* #############################
+            STEPPER
+   ############################# */
 const nextStep = () => {
     if (validateStep()) {
         activeStep.value++;
@@ -384,7 +491,7 @@ watch(
 <template>
     <Head title="Registration" />
 
-    <AuthenticatedLayout :auth="auth" >
+    <AuthenticatedLayout :auth="auth">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Event Registration
@@ -422,25 +529,6 @@ watch(
                                     <InputError
                                         class="mt-2"
                                         :message="form.errors.event"
-                                    />
-                                </div>
-
-                                <div>
-                                    <InputLabel
-                                        for="address"
-                                        value="Event Location"
-                                    />
-                                    <TextInput
-                                        id="address"
-                                        type="text"
-                                        class="mt-1 block w-full"
-                                        v-model="form.address"
-                                        required
-                                        autocomplete="address"
-                                    />
-                                    <InputError
-                                        class="mt-2"
-                                        :message="form.errors.address"
                                     />
                                 </div>
 
@@ -574,6 +662,125 @@ watch(
                                             :message="form.errors.ampm"
                                         />
                                     </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4"
+                            >
+                                <div>
+                                    <InputLabel for="region" value="Region" />
+                                    <select
+                                        v-model="form.region_id"
+                                        @change="fetchProvinces"
+                                        class="mt-1 block w-full"
+                                    >
+                                        <option disabled value="">
+                                            Select Region
+                                        </option>
+                                        <option
+                                            v-for="region in regions"
+                                            :key="region.id"
+                                            :value="region.id"
+                                        >
+                                            {{ region.name }}
+                                        </option>
+                                    </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.region_id"
+                                    />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="province"
+                                        value="Province"
+                                    />
+                                    <select
+                                        v-model="form.province_id"
+                                        @change="fetchCities"
+                                        class="mt-1 block w-full"
+                                    >
+                                        <option disabled value="">
+                                            Select Province
+                                        </option>
+                                        <option
+                                            v-for="province in provinces"
+                                            :key="province.id"
+                                            :value="province.id"
+                                        >
+                                            {{ province.name }}
+                                        </option>
+                                    </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.province_id"
+                                    />
+                                </div>
+
+                                <div>
+                                    <InputLabel for="city" value="City" />
+                                    <select
+                                        v-model="form.city_id"
+                                        @change="fetchBarangays"
+                                        class="mt-1 block w-full"
+                                    >
+                                        <option disabled value="">
+                                            Select City
+                                        </option>
+                                        <option
+                                            v-for="city in cities"
+                                            :key="city.id"
+                                            :value="city.id"
+                                        >
+                                            {{ city.name }}
+                                        </option>
+                                    </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.city_id"
+                                    />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="barangay"
+                                        value="Barangay"
+                                    />
+                                    <select
+                                        v-model="form.barangay_id"
+                                        class="mt-1 block w-full"
+                                    >
+                                        <option disabled value="">
+                                            Select Barangay
+                                        </option>
+                                        <option
+                                            v-for="barangay in barangays"
+                                            :key="barangay.id"
+                                            :value="barangay.id"
+                                        >
+                                            {{ barangay.name }}
+                                        </option>
+                                    </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.barangay_id"
+                                    />
+                                </div>
+
+                                <div>
+                                    <InputLabel for="street" value="Street" />
+                                    <TextInput
+                                        id="street"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="form.street"
+                                    />
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.street"
+                                    />
                                 </div>
                             </div>
 

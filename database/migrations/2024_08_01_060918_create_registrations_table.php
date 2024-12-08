@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->string('event');
-            $table->string('address');
+            $table->address();
             $table->string('contactperson');
             $table->string('contactno');
             $table->date('date');

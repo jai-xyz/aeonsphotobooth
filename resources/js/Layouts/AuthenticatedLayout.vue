@@ -1,12 +1,14 @@
 <script setup>
 import UserNavbar from "@/Components/UserNavbar.vue";
 import { Head } from '@inertiajs/vue3';
+import { onMounted } from 'vue';
 
 const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     auth: Object,
 });
+
 </script>
 
 <template>

@@ -54,7 +54,7 @@ defineProps({
                                         <td>{{ event.event }}</td>
                                         <td>{{ event.date }}</td>
                                         <td>{{ event.time }}</td>
-                                        <td>{{ event.address }}</td>
+                                        <td>{{ event.street }}, {{ event.barangay_name }}, {{ event.city_name }}, {{ event.province_name }}</td>
                                         <td>{{ event.packagename }}</td>
                                         <td>{{ event.packagesize }}</td>
                                         <td>{{ event.backdroptype }}</td>

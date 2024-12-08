@@ -20,8 +20,22 @@ class UserRegistrationController extends Controller
 {  
         $userId = Auth::id();
 
-        $events = DB::table('registrations')->where('user_id', $userId)->orderBy('created_at', 'desc')->get();
+        $events = DB::table('registrations')
+        ->join('barangays', 'registrations.barangay_id', '=', 'barangays.id')
+        ->join('cities', 'registrations.city_id', '=', 'cities.id')
+        ->join('provinces', 'registrations.province_id', '=', 'provinces.id')
+        ->join('regions', 'registrations.region_id', '=', 'regions.id') 
+        ->where('registrations.user_id', $userId)
+        ->orderBy('registrations.created_at', 'desc')
+        ->select('registrations.*', 
+        'barangays.name as barangay_name', 
+        'cities.name as city_name', 
+        'provinces.name as province_name',
+        'regions.name as region_name'
+        )
+        ->get();
 
+        
         $events = $events->map(function ($event){
             $event->user = DB::table('users')->where('id', $event->user_id)->first();   
             $event->date = (new DateTime($event->date))->format('m-d-Y');
@@ -69,7 +83,11 @@ class UserRegistrationController extends Controller
 
          $request->validate([
             'event' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
+            'street' => 'required|string|max:255',
+            'barangay_id' => 'required|max:255',
+            'city_id' => 'required|max:255',
+            'province_id' => 'required|max:255',
+            'region_id' => 'required|max:255',
             'contactperson' => 'required|string|max:255',
             'contactno' => 'required|string|max:100',
             'date' => 'required|date_format:Y-m-d|after_or_equal:today',
@@ -104,6 +122,7 @@ class UserRegistrationController extends Controller
         // $minute = 7;
         $time = sprintf('%02d:%02d', $hour, $minute);
         // Output: 05:07
+        
 
         $userId = Auth::id();
 
@@ -111,7 +130,11 @@ class UserRegistrationController extends Controller
         Registration::create([
             'user_id' => $userId,
             'event' => $request->event,
-            'address' => $request->address,
+            'street' => $request->street,
+            'barangay_id' => $request->barangay_id,
+            'city_id' => $request->city_id,
+            'province_id' => $request->province_id,
+            'region_id' => $request->region_id,
             'contactperson' => $request->contactperson,
             'contactno' => $request->contactno,
             'date' => $request->date,
