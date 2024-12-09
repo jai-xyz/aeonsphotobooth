@@ -42,7 +42,7 @@ const signInWithGoogle = () => {
                     alt=""
                 />
             </div>
-            <div class="w-full lg:w-3/5 flex justify-center items-center">
+            <div class="bg-gray-50 w-full lg:w-3/5 flex justify-center items-center">
                 <div class="w-[400px] px-4 overflow-hidden rounded-2xl">
                     <form @submit.prevent="submit" class="mx-6">
                         <div
@@ -64,7 +64,7 @@ const signInWithGoogle = () => {
                             <TextInput
                                 id="fullname"
                                 type="text"
-                                class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                class="text-sm  border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.fullname"
                                 required
                                 autofocus
@@ -87,7 +87,7 @@ const signInWithGoogle = () => {
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                class="text-sm  border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.email"
                                 required
                                 autocomplete="off"
@@ -109,7 +109,7 @@ const signInWithGoogle = () => {
                             <TextInput
                                 id="password"
                                 type="password"
-                                class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                class="text-sm  border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.password"
                                 required
                                 autocomplete="off"
@@ -131,7 +131,7 @@ const signInWithGoogle = () => {
                             <TextInput
                                 id="password_confirmation"
                                 type="password"
-                                class="text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                class="text-sm  border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                 v-model="form.password_confirmation"
                                 required
                                 autocomplete="off"
