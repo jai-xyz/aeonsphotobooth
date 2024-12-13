@@ -18,7 +18,7 @@ Route::get('/', function () {
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
     ]);
-})->name('home');
+})->middleware(['auth', UserMiddleware::class])->name('home');
 
 // USER ROUTES
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', UserMiddleware::class])->name('dashboard');

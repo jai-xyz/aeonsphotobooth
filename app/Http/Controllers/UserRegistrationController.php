@@ -90,6 +90,7 @@ class UserRegistrationController extends Controller
             'region_id' => 'required|max:255',
             'contactperson' => 'required|string|max:255',
             'contactno' => 'required|string|max:100',
+            'email' => 'required|email|max:255',
             'date' => 'required|date_format:Y-m-d|after_or_equal:today',
             'hour' => 'required|string',
             'minute' => 'required|string',
@@ -99,6 +100,7 @@ class UserRegistrationController extends Controller
             'packagesize' => 'required|string|max:255',
             'backdroptype' => 'required|string|max:255',
             'backdropcolor' => 'required|string|max:255',
+            'theme' => 'required|string|max:255',
             'suggestion' => 'required|string|max:255',
         ],
         [
@@ -137,6 +139,7 @@ class UserRegistrationController extends Controller
             'region_id' => $request->region_id,
             'contactperson' => $request->contactperson,
             'contactno' => $request->contactno,
+            'email' => $request->email,
             'date' => $request->date,
             'time' => $time,
             'packageid' => $request->packageid,
@@ -144,6 +147,7 @@ class UserRegistrationController extends Controller
             'packagesize' => $request->packagesize,
             'backdroptype' => $request->backdroptype,
             'backdropcolor' => $request->backdropcolor,
+            'theme' => $request->theme,
             'suggestion' => $request->suggestion,
         ]);
 

@@ -25,7 +25,7 @@ class AdminMiddleware
             if ($user->usertype === 'admin') {
                 return $next($request);
             } else {
-                return redirect('/dashboard');
+                return redirect('/');
             }
         } else {
             return redirect('/login');

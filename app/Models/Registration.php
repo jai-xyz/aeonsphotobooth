@@ -23,6 +23,7 @@ class Registration extends Model
         'region_id',
         'contactperson',
         'contactno',
+        'email',
         'date',
         'time',
         'packageid',
@@ -30,6 +31,7 @@ class Registration extends Model
         'packagesize',
         'backdroptype',
         'backdropcolor',
+        'theme',
         'suggestion',
     ];
 }

@@ -80,9 +80,11 @@ watch(
 
 const addForm = useForm({
     name: "",
+    alias: "",
     price: "",
     duration: "",
     size: "",
+    number_of_shots: "",
     inclusion: "",
     note: "",
     extension: "",
@@ -92,9 +94,11 @@ const addingNewProduct = ref(false);
 
 const addNewProduct = (pkg) => {
     addForm.name = pkg.name;
+    addForm.alias = pkg.alias;
     addForm.price = pkg.price;
     addForm.duration = pkg.duration;
     addForm.size = pkg.size;
+    addForm.number_of_shots = pkg.number_of_shots;
     addForm.inclusion = pkg.inclusion;
     addForm.note = pkg.note;
     addForm.extension = pkg.extension;
@@ -125,9 +129,11 @@ const currentPackage = ref(null);
 const editForm = useForm({
     id: null,
     name: "",
+    alias: "",
     price: "",
     duration: "",
     size: "",
+    number_of_shots: "",
     inclusion: "",
     note: "",
     extension: "",
@@ -137,11 +143,13 @@ const openEditModal = (pkg) => {
     currentPackage.value = pkg;
     editForm.id = pkg.id;
     editForm.name = pkg.name;
+    editForm.alias = pkg.alias;
     editForm.price = pkg.price;
     editForm.duration = pkg.duration;
     editForm.size = [pkg.size, pkg.size2, pkg.size3, pkg.size4, pkg.size5]
         .filter((size) => size)
         .join(", ");
+    editForm.number_of_shots = pkg.number_of_shots;
     editForm.inclusion = pkg.inclusion;
     editForm.note = pkg.note;
     editForm.extension = pkg.extension;
@@ -149,11 +157,13 @@ const openEditModal = (pkg) => {
     // for checking if there are changes
     editForm.OrigId = pkg.id;
     editForm.OrigName = pkg.name;
+    editForm.OrigAlias = pkg.alias;
     editForm.OrigPrice = pkg.price;
     editForm.OrigDuration = pkg.duration;
     editForm.OrigSize = [pkg.size, pkg.size2, pkg.size3, pkg.size4, pkg.size5]
         .filter((size) => size)
         .join(", ");
+    editForm.OrigNumberOfShots = pkg.number_of_shots;
     editForm.OrigInclusion = pkg.inclusion;
     editForm.OrigNote = pkg.note;
     editForm.OrigExtension = pkg.extension;
@@ -185,9 +195,11 @@ const noChanges = computed(() => {
     return (
         editForm.OrigId === editForm.id &&
         editForm.OrigName === editForm.name &&
+        editForm.OrigAlias === editForm.alias &&
         editForm.OrigPrice === editForm.price &&
         editForm.OrigDuration === editForm.duration &&
         editForm.OrigSize === editForm.size &&
+        editForm.OrigNumberOfShots === editForm.number_of_shots &&
         editForm.OrigInclusion === editForm.inclusion &&
         editForm.OrigNote === editForm.note &&
         editForm.OrigExtension === editForm.extension
@@ -369,9 +381,11 @@ watch(
                             () =>
                                 addNewProduct({
                                     name: '',
+                                    alias: '',
                                     price: '',
                                     duration: '',
                                     size: '',
+                                    number_of_shots: '',
                                     inclusion: '',
                                     note: '',
                                     extension: '',
@@ -418,6 +432,12 @@ watch(
                                     >
                                         Size/s
                                     </th>
+                                       <th
+                                        scope="col"
+                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                    >
+                                        Number of shots
+                                    </th>
                                     <th
                                         scope="col"
                                         class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
@@ -463,7 +483,7 @@ watch(
                                         <div
                                             class="text-sm font-normal text-gray-500 dark:text-gray-400"
                                         >
-                                            category
+                                            {{ pkg.alias }}
                                         </div>
                                     </td>
                                     <td
@@ -486,6 +506,11 @@ watch(
                                         }}{{
                                             pkg.size5 ? ", " + pkg.size5 : ""
                                         }}
+                                    </td>
+                                    <td
+                                        class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                    >
+                                        {{ pkg.number_of_shots }}
                                     </td>
                                     <td
                                         class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
@@ -719,6 +744,29 @@ watch(
                                 />
                             </div>
 
+                                  <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="alias"
+                                    value="Alias"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+
+                                <TextInput
+                                    id="alias"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="addForm.alias"
+                                    required
+                                    autofocus
+                                    autocomplete="off"
+                                    placeholder="e.g. Photo Standee in Strips or 4R for 2 hours"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="addForm.errors.alias"
+                                />
+                            </div>
+
                             <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="price"
@@ -781,6 +829,28 @@ watch(
                                 <InputError
                                     class="mt-2"
                                     :message="addForm.errors.size"
+                                />
+                            </div>
+
+                              <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="shots"
+                                    value="Number of shots"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="shots"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="addForm.number_of_shots"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. 4"
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="addForm.errors.number_of_shots"
                                 />
                             </div>
 
@@ -927,6 +997,29 @@ watch(
                                 />
                             </div>
 
+                              <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="alias"
+                                    value="Alias"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+
+                                <TextInput
+                                    id="alias"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="editForm.alias"
+                                    required
+                                    autofocus
+                                    autocomplete="off"
+                                    placeholder="e.g. Photo Standee in Strips or 4R for 2 hours"
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.alias"
+                                />
+                            </div>
+
                             <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="price"
@@ -989,6 +1082,28 @@ watch(
                                 <InputError
                                     class="mt-2"
                                     :message="editForm.errors.size"
+                                />
+                            </div>
+
+                             <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="shots"
+                                    value="Number of shots"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+                                <TextInput
+                                    id="size"
+                                    type="text"
+                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
+                                    v-model="editForm.number_of_shots"
+                                    required
+                                    autocomplete="off"
+                                    placeholder="e.g. 4"
+                                />
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.number_of_shots"
                                 />
                             </div>
 

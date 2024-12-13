@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('alias');
             $table->string('price');
             $table->string('duration');
-            $table->string('size');
+            $table->string('number_of_shots');
+            $table->string('size'); 
             $table->string('size2')->nullable();
             $table->string('size3')->nullable();
             $table->string('size4')->nullable();

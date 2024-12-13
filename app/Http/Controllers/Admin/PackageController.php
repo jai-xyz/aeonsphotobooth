@@ -57,6 +57,7 @@ class PackageController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'alias' => 'required|string|max:255',
             'price' => 'required|string|max:255',
             'duration' => 'required|string|max:255',
             'size' => 'required|string|max:255',
@@ -64,6 +65,7 @@ class PackageController extends Controller
             'size3' => 'nullable|string|max:255',
             'size4' => 'nullable|string|max:255',
             'size5' => 'nullable|string|max:255',
+            'number_of_shots' => 'required|string|max:255',
             'inclusion' => 'required|string|max:2500',
             'note' => 'required|string|max:255',
             'extension' => 'required|string|max:255',
@@ -83,6 +85,7 @@ class PackageController extends Controller
 
         Packages::create([
             'name' => $request->name,
+            'alias' => $request->alias,
             'price' => $request->price,
             'duration' => $request->duration,
             'size' => $request->size,
@@ -90,6 +93,7 @@ class PackageController extends Controller
             'size3' => $request->size3,
             'size4' => $request->size4,
             'size5' => $request->size5,
+            'number_of_shots' => $request->number_of_shots,
             'inclusion' => $request->inclusion,
             'note' => $request->note,
             'extension' => $request->extension,
@@ -123,6 +127,7 @@ class PackageController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'alias' => 'required|string|max:255',
             'price' => 'required|string|max:255',
             'duration' => 'required|string|max:255',
             'size' => 'required|string|max:255',
@@ -130,6 +135,7 @@ class PackageController extends Controller
             'size3' => 'nullable|string|max:255',
             'size4' => 'nullable|string|max:255',
             'size5' => 'nullable|string|max:255',
+            'number_of_shots' => 'required|string|max:255',
             'inclusion' => 'required|string|max:2500',
             'note' => 'required|string|max:255',
             'extension' => 'required|string|max:255',
@@ -149,6 +155,7 @@ class PackageController extends Controller
 
         $package->fill([
             'name' => $request->name,
+            'alias' => $request->alias,
             'price' => $request->price,
             'duration' => $request->duration,
             'size' => $request->size,
@@ -156,6 +163,7 @@ class PackageController extends Controller
             'size3' => $request->size3,
             'size4' => $request->size4,
             'size5' => $request->size5,
+            'number_of_shots' => $request->number_of_shots,
             'inclusion' => $request->inclusion,
             'note' => $request->note,
             'extension' => $request->extension]

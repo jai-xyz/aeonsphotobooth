@@ -18,6 +18,7 @@ return new class extends Migration
             $table->address();
             $table->string('contactperson');
             $table->string('contactno');
+            $table->string('email');
             $table->date('date');
             $table->time('time');
             $table->foreignId('packageid')->constrained('packages', 'id');
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('packagesize');
             $table->string('backdroptype');
             $table->string('backdropcolor');
+            $table->string('theme');
             $table->string('suggestion');
             $table->string('status')->default('Pending');
             $table->timestamps();
