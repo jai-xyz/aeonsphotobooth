@@ -15,7 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->string('event');
-            $table->address();
+            $table->string('region');
+            $table->string('province');
+            $table->string('city');
+            $table->string('barangay');
+            $table->string('street');
+            $table->string('zipcode');
             $table->string('contactperson');
             $table->string('contactno');
             $table->string('email');
@@ -26,8 +31,12 @@ return new class extends Migration
             $table->string('packagesize');
             $table->string('backdroptype');
             $table->string('backdropcolor');
+            $table->integer('number_of_shots');
+            $table->string('price');
+            $table->string('extension');
             $table->string('theme');
             $table->string('suggestion');
+            $table->string('images')->nullable();
             $table->string('status')->default('Pending');
             $table->timestamps();
         });

@@ -9,6 +9,7 @@ import { computed, ref, watch } from "vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import { Inertia } from "@inertiajs/inertia";
+import Toast from "@/Components/Toast.vue";
 
 const props = defineProps({
     events: {
@@ -100,7 +101,7 @@ const closeModal = () => {
     form.reset();
 };
 
-const statusOptions = ["Pending", "Accepted", "Declined"];
+const statusOptions = ["Pending", "Accept", "Decline"];
 
 const isSameStatus = computed(() => {
     return form.status === form.originalStatus;
@@ -133,10 +134,34 @@ watch(
         });
     }
 );
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const monthNames = [
+        "Jan.",
+        "Feb.",
+        "Mar.",
+        "Apr.",
+        "May.",
+        "Jun.",
+        "Jul.",
+        "Aug.",
+        "Sep.",
+        "Oct.",
+        "Nov.",
+        "Dec.",
+    ];
+    const month = monthNames[date.getMonth()];
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${month} ${day}, ${year}`;
+}
 </script>
 
 <template>
     <Head title="Events" />
+    
+        <Toast />
 
     <AdminAuthenticatedLayout>
         <div
@@ -312,12 +337,7 @@ watch(
                                     >
                                         Package
                                     </th>
-                                    <th
-                                        scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                    >
-                                        Size
-                                    </th>
+                               
                                     <th
                                         scope="col"
                                         class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
@@ -329,6 +349,12 @@ watch(
                                         class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                     >
                                         Suggestion
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                    >
+                                        Attachment/s
                                     </th>
                                     <th
                                         scope="col"
@@ -353,7 +379,7 @@ watch(
                                     class="hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                     <td
-                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                        class="p-4 text-sm font-normal text-gray-700 whitespace-nowrap dark:text-gray-400"
                                     >
                                         <div
                                             class="text-base font-semibold text-gray-900 dark:text-white"
@@ -361,27 +387,27 @@ watch(
                                             {{ event.event }}
                                         </div>
                                         <div
-                                            class="text-sm font-normal text-gray-500 dark:text-gray-400"
+                                            class="text-sm font-normal text-gray-600 dark:text-gray-400"
                                         >
-                                            theme
+                                            {{ event.theme }}
                                         </div>
                                     </td>
                                     <td
-                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                        class="p-4 text-sm font-normal text-gray-600 whitespace-nowrap dark:text-gray-400"
                                     >
                                         <div
                                             class="text-base font-normal text-gray-900 dark:text-white"
                                         >
-                                            {{ event.date }}
+                                            {{  formatDate(event.date) }}
                                         </div>
                                         <div
-                                            class="text-base font-normal text-gray-500 dark:text-white"
+                                            class="text-base font-normal text-gray-600 dark:text-white"
                                         >
                                             {{ event.time }}
                                         </div>
                                     </td>
                                     <td
-                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                        class="p-4 text-sm font-normal text-gray-600 whitespace-nowrap dark:text-gray-400"
                                     >
                                         <div
                                             class="text-base font-normal text-gray-900 dark:text-white"
@@ -389,28 +415,40 @@ watch(
                                             {{ event.contactperson }}
                                         </div>
                                         <div
-                                            class="text-base font-normal text-gray-500 dark:text-white"
+                                            class="text-base font-normal text-gray-600 dark:text-white"
                                         >
                                             {{ event.contactno }}
                                         </div>
+                                         <div
+                                            class="text-sm font-normal text-gray-600 dark:text-white"
+                                        >
+                                            {{ event.email }}
+                                        </div>
                                     </td>
                                     <td
-                                        class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
+                                        class="max-w-sm p-4  text-base font-normal text-gray-900  xl:max-w-[250px] dark:text-gray-400"
                                     >
-                                        {{ event.address }}
+                                        {{ event.street }}, {{ event.barangay}}, {{ event.city }}, {{ event.province}}
                                     </td>
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                     >
-                                        {{ event.packagename }}
+                                          <div
+                                            class="text-base font-semibold text-gray-900 dark:text-white"
+                                        >
+                                               {{ event.packagename }}
+
+                                        </div>
+                                         <div
+                                            class="text-sm font-normal text-gray-600 dark:text-white"
+                                        >
+                                          {{ event.packagesize }} - {{ event.number_of_shots }} shots - {{ event.price }}  
+
+                                        </div>
                                     </td>
+                                  
                                     <td
-                                        class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                    >
-                                        {{ event.packagesize }}
-                                    </td>
-                                    <td
-                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                        class="p-4 text-sm font-normal text-gray-600 whitespace-nowrap dark:text-gray-400"
                                     >
                                         <div
                                             class="text-base font-semibold text-gray-900 dark:text-white"
@@ -418,15 +456,36 @@ watch(
                                             {{ event.backdroptype }}
                                         </div>
                                         <div
-                                            class="text-sm font-normal text-gray-500 dark:text-gray-400"
+                                            class="text-sm font-normal text-gray-600 dark:text-gray-400"
                                         >
                                             {{ event.backdropcolor }}
                                         </div>
                                     </td>
                                     <td
-                                        class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
+                                        class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-600 xl:max-w-xs dark:text-gray-400"
                                     >
                                         {{ event.suggestion }}
+                                    </td>
+                                    <td
+                                        class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-600 xl:max-w-xs dark:text-gray-400"
+                                    >
+                                        <div v-if="event.images">
+                                            <div
+                                                v-for="(
+                                                    image, index
+                                                ) in JSON.parse(event.images)"
+                                                :key="index"
+                                            >
+                                                <img
+                                                    :src="image"
+                                                    :alt="
+                                                        'Image ' + (index + 1)
+                                                    "
+                                                    width="100"
+                                                    class="p-1"
+                                                />
+                                            </div>
+                                        </div>
                                     </td>
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -436,13 +495,13 @@ watch(
                                                 'bg-yellow-7 text-yellow-77 font-semibold me-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-7 dark:text-yellow-77':
                                                     event.status === 'Pending',
                                                 'bg-green-7 text-green-77  font-semibold me-2 px-2.5 py-0.5 rounded-full dark:bg-green-7 dark:text-green-77':
-                                                    event.status === 'Accepted',
+                                                    event.status === 'Accept',
                                                 'bg-red-7 text-red-77 font-semibold me-2 px-2.5 py-0.5 rounded-full dark:bg-red-7900 dark:text-red-77':
-                                                    event.status === 'Declined',
+                                                    event.status === 'Decline',
                                             }"
                                             class="px-2 py-1 rounded"
                                         >
-                                            {{ event.status }}
+                                            {{ event.status ? event.status === 'Accept' ? 'Accepted' : event.status === 'Decline' ? 'Declined' : event.status === 'Pending' ? 'Pending' : '' : '' }}
                                         </span>
                                     </td>
                                     <td class="p-4 space-x-2 whitespace-nowrap">

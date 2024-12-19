@@ -32,6 +32,9 @@ Route::middleware('auth', UserMiddleware::class)->group(function () {
     Route::get('/event/registration/{packageId?}', [UserRegistrationController::class, 'create'])->name('user.event.create');
     Route::post('/event/registration', [UserRegistrationController::class, 'store'])->name('user.event.store');
     Route::post('/event/registration', [UserRegistrationController::class, 'store'])->name('user.event.store');
+    Route::get('/event', [UserRegistrationController::class, 'index'])->name('user.event.index');
+    Route::get('/event/registration-confirmation', [UserRegistrationController::class, 'indexConfirmation'])->name('user.event.confirmation');
+
 
     Route::get('/packages', [UserPackageController::class, 'index'])->name('user.package.index');
 });

@@ -16,7 +16,7 @@ class PackageController extends Controller
      */
     public function index(Request $request): Response
     {
-        $packagesQuery = Packages::query();
+        $packagesQuery = Packages::query()->with('options');
 
         $this->applySearch($packagesQuery, $request->search);
 
@@ -58,17 +58,21 @@ class PackageController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'alias' => 'required|string|max:255',
-            'price' => 'required|string|max:255',
+            // 'price' => 'required|string|max:255',
             'duration' => 'required|string|max:255',
             'size' => 'required|string|max:255',
             'size2' => 'nullable|string|max:255',
             'size3' => 'nullable|string|max:255',
             'size4' => 'nullable|string|max:255',
             'size5' => 'nullable|string|max:255',
-            'number_of_shots' => 'required|string|max:255',
+            // 'number_of_shots' => 'required|string|max:255',
             'inclusion' => 'required|string|max:2500',
             'note' => 'required|string|max:255',
-            'extension' => 'required|string|max:255',
+            'options' => 'nullable|array',
+            'options.*.number_of_shots' => 'nullable|integer',
+            'options.*.price' => 'nullable|string|max:255',
+            'options.*.extension' => 'nullable|string|max:255',
+            // 'extension' => 'required|string|max:255',
         ]);
 
         $sizes = explode(', ', $request->input('size'));
@@ -83,21 +87,24 @@ class PackageController extends Controller
             ]);
         }
 
-        Packages::create([
-            'name' => $request->name,
-            'alias' => $request->alias,
-            'price' => $request->price,
-            'duration' => $request->duration,
-            'size' => $request->size,
-            'size2' => $request->size2,
-            'size3' => $request->size3,
-            'size4' => $request->size4,
-            'size5' => $request->size5,
-            'number_of_shots' => $request->number_of_shots,
-            'inclusion' => $request->inclusion,
-            'note' => $request->note,
-            'extension' => $request->extension,
-        ]);
+        $package = Packages::create($request->only(['name', 'alias',
+            'duration',
+            'size',
+            'size2',
+            'size3',
+            'size4',
+            'size5',
+            'inclusion',
+            'note'
+        ]));
+            // 'price' => $request->price,
+            // 'number_of_shots' => $request->number_of_shots,
+            // 'extension' => $request->extension,
+
+            foreach ($request->options as $option) {
+                $package->options()->create($option);
+            }
+
 
         return redirect()->back()->with('success', 'Package added successfully');
     }
@@ -128,17 +135,21 @@ class PackageController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'alias' => 'required|string|max:255',
-            'price' => 'required|string|max:255',
+            // 'price' => 'required|string|max:255',
             'duration' => 'required|string|max:255',
             'size' => 'required|string|max:255',
             'size2' => 'nullable|string|max:255',
             'size3' => 'nullable|string|max:255',
             'size4' => 'nullable|string|max:255',
             'size5' => 'nullable|string|max:255',
-            'number_of_shots' => 'required|string|max:255',
+            // 'number_of_shots' => 'required|string|max:255',
             'inclusion' => 'required|string|max:2500',
             'note' => 'required|string|max:255',
-            'extension' => 'required|string|max:255',
+            'options' => 'nullable|array',
+            'options.*.number_of_shots' => 'nullable|integer',
+            'options.*.price' => 'nullable|string|max:255',
+            'options.*.extension' => 'nullable|string|max:255',
+            // 'extension' => 'required|string|max:255',
         ]);
 
         $sizes = explode(', ', $request->input('size'));
@@ -153,25 +164,42 @@ class PackageController extends Controller
             ]);
         }
 
-        $package->fill([
+        $package->update($request->only([
             'name' => $request->name,
             'alias' => $request->alias,
-            'price' => $request->price,
+            // 'price' => $request->price,
             'duration' => $request->duration,
             'size' => $request->size,
             'size2' => $request->size2,
             'size3' => $request->size3,
             'size4' => $request->size4,
             'size5' => $request->size5,
-            'number_of_shots' => $request->number_of_shots,
+            // 'number_of_shots' => $request->number_of_shots,
             'inclusion' => $request->inclusion,
             'note' => $request->note,
-            'extension' => $request->extension]
-        );
+            // 'extension' => $request->extension
+            ]
+        ));
         
-        if ($package->save()) {
-            return redirect()->back()->with('success', 'Package updated successfully');
+        $package->update($request->only(['name', 'alias',
+            'duration',
+            'size',
+            'size2',
+            'size3',
+            'size4',
+            'size5',
+            'inclusion',
+            'note'
+        ]));
+
+        $package->options()->delete();
+        if ($request->has('options')) {
+            foreach ($request->options as $option) {
+                $package->options()->create($option);
+            }
         }
+
+        return redirect()->route('package.index')->with('success', 'Package updated successfully.');
     }
 
     /**

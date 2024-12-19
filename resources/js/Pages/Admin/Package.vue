@@ -26,8 +26,8 @@ const props = defineProps({
 
 /* #############################
             PAGINATION
-   ############################# */  
-    
+   ############################# */
+
 const paginationpackages = ref(props.packages.data);
 const currentPage = ref(1);
 
@@ -76,18 +76,19 @@ watch(
 
 /* #############################
             ADD PACKAGE
-   ############################# */  
+   ############################# */
 
 const addForm = useForm({
     name: "",
     alias: "",
-    price: "",
+    // price: "",
     duration: "",
     size: "",
-    number_of_shots: "",
+    // number_of_shots: "",
     inclusion: "",
     note: "",
-    extension: "",
+    // extension: "",
+    options: [{ number_of_shots: "", price: "", extension: "" }],
 });
 
 const addingNewProduct = ref(false);
@@ -95,22 +96,43 @@ const addingNewProduct = ref(false);
 const addNewProduct = (pkg) => {
     addForm.name = pkg.name;
     addForm.alias = pkg.alias;
-    addForm.price = pkg.price;
+    // addForm.price = pkg.price;
     addForm.duration = pkg.duration;
     addForm.size = pkg.size;
-    addForm.number_of_shots = pkg.number_of_shots;
+    // addForm.number_of_shots = pkg.number_of_shots;
     addForm.inclusion = pkg.inclusion;
     addForm.note = pkg.note;
-    addForm.extension = pkg.extension;
+    addForm.options = pkg.options || [
+        { number_of_shots: "", price: "", extension: "" },
+    ];
+    // addForm.extension = pkg.extension;
     addingNewProduct.value = true;
 };
 
+const addOption = () => {
+    addForm.options.push({ number_of_shots: "", price: "", extension: "" });
+};
+
+const removeOption = (index) => {
+    addForm.options.splice(index, 1);
+};
+
 const submitAdd = () => {
+    console.log("Submitting form with data:", addForm);
     addForm.post(route("package.store", { page: currentPage.value }), {
         preserveScroll: true,
         preserveState: true,
-        onSuccess: () => closeAddModal(),
-        onFinish: () => addForm.reset(),
+        onSuccess: () => {
+            console.log("Form submitted successfully");
+            closeAddModal();
+        },
+        onError: (errors) => {
+            console.error("Form submission error:", errors);
+        },
+        onFinish: () => {
+            console.log("Form submission finished");
+            addForm.reset();
+        },
     });
 };
 
@@ -121,7 +143,7 @@ const closeAddModal = () => {
 
 /* #############################
             EDIT PACKAGE
-   ############################# */  
+   ############################# */
 
 const editingProduct = ref(false);
 const currentPackage = ref(null);
@@ -130,13 +152,11 @@ const editForm = useForm({
     id: null,
     name: "",
     alias: "",
-    price: "",
     duration: "",
     size: "",
-    number_of_shots: "",
     inclusion: "",
     note: "",
-    extension: "",
+    options: [{ number_of_shots: "", price: "", extension: "" }],
 });
 
 const openEditModal = (pkg) => {
@@ -144,15 +164,18 @@ const openEditModal = (pkg) => {
     editForm.id = pkg.id;
     editForm.name = pkg.name;
     editForm.alias = pkg.alias;
-    editForm.price = pkg.price;
+    // editForm.price = pkg.price;
     editForm.duration = pkg.duration;
     editForm.size = [pkg.size, pkg.size2, pkg.size3, pkg.size4, pkg.size5]
         .filter((size) => size)
         .join(", ");
-    editForm.number_of_shots = pkg.number_of_shots;
+    // editForm.number_of_shots = pkg.number_of_shots;
     editForm.inclusion = pkg.inclusion;
     editForm.note = pkg.note;
-    editForm.extension = pkg.extension;
+    // editForm.extension = pkg.extension;
+    editForm.options = pkg.options || [
+        { number_of_shots: "", price: "", extension: "" },
+    ];
 
     // for checking if there are changes
     editForm.OrigId = pkg.id;
@@ -208,7 +231,7 @@ const noChanges = computed(() => {
 
 /* #############################
             DELETE PACKAGE
-   ############################# */  
+   ############################# */
 const deletingProduct = ref(false);
 
 const openDeleteModal = (pkg) => {
@@ -232,7 +255,7 @@ const submitDelete = () => {
 
 /* #############################
             SEARCH
-   ############################# */  
+   ############################# */
 let search = ref(usePage().props.search),
     pageNumber = ref(1);
 
@@ -432,7 +455,7 @@ watch(
                                     >
                                         Size/s
                                     </th>
-                                       <th
+                                    <th
                                         scope="col"
                                         class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
                                     >
@@ -489,7 +512,11 @@ watch(
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                     >
-                                        ₱{{ pkg.price }}
+                                        ₱{{
+                                            pkg.options
+                                                .map((option) => option.price)
+                                                .join(", ₱")
+                                        }}
                                     </td>
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -510,7 +537,14 @@ watch(
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                     >
-                                        {{ pkg.number_of_shots }}
+                                        {{
+                                            pkg.options
+                                                .map(
+                                                    (option) =>
+                                                        option.number_of_shots
+                                                )
+                                                .join(", ")
+                                        }}
                                     </td>
                                     <td
                                         class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
@@ -525,7 +559,13 @@ watch(
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                     >
-                                        {{ pkg.extension }}
+                                        {{
+                                            pkg.options
+                                                .map(
+                                                    (option) => option.extension
+                                                )
+                                                .join(", ")
+                                        }}
                                     </td>
 
                                     <td class="p-4 space-x-2 whitespace-nowrap">
@@ -744,7 +784,7 @@ watch(
                                 />
                             </div>
 
-                                  <div class="col-span-6 sm:col-span-3">
+                            <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="alias"
                                     value="Alias"
@@ -767,7 +807,7 @@ watch(
                                 />
                             </div>
 
-                            <div class="col-span-6 sm:col-span-3">
+                            <!-- <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="price"
                                     value="Price"
@@ -786,7 +826,7 @@ watch(
                                     class="mt-2"
                                     :message="addForm.errors.price"
                                 />
-                            </div>
+                            </div> -->
 
                             <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
@@ -832,7 +872,7 @@ watch(
                                 />
                             </div>
 
-                              <div class="col-span-6 sm:col-span-3">
+                            <!-- <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="shots"
                                     value="Number of shots"
@@ -852,7 +892,7 @@ watch(
                                     class="mt-2"
                                     :message="addForm.errors.number_of_shots"
                                 />
-                            </div>
+                            </div> -->
 
                             <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
@@ -875,7 +915,7 @@ watch(
                                     :message="addForm.errors.note"
                                 />
                             </div>
-
+                            <!-- 
                             <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="extension"
@@ -896,7 +936,7 @@ watch(
                                     class="mt-2"
                                     :message="addForm.errors.extension"
                                 />
-                            </div>
+                            </div> -->
 
                             <div class="col-span-6">
                                 <InputLabel
@@ -919,6 +959,68 @@ watch(
                                     class="mt-2"
                                     :message="addForm.errors.inclusion"
                                 />
+                            </div>
+
+                            <div class="mb-4">
+                                <h2 class="text-xl font-bold mb-2">
+                                    Package Options
+                                </h2>
+                                <div
+                                    v-for="(option, index) in addForm.options"
+                                    :key="index"
+                                    class="mb-4"
+                                >
+                                    <label
+                                        for="number_of_shots"
+                                        class="block text-gray-700"
+                                        >Number of Shots</label
+                                    >
+                                    <input
+                                        id="number_of_shots"
+                                        type="number"
+                                        v-model="option.number_of_shots"
+                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                        required
+                                    />
+                                    <label
+                                        for="price"
+                                        class="block text-gray-700"
+                                        >Price</label
+                                    >
+                                    <input
+                                        id="price"
+                                        type="text"
+                                        v-model="option.price"
+                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                        required
+                                    />
+                                    <label
+                                        for="extension"
+                                        class="block text-gray-700"
+                                        >Extension</label
+                                    >
+                                    <input
+                                        id="extension"
+                                        type="text"
+                                        v-model="option.extension"
+                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        @click="removeOption(index)"
+                                        class="mt-2 px-4 py-2 bg-red-500 text-white rounded-md"
+                                    >
+                                        Remove Option
+                                    </button>
+                                </div>
+                                <button
+                                    type="button"
+                                    @click="addOption"
+                                    class="mt-2 px-4 py-2 bg-green-500 text-white rounded-md"
+                                >
+                                    Add Option
+                                </button>
                             </div>
                         </div>
                         <!-- Modal footer -->
@@ -997,7 +1099,7 @@ watch(
                                 />
                             </div>
 
-                              <div class="col-span-6 sm:col-span-3">
+                            <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="alias"
                                     value="Alias"
@@ -1085,7 +1187,7 @@ watch(
                                 />
                             </div>
 
-                             <div class="col-span-6 sm:col-span-3">
+                            <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="shots"
                                     value="Number of shots"

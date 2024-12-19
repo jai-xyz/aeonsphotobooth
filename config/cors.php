@@ -16,11 +16,11 @@ return [
     */
 
     // 'paths' => ['api/*', 'auth/google/call-back', 'sanctum/csrf-cookie'],
-    'paths' => ['*'],
+    'paths' => ['*', 'api/*'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL'),'http://127.0.0.1:8000', 'http://localhost:8000'],
+    'allowed_origins' => [env('FRONTEND_URL'),'http://127.0.0.1:8000', 'http://localhost:8000', '*'],
 
     'allowed_origins_patterns' => [],
 

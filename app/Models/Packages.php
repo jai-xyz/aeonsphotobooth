@@ -14,16 +14,18 @@ protected $table = "packages";
     protected $fillable = [
         'name',
         'alias',
-        'price',
         'duration',
         'size',
         'size2',
         'size3',
         'size4',
         'size5',
-        'number_of_shots',
         'inclusion',
         'note',
-        'extension',
     ];
+
+    public function options()
+    {
+        return $this->hasMany(PackageOptions::class);
+    }
 }

@@ -19,7 +19,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <nav class="sticky top-0 bg-white border-b border-gray-100">
+    <nav class="sticky top-0 z-50  bg-white border-b border-gray-100">
         <!-- Primary Navigation Menu -->
         <div class="max-w-full mx-auto px-2 sm:px-4 lg:px-6">
             <div class="flex justify-between h-16">

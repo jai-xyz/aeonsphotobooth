@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('alias');
-            $table->string('price');
+            // $table->string('price');
             $table->string('duration');
-            $table->string('number_of_shots');
+            // $table->string('number_of_shots');
             $table->string('size'); 
             $table->string('size2')->nullable();
             $table->string('size3')->nullable();
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('size5')->nullable();
             $table->longText('inclusion');
             $table->string('note');
-            $table->string('extension');
+            // $table->string('extension');
             $table->timestamps();
         });
     }

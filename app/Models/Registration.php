@@ -4,23 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Yajra\Address\HasAddress;
-
 
 class Registration extends Model
 {
-    use HasFactory, HasAddress;
 
     protected $table = "registrations";
 
     protected $fillable = [
         'user_id',
         'event',
+        'region',
+        'province',
+        'city',
+        'barangay',
         'street',
-        'barangay_id',
-        'city_id',
-        'province_id',
-        'region_id',
+        'zipcode',
         'contactperson',
         'contactno',
         'email',
@@ -31,7 +29,11 @@ class Registration extends Model
         'packagesize',
         'backdroptype',
         'backdropcolor',
+        'number_of_shots',
+        'price',
+        'extension',
         'theme',
         'suggestion',
+        'images',
     ];
 }
