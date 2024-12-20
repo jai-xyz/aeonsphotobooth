@@ -36,11 +36,12 @@ class RegistrationController extends Controller
             return $event;
         });
 
-        // Retrieve packages with options
-        $packages = Packages::with('options')->get();
+        //                                                       Accepted
+        $getEvents = DB::table('registrations')->where('status', 'Pending')->get();
 
         return Inertia::render('Admin/Registration', [
             'events' => $events,
+            'getEvents' => $getEvents,
             'search' => $request->search ?? '',
         ]);
     }

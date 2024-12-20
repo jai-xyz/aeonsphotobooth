@@ -35,8 +35,8 @@ const props = defineProps({
                     <div class="flex flex-wrap -mx-3 px-5">
                         <div v-for="pkg in packages" :key="pkg.id" class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-3 mb-6">
                             <div class="p-6 text-gray-900 border">
-                                <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ pkg.name }} - ₱{{pkg.price}} </h2>
-                                <!-- <p>Price: {{ pkg.price }}</p>   -->
+                                <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ pkg.name }} - {{pkg.alias}} </h2>
+                                <p>Price:  ₱{{ pkg.price }}</p>  
                                 <p>Duration: {{ pkg.duration }}</p>
                                 <p>Size: {{ pkg.size }}{{ pkg.size2 ? ', ' + pkg.size2 : '' }}{{ pkg.size3 ? ', ' + pkg.size3 : '' }}{{ pkg.size4 ? ', ' + pkg.size4 : '' }}{{ pkg.size5 ? ', ' + pkg.size5 : '' }}</p>
                                 <p>Inclusions:</p>

@@ -28,6 +28,7 @@ return new class extends Migration
             $table->time('time');
             $table->foreignId('packageid')->constrained('packages', 'id');
             $table->string('packagename');
+            $table->string('alias');
             $table->string('packagesize');
             $table->string('backdroptype');
             $table->string('backdropcolor');
