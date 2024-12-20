@@ -1,0 +1,131 @@
+ <!-- scripts  -->
+ const minInputDate = computed(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+});
+
+// MIN DATES VUECAL
+const minDate = computed(() => {
+    const date = new Date();
+    date.setDate(date.getDate());
+    return date;
+});
+
+// SPLIT DAYS AND EVENTS VUECAL
+const splitsAndEvents = {
+    splits: [
+        { id: 1, class: "booth1", label: "Booth 1" },
+        { id: 2, class: "booth2", label: "Booth 2" },
+    ],
+    events: [],
+};
+
+if (props.getEvents && Array.isArray(props.getEvents)) {
+    // Split end times
+    const splitEndTimes = {
+        1: new Date(0),
+        2: new Date(0),
+    };
+
+    // Filter events that are after the min date
+    splitsAndEvents.events = props.getEvents
+        .filter((event) => {
+            const startDateTime = new Date(`${event.date}T${event.time}`);
+            return startDateTime > minDate.value;
+        })
+        .map((event) => {
+            const startDateTime = new Date(`${event.date}T${event.time}`);
+            const endDateTime = new Date(
+                startDateTime.getTime() + 2 * 60 * 60 * 1000
+            );
+
+            // If the start time is after 10pm, the end time will be the next day
+            if (startDateTime.getHours() >= 22) {
+                endDateTime.setDate(endDateTime.getDate() + 1);
+            }
+
+            const endHours = String(endDateTime.getHours()).padStart(2, "0");
+            const endMinutes = String(endDateTime.getMinutes()).padStart(
+                2,
+                "0"
+            );
+            const end = `${endDateTime.getFullYear()}-${String(
+                endDateTime.getMonth() + 1
+            ).padStart(2, "0")}-${String(endDateTime.getDate()).padStart(
+                2,
+                "0"
+            )} ${endHours}:${endMinutes}`;
+
+            let split = 1;
+            if (startDateTime < splitEndTimes[1]) {
+                split = 2;
+            } else if (
+                startDateTime < splitEndTimes[1] &&
+                startDateTime < splitEndTimes[2]
+            ) {
+                split = 2;
+            }
+
+            splitEndTimes[split] = endDateTime;
+
+            let color = "primary"; 
+            if (props.auth.user.id === event.user_id) {
+                color = "primary";
+            } else {
+                color = "secondary";
+            }
+
+            return {
+                start: startDateTime,
+                end: end,
+                title: "Event",
+                class: color,
+                split: split,
+            };
+        });
+}
+ 
+ 
+ 
+ 
+ 
+ <!-- view -->
+ <div class="row">
+                                    <div
+                                        class="col-12 flex justify-center align-center"
+                                    >
+                                        <VueCal
+                                            :events="splitsAndEvents.events"
+                                            class="vuecal "
+                                            events-count-on-year-view
+                                            today-button
+                                            sticky-split-labels
+                                            style="
+                                                width: 150%;
+                                                height: 665px;
+                                                max-width: 1500px;
+                                            "
+                                            :disable-views="[
+                                                'day',
+                                                'years',
+                                                'year',
+                                            ]"
+                                            active-view="month"
+                                            timeFormat="hh:mm {AM}"
+                                            :min-date="minDate"
+                                            :split-days="splitsAndEvents.splits"
+
+                                        >
+                                        </VueCal>
+                                    </div>
+                                </div>
+
+
+
+
+
+
