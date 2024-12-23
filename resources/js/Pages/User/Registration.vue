@@ -5,7 +5,6 @@ import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import "../../../css/custom-styles.css";
 import "../../../css/user-vuecal.css";
-import axios from "axios";
 
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputError from "@/Components/InputError.vue";
@@ -77,6 +76,37 @@ const form = useForm({
     user_id: userId,
 });
 
+
+const submitForm = async () => {
+    if (validateStep()) {
+        try {
+            // Show loading indicator
+            form.processing = true;
+
+            // Submit the form
+            await form.post(route("user.event.store"), {
+                onSuccess: () => {
+                    console.log("Form submitted successfully");
+                },
+                onError: (errors) => {
+                    console.error("Error submitting form:", errors);
+                },
+                onFinish: () => {
+                    console.log("Form submission finished");
+                    // Hide loading indicator
+                    form.processing = false;
+                },
+            });
+        } catch (error) {
+            console.error("Unexpected error during form submission:", error);
+            // Hide loading indicator
+            form.processing = false;
+        }
+    } else {
+        console.warn("Form validation failed:", form.errors);
+    }
+};
+
 /* #############################
             IMAGE HANDLER
     ############################# */
@@ -103,10 +133,13 @@ const jsonData = ref({});
 
 onMounted(async () => {
     try {
-        const response = await axios.get(
+        const response = await fetch(
             "/philippine_provinces_cities_municipalities_and_barangays_2019v2.json"
         );
-        jsonData.value = response.data;
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        jsonData.value = await response.json();
     } catch (error) {
         console.error("Error fetching JSON data:", error);
     }
@@ -456,111 +489,108 @@ const validateStep = () => {
     form.errors = {}; // Clear previous errors
 
     if (activeStep.value === 1) {
-        // if (!form.event) {
-        //     form.errors.event = "Event name is required.";
-        //     isValid = false;
-        // }
-        // if (!form.region) {
-        //     form.errors.region = "Region is required.";
-        //     isValid = false;
-        // }
-        // if (!form.province) {
-        //     form.errors.province = "Province is required.";
-        //     isValid = false;
-        // }
-        // if (!form.city) {
-        //     form.errors.city = "City is required.";
-        //     isValid = false;
-        // }
-        // if (!form.barangay) {
-        //     form.errors.barangay = "Barangay is required.";
-        //     isValid = false;
-        // }
-        // if (!form.street) {
-        //     form.errors.street = "Street is required.";
-        //     isValid = false;
-        // }
-        // if (!form.zipcode) {
-        //     form.errors.zipcode = "Zip code is required.";
-        //     isValid = false;
-        // }
-        // if (!form.contactperson) {
-        //     form.errors.contactperson = "Contact person is required.";
-        //     isValid = false;
-        // }
-        // if (!form.contactno) {
-        //     form.errors.contactno = "Contact number is required.";
-        //     isValid = false;
-        // }
-        // if (!form.email) {
-        //     form.errors.email = "Email address is required.";
-        //     isValid = false;
-        // }
-        // if (!form.hour) {
-        //     form.errors.hour = "Hour is required.";
-        //     isValid = false;
-        // }
-        // if (!form.minute) {
-        //     form.errors.minute = "Minute is required.";
-        //     isValid = false;
-        // }
-        // if (!form.ampm) {
-        //     form.errors.ampm = "AMPM is required.";
-        //     isValid = false;
-        // }
-        // if (!form.date) {
-        //     form.errors.date = "Date is required.";
-        //     isValid = false;
-        // } else if (!validateDate(form.date)) {
-        //     form.errors.date = "Date must be a future date.";
-        //     isValid = false;
-        // } else if (
-        //     isDateTimeTaken(form.date, form.hour, form.minute, form.ampm)
-        // ) {
-        //     form.errors.date = "The selected date and time are not available.";
-        //     isValid = false;
-        // }
-        // if (!form.hour && !form.minute && !form.ampm) {
-        //     form.errors.time = "Time is required.";
-        //     isValid = false;
-        // }
+        if (!form.event) {
+            form.errors.event = "Event name is required.";
+            isValid = false;
+        }
+        if (!form.region) {
+            form.errors.region = "Region is required.";
+            isValid = false;
+        }
+        if (!form.province) {
+            form.errors.province = "Province is required.";
+            isValid = false;
+        }
+        if (!form.city) {
+            form.errors.city = "City is required.";
+            isValid = false;
+        }
+        if (!form.barangay) {
+            form.errors.barangay = "Barangay is required.";
+            isValid = false;
+        }
+        if (!form.street) {
+            form.errors.street = "Street is required.";
+            isValid = false;
+        }
+        if (!form.zipcode) {
+            form.errors.zipcode = "Zip code is required.";
+            isValid = false;
+        }
+        if (!form.contactperson) {
+            form.errors.contactperson = "Contact person is required.";
+            isValid = false;
+        }
+        if (!form.contactno) {
+            form.errors.contactno = "Contact number is required.";
+            isValid = false;
+        }
+        if (!form.email) {
+            form.errors.email = "Email address is required.";
+            isValid = false;
+        }
+        if (!form.hour) {
+            form.errors.hour = "Hour is required.";
+            isValid = false;
+        }
+        if (!form.minute) {
+            form.errors.minute = "Minute is required.";
+            isValid = false;
+        }
+        if (!form.ampm) {
+            form.errors.ampm = "AMPM is required.";
+            isValid = false;
+        }
+        if (!form.date) {
+            form.errors.date = "Date is required.";
+            isValid = false;
+        } else if (!validateDate(form.date)) {
+            form.errors.date = "Date must be a future date.";
+            isValid = false;
+        } else if (
+            isDateTimeTaken(form.date, form.hour, form.minute, form.ampm)
+        ) {
+            form.errors.date = "The selected date and time are not available.";
+            isValid = false;
+        }
+        if (!form.hour && !form.minute && !form.ampm) {
+            form.errors.time = "Time is required.";
+            isValid = false;
+        }
     } else if (activeStep.value === 2) {
-        // if (!form.packagename) {
-        //     form.errors.packagename = "Package name is required.";
-        //     isValid = false;
-        // }
-        // if (!form.packagesize) {
-        //     form.errors.packagesize = "Package size is required.";
-        //     isValid = false;
-        // }
-        // if (!form.number_of_shots) {
-        //     form.errors.number_of_shots = "Number of shots is required.";
-        //     isValid = false;
-        // }
-        // if (!form.price) {
-        //     form.errors.price = "Price is required.";
-        //     isValid = false;
-        // }
-        // if (!form.extension) {
-        //     form.errors.extension = "Extension is required.";
-        //     isValid = false;
-        // }
-        // if (!form.backdroptype) {
-        //     form.errors.backdroptype = "Backdrop type is required.";
-        //     isValid = false;
-        // }
-        // if (!form.backdropcolor) {
-        //     form.errors.backdropcolor = "Backdrop color is required.";
-        //     isValid = false;
-        // }
-        // if (!form.theme) {
-        //     form.errors.theme = "Theme is required.";
-        //     isValid = false;
-        // }
-        // if (!form.suggestion) {
-        //     form.errors.suggestion = "Suggestion is required.";
-        //     isValid = false;
-        // }
+        if (!form.packagename) {
+            form.errors.packagename = "Package name is required.";
+            isValid = false;
+        }
+        if (!form.packagesize) {
+            form.errors.packagesize = "Package size is required.";
+            isValid = false;
+        }
+        if (!form.number_of_shots) {
+            form.errors.number_of_shots = "Number of shots is required.";
+            isValid = false;
+        }
+        if (!form.price) {
+            form.errors.price = "Price is required.";
+            isValid = false;
+        }
+        if (!form.extension) {
+            form.errors.extension = "Extension is required.";
+            isValid = false;
+        }
+        if (!form.backdroptype) {
+            form.errors.backdroptype = "Backdrop type is required.";
+            isValid = false;
+        }
+        if (!form.backdropcolor) {
+            form.errors.backdropcolor = "Backdrop color is required.";
+            isValid = false;
+        }
+        if (!form.theme) {
+            form.errors.theme = "Theme is required.";
+            isValid = false;
+        }
+
     } else if (activeStep.value === 3) {
     }
     return isValid;
@@ -705,8 +735,6 @@ watch(
             (option) => option.number_of_shots === newNumberOfShots
         );
         if (!selectedOption) {
-            // form.price = selectedOption.price;
-            // form.extension = selectedOption.extension;
             form.price = "";
             form.extension = "";
         } else {
@@ -735,25 +763,12 @@ const handleModalSubmit = () => {
     if (isTaken) {
         form.errors.date = "The selected date and time are not available.";
     } else {
+        form.errors.date = "";
         closeModal();
     }
 };
 
-const submitForm = () => {
-    if (validateStep()) {
-        console.log("Form details:", form);
-        form.post(route("user.event.store"), {
-            onSuccess: () => {
-                console.log("Form submitted successfully");
-            },
-            onError: (errors) => {
-                console.log("Error submitting form:", errors);
-            },
-        });
-    } else {
-        console.log("Form validation failed:", form.errors);
-    }
-};
+
 </script>
 
 <template>
@@ -897,7 +912,8 @@ const submitForm = () => {
                         </ol>
                     </div>
                     <div class="px-14 pt-6">
-                        <form @submit.prevent="submit">
+                        
+                        <form @submit.prevent="submitForm">
                             <!-- STEP 1: BACKDROP DETAILS -->
                             <div v-if="activeStep === 1">
                                 <div
@@ -1015,6 +1031,7 @@ const submitForm = () => {
                                         <PrimaryButton
                                             class="w-full py-2.5 flex items-center justify-center gap-2"
                                             @click="openModal"
+                                            type="button"
                                         >
                                             <svg
                                                 class="w-6 h-6 text-gray-50 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -1569,15 +1586,9 @@ const submitForm = () => {
                                                 type="text"
                                                 class="border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                                 v-model="form.suggestion"
-                                                required
                                                 autocomplete="off"
                                             />
-                                            <InputError
-                                                class="mt-2"
-                                                :message="
-                                                    form.errors.suggestion
-                                                "
-                                            />
+
                                         </div>
 
                                         <div>
@@ -2063,15 +2074,9 @@ const submitForm = () => {
                                                 type="text"
                                                 class="border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
                                                 v-model="form.suggestion"
-                                                required
                                                 autocomplete="off"
                                             />
-                                            <InputError
-                                                class="mt-2"
-                                                :message="
-                                                    form.errors.suggestion
-                                                "
-                                            />
+
                                         </div>
 
                                         <div>
@@ -2266,7 +2271,7 @@ const submitForm = () => {
                                     </h1>
                                 </div>
 
-                                <div class=" mx-6 mt-6">
+                                <div class="mx-6 mt-6">
                                     <div class="">
                                         <p class="text-gray-600">
                                             Title of the Event:
@@ -2492,17 +2497,19 @@ const submitForm = () => {
                                 :disabled="form.processing"
                                 type="button"
                             >
-                                Next >
+                                Next
                             </PrimaryButton>
 
                             <PrimaryButton
-                                class="mt-6 flex float-right"
-                                v-if="activeStep === 3"
-                                :class="{ 'opacity-25': form.processing }"
-                                :disabled="form.processing"
-                                @click="submitForm"
+                            class="mt-6 flex float-right"
+                            v-if="activeStep === 3"
+                            type="button"
+                            :class="{ 'opacity-25': form.processing }"
+                            :disabled="form.processing"
+                            @click="submitForm"
                             >
-                                Register
+                                <span v-if="form.processing">Submitting...</span>
+                                <span v-else>Submit</span>
                             </PrimaryButton>
                         </form>
                     </div>

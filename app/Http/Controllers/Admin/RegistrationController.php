@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Packages;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class RegistrationController extends Controller
@@ -21,9 +22,11 @@ class RegistrationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): Response
+    public function indexPending(Request $request): Response
     {
-        $registrationQuery = Registration::query();
+        $registrationQuery = Registration::query()
+        ->where('status', 'Pending')
+        ->where('payment_status', 'Pending');
 
         $this->applySearch($registrationQuery, $request->search);
 
@@ -36,8 +39,62 @@ class RegistrationController extends Controller
             return $event;
         });
 
-        //                                                       Accepted
-        $getEvents = DB::table('registrations')->where('status', 'Pending')->get();
+        return Inertia::render('Admin/PendingRegistration', [
+            'events' => $events,
+            'search' => $request->search ?? '',
+        ]);
+    }
+
+    protected function applySearch($query, $search)
+    {
+        return $query->when($search, function ($query, $search) {
+            $query->where('event', 'LIKE', '%' . $search . '%');
+        });
+    }
+
+
+
+    public function indexAccepted(Request $request): Response
+    {
+        $registrationQuery = Registration::query()
+        ->where('status', 'Accept')
+        ->where('payment_status', 'Pending');
+
+        $this->applySearch($registrationQuery, $request->search);
+
+        $events = $registrationQuery->orderBy('created_at', 'desc')->paginate(10);
+
+        $events->getCollection()->transform(function ($event) {
+            $event->user = DB::table('users')->where('id', $event->user_id)->first();
+            $event->date = (new DateTime($event->date))->format('m-d-Y');
+            $event->time = (new DateTime($event->time))->format('g:i A');
+            return $event;
+        });
+
+        return Inertia::render('Admin/AcceptedRegistration', [
+            'events' => $events,
+            'search' => $request->search ?? '',
+        ]);
+    }
+
+    public function index(Request $request): Response
+    {
+        $registrationQuery = Registration::query()
+        ->where('status', 'Accept')
+        ->where('payment_status', 'paid');
+
+        $this->applySearch($registrationQuery, $request->search);
+
+        $events = $registrationQuery->orderBy('created_at', 'desc')->paginate(10);
+
+        $events->getCollection()->transform(function ($event) {
+            $event->user = DB::table('users')->where('id', $event->user_id)->first();
+            $event->date = (new DateTime($event->date))->format('m-d-Y');
+            $event->time = (new DateTime($event->time))->format('g:i A');
+            return $event;
+        });
+
+        $getEvents = DB::table('registrations')->where('status', 'Accept')->where('payment_status', 'paid')->get();
 
         return Inertia::render('Admin/Registration', [
             'events' => $events,
@@ -46,16 +103,6 @@ class RegistrationController extends Controller
         ]);
     }
 
-    protected function applySearch($query, $search)
-    {
-        return $query->when($search, function ($query, $search) {
-            $query->where('event', 'LIKE', '%' . $search . '%')
-                ->orWhere('contactperson', 'LIKE', '%' . $search . '%')
-                ->orWhere('address', 'LIKE', '%' . $search . '%')
-                ->orWhere('date', 'LIKE', '%' . $search . '%')
-                ->orWhere('time', 'LIKE', '%' . $search . '%');
-        });
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -103,16 +150,123 @@ class RegistrationController extends Controller
         $event->status = $validated['status'];
         $event->user_id = $validated['user_id'];
         $email = $event->email;
-        
+
         $event->save();
 
         if ($event->status === 'Accept') {
-            Mail::to($email)->send(new UserAcceptNotification($event));
+
+            // PAYMONGO API
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, [
+                CURLOPT_URL => "https://api.paymongo.com/v1/links",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => json_encode([
+                    'data' => [
+                        'attributes' => [
+                            'amount' => 50000,
+                            'description' => 'NON-REFUNDABLE DOWN PAYMENT',
+                            'remarks' => 'Down payment for the event',
+                        ]
+                    ]
+                ]),
+                CURLOPT_HTTPHEADER => [
+                    "accept: application/json",
+                    "authorization: Basic c2tfdGVzdF8zZnI4VUNkR0Z5VHZVVmF2Tk5RMkF2QmU6",
+                    "content-type: application/json"
+                ]
+            ]);
+
+            $response = curl_exec($curl);
+            $decoded = json_decode($response, true);
+            $err = curl_error($curl);
+
+            curl_close($curl);
+
+            if ($err) {
+                echo "cURL Error #:" . $err;
+            } else {
+                $checkout_url = $decoded['data']['attributes']['checkout_url'];
+                $reference_number = $decoded['data']['attributes']['reference_number'];
+
+                // Store the reference number in the event
+                $event->reference_number = $reference_number;
+                $event->save();
+            }
+
+            Mail::to($email)->queue(new UserAcceptNotification($event, $checkout_url));
         } elseif ($event->status === 'Decline') {
-            Mail::to($email)->send(new UserDeclineNotification($event));
+            Mail::to($email)->queue(new UserDeclineNotification($event));
         }
 
-        return Redirect::route('event.index');
+        return redirect()->back()->with('success', 'Event status updated successfully');
+    }
+
+    public function checkAndUpdatePaymentStatus()
+    {
+        Log::info('checkAndUpdatePaymentStatus method called.');
+
+        $events = Registration::where('payment_status', 'Pending')->get();
+        Log::info('Number of pending events: ' . $events->count());
+
+        foreach ($events as $event) {
+            $reference_number = $event->reference_number;
+            Log::info("Processing event with reference number: {$reference_number}");
+
+            if (empty($reference_number)) {
+                Log::error("Event with ID {$event->id} has a blank reference number.");
+                continue;
+            }
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, [
+                CURLOPT_URL => "https://api.paymongo.com/v1/links?reference_number={$reference_number}",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => [
+                    "accept: application/json",
+                    "authorization: Basic c2tfdGVzdF8zZnI4VUNkR0Z5VHZVVmF2Tk5RMkF2QmU6",
+                    "content-type: application/json"
+                ],
+            ]);
+
+            $response = curl_exec($curl);
+            $decoded = json_decode($response, true);
+            $err = curl_error($curl);
+
+            curl_close($curl);
+
+            Log::info('API Response:', ['response' => $decoded]);
+
+            if ($err) {
+                Log::error("cURL Error #: " . $err);
+                continue;
+            }
+
+            if (isset($decoded['data'][0]['attributes']['status'])) {
+                $status = $decoded['data'][0]['attributes']['status'];
+                Log::info("Payment status for reference number {$reference_number}: {$status}");
+
+                if ($status === 'paid') {
+                    $event->payment_status = 'paid';
+                    $event->save();
+                    Log::info("Payment status updated to 'paid' for reference number {$reference_number}");
+                }
+            } else {
+                Log::error("API response does not contain the expected 'data' key.", ['response' => $decoded]);
+            }
+        }
     }
 
     /**

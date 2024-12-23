@@ -39,6 +39,8 @@ return new class extends Migration
             $table->string('suggestion');
             $table->string('images')->nullable();
             $table->string('status')->default('Pending');
+            $table->string('reference_number')->nullable();
+            $table->string('payment_status')->default('Pending');
             $table->timestamps();
         });
     }

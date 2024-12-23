@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Mail\AdminNotification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class UserRegistrationController extends Controller
 {
@@ -87,7 +88,7 @@ class UserRegistrationController extends Controller
     public function store(Request $request): RedirectResponse
     {
 
-        $request->validate(
+        $validatedData = $request->validate(
             [
                 'event' => 'required|string|max:255',
                 'region' => 'required|max:255',
@@ -113,7 +114,7 @@ class UserRegistrationController extends Controller
                 'price' => 'required|string|max:255',
                 'extension' => 'required|string|max:255',
                 'theme' => 'required|string|max:255',
-                'suggestion' => 'required|string|max:255',
+                'suggestion' => 'nullable|string|max:255',
                 'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
             ],
             [
@@ -121,18 +122,16 @@ class UserRegistrationController extends Controller
             ]
         );
 
+      // Convert hour, minute, and ampm to a 24-hour format time string
+    $hour = (int) $validatedData['hour'];
+    $minute = (int) $validatedData['minute'];
+    $ampm = $validatedData['ampm'];
 
-        // Convert hour, minute, and ampm to a 24-hour format time string
-        $hour = $request->hour;
-        $minute = $request->minute;
-        $ampm = $request->ampm;
-
-        if ($ampm === 'PM' && $hour != 12) {
-            $hour += 12;
-        } elseif ($ampm === 'AM' && $hour == 12) {
-            $hour = 0;
-        }
-
+    if ($ampm === 'PM' && $hour != 12) {
+        $hour += 12;
+    } elseif ($ampm === 'AM' && $hour == 12) {
+        $hour = 0;
+    }
         // $hour = 5;
         // $minute = 7;
         $time = sprintf('%02d:%02d', $hour, $minute);
@@ -140,55 +139,60 @@ class UserRegistrationController extends Controller
 
         // Handle file storage
         $imagePaths = [];
-        $imageBaseName = strtolower(preg_replace('/\s+/', '_', $request->contactperson));
         if ($request->hasFile('images')) {
-            $index = 1;
-            foreach ($request->file('images') as $file) {
-                $fileName = $imageBaseName . '_' . $index . '.' . $file->getClientOriginalExtension();
+            $imageBaseName = strtolower(preg_replace('/\s+/', '_', $validatedData['contactperson']));
+            foreach ($request->file('images') as $index => $file) {
+                $fileName = $imageBaseName . '_' . ($index + 1) . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('public/uploads/events', $fileName);
                 $imagePaths[] = Storage::url($path);
-                $index++;
             }
         }
-
         // dd($request->all());
 
         try {
             $userRegistration = Registration::create([
                 'user_id' => $request->user()->id,
-                'event' => $request->event,
-                'street' => $request->street,
-                'barangay' => $request->barangay,
-                'city' => $request->city,
-                'province' => $request->province,
-                'region' => $request->region,
-                'zipcode' => $request->zipcode,
-                'contactperson' => $request->contactperson,
-                'contactno' => $request->contactno,
-                'email' => $request->email,
-                'date' => $request->date,
+                'event' => $validatedData['event'],
+                'street' => $validatedData['street'],
+                'barangay' => $validatedData['barangay'],
+                'city' => $validatedData['city'],
+                'province' => $validatedData['province'],
+                'region' => $validatedData['region'],
+                'zipcode' => $validatedData['zipcode'],
+                'contactperson' => $validatedData['contactperson'],
+                'contactno' => $validatedData['contactno'],
+                'email' => $validatedData['email'],
+                'date' => $validatedData['date'],
                 'time' => $time,
-                'packageid' => $request->packageid,
-                'packagename' => $request->packagename,
-                'alias' => $request->alias,
-                'packagesize' => $request->packagesize,
-                'backdroptype' => $request->backdroptype,
-                'backdropcolor' => $request->backdropcolor,
-                'number_of_shots' => $request->number_of_shots,
-                'price' => $request->price,
-                'extension' => $request->extension,
-                'theme' => $request->theme,
-                'suggestion' => $request->suggestion,
+                'packageid' => $validatedData['packageid'],
+                'packagename' => $validatedData['packagename'],
+                'alias' => $validatedData['alias'],
+                'packagesize' => $validatedData['packagesize'],
+                'backdroptype' => $validatedData['backdroptype'],
+                'backdropcolor' => $validatedData['backdropcolor'],
+                'number_of_shots' => $validatedData['number_of_shots'],
+                'price' => $validatedData['price'],
+                'extension' => $validatedData['extension'],
+                'theme' => $validatedData['theme'],
+                'suggestion' => $validatedData['suggestion'],
                 'images' => json_encode($imagePaths),
             ]);
 
-            Mail::to('rhyaaaaa01072001@gmail.com')->send(new AdminNotification($userRegistration));
+            // Log the email details
+            Log::info('Sending email to: rhyaaaaa01072001@gmail.com');
+            Log::info('Email content: ', ['userRegistration' => $userRegistration]);
+
+            // Queue the email to be sent asynchronously
+            Mail::to('rhyaaaaa01072001@gmail.com')->queue(new AdminNotification($userRegistration));
 
             Session::put('registration_success', true);
-
-            return redirect()->route('user.event.confirmation')->with('success', 'Event registered successfully');
+            
+            return redirect()->route('user.event.confirmation');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'An error occurred while processing your registration. Please try again.']);
+            // Log the error for debugging
+            Log::error('Error processing registration: ' . $e->getMessage());
+    
+            return redirect()->back()->with(['error' => 'An error occurred while processing your registration. Please try again.'], 500);
         }
     }
 
@@ -203,7 +207,7 @@ class UserRegistrationController extends Controller
         // // Clear the session variable after checking
         Session::forget('registration_success');
 
-        return Inertia::render('User/Confirmation', []);
+        return Inertia::render('User/Confirmation');
     }
 
     /**

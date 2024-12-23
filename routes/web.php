@@ -13,6 +13,7 @@ use Inertia\Inertia;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
 
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -31,12 +32,11 @@ Route::middleware('auth', UserMiddleware::class)->group(function () {
     Route::get('/event', [UserRegistrationController::class, 'index'])->name('user.event.index');
     Route::get('/event/registration/{packageId?}', [UserRegistrationController::class, 'create'])->name('user.event.create');
     Route::post('/event/registration', [UserRegistrationController::class, 'store'])->name('user.event.store');
-    Route::post('/event/registration', [UserRegistrationController::class, 'store'])->name('user.event.store');
     Route::get('/event', [UserRegistrationController::class, 'index'])->name('user.event.index');
     Route::get('/event/registration-confirmation', [UserRegistrationController::class, 'indexConfirmation'])->name('user.event.confirmation');
 
-
     Route::get('/packages', [UserPackageController::class, 'index'])->name('user.package.index');
+    
 });
 
 // ADMIN ROUTES
@@ -64,13 +64,18 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
     Route::patch('/admin/backdrop/type/edit/{backdroptype}', [BackdropController::class, 'updateBackdropType'])->name('backdroptype.update');
     Route::delete('/admin/backdrop/type/delete/{backdroptype}', [BackdropController::class, 'destroyBackdropType'])->name('backdroptype.destroy');
 
-    // Route::post('/admin/backdrop', [BackdropController::class, 'storeType'])->name('backdroptype.store');
-    // Route::get('/admin/backdrop/type/{backdroptype}', [BackdropController::class, 'editType'])->name('backdroptype.edit');
-    // Route::post('/admin/backdrop/type/{backdroptype}', [BackdropController::class, 'updateType'])->name('backdroptype.update');
+    // EVENTS PENDING ROUTES
+    Route::get('/admin/pending-events', [RegistrationController::class, 'indexPending'])->name('event.pending.index');
+    Route::patch('/admin/pending-events/{event}', [RegistrationController::class, 'update'])->name('event.update');
 
-    // EVENTS ROUTES
-    Route::get('/admin/events', [RegistrationController::class, 'index'])->name('event.index');
-    Route::patch('/admin/events/{event}', [RegistrationController::class, 'update'])->name('event.update');
+    // EVENTS ACCEPTED ROUTES
+    Route::get('/admin/accepted-events', [RegistrationController::class, 'indexAccepted'])->name('event.accepted.index');
+
+    // EVENTS LISTED ROUTES
+    Route::get('/admin/listed-events', [RegistrationController::class, 'index'])->name('event.index');
+
+
+    // Route::get('/admin/pay', [RegistrationController::class, 'pay'])->name('event.pay');
 });
 
 

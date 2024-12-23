@@ -31,7 +31,9 @@ class UserDeclineNotification extends Mailable
     public function build()
     {
         return $this->subject('Event Registration - Declined')
-                    ->view('emails.user_decline_notification');
+                    ->markdown('emails.user_decline_notification', [
+                        'event' => $this->event,
+                    ]);
     }
 
     /**

@@ -1,17 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Event Registration - Accepted</title>
-</head>
-<body>
-    <h1>Your registration is accepted</h1>
-    <p>
-        Your registration for the event <strong>{{ $event->event }}</strong> is accepted.
-    </p>
+<x-slot:header>
+    <x-mail::header :url="config('app.url')">
+        {{ config('app.name') }}
+    </x-mail::header>
+</x-slot:header>
 
-    {{-- <p>
-        <a href="{{ $adminUrl }}">Click here</a> to view the event registration details.
-    </p> --}}
-    <!-- Add other necessary details -->
-</body>
-</html>
+ @component('mail::message')
+Hi there,
+
+Your registration for the event **{{ $event->event }}** has been accepted.
+
+To fully complete your registration, please proceed with the necessary payment. 
+Note that your registration will remain incomplete until payment is made.
+
+## Important: A non-refundable downpayment of **P500.00** is required for the event.
+
+Please click the link below to make your payment:
+[ Your Payment Now]({{ $checkout_url }})
+
+If you have any questions, feel free to respond to this e-mail. 
+
+Best,   
+Aeon's Photobooth team
+
+@endcomponent
+
+<x-slot:footer>
+    <x-mail::footer>
+        © {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')
+    </x-mail::footer>
+</x-slot:footer>

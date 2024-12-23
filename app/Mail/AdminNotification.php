@@ -17,7 +17,7 @@ class AdminNotification extends Mailable
 
     public $userRegistration;
     public $adminUrl;
-
+    
     /**
      * Create a new message instance.
      */
@@ -34,8 +34,14 @@ class AdminNotification extends Mailable
      */
     public function build()
     {
-        return $this->subject('New Event Registration')
-                    ->view('emails.admin_notification');
+
+        return $this->subject('You’ve Got a New Photobooth Event Registration!')
+                    ->markdown('emails.admin_notification',
+                [
+                    'userRegistration' => $this->userRegistration,
+                    'adminUrl' => $this->adminUrl,
+                ]);
+                   
     }
 
     /**

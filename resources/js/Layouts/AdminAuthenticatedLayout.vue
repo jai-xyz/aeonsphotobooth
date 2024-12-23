@@ -12,10 +12,15 @@ import { Head } from '@inertiajs/vue3';
 
 const isSidebarVisible = ref(false);
 const showingNavigationDropdown = ref(false);
-const isDropdownVisible = ref(false);
+const isDropdownVisibleEvent = ref(false);
 
-function toggleDropdown() {
-    isDropdownVisible.value = !isDropdownVisible.value;
+function toggleDropdownEvent() {
+    isDropdownVisibleEvent.value = !isDropdownVisibleEvent.value;
+}
+const isDropdownVisibleBackdrop = ref(false);
+
+function toggleDropdownBackdrop() {
+    isDropdownVisibleBackdrop.value = !isDropdownVisibleBackdrop.value;
 }
 
 function toggleSidebar() {
@@ -269,6 +274,88 @@ onBeforeUnmount(() => {
                                     <span class="ml-3">Dashboard</span>
                                 </AdminNavLink>
 
+                                
+                                   <AdminDropdown
+                                :active="route().current('event.index') ||  route().current('event.pending.index') ||  route().current('event.accepted.index')">
+                                    <button
+                                        type="button"
+                                        class="flex items-center w-full font-medium text-base text-gray-600"
+                                        @click="toggleDropdownEvent"
+                                    >
+                                       <svg
+                                        :class="[
+                                            'w-6 h-6 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white',
+                                             {
+                                                'text-pink-400':
+                                                    route().current('event.index') ||  route().current('event.pending.index') ||  route().current('event.accepted.index'),
+                                                'text-gray-400 dark:text-gray-400':
+                                                   !route().current('event.index') ||  !route().current('event.pending.index') ||  !route().current('event.accepted.index'),
+                                            },
+                                        ]"
+                                        fill="currentColor"
+                                        viewBox="0 0 22 22"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                        <span
+                                            class="flex-1 ms-2 text-left rtl:text-right whitespace-nowrap"
+                                            >Events</span
+                                        >
+                                        <svg
+                                            class="w-3 h-3"
+                                            :class="{
+                                                'rotate-180': isDropdownVisibleEvent,
+                                            }"
+                                            aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 10 6"
+                                        >
+                                            <path
+                                                stroke="gray"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="m1 1 4 4 4-4"
+                                            />
+                                        </svg>
+                                    </button>
+                                    <ul
+                                        id="dropdown-example"
+                                        :class="{
+                                            hidden: !isDropdownVisibleEvent,
+                                            'py-2 space-y-2': true,
+                                        }"
+                                    >
+                                        <AdminDropdownLink
+                                        class="ms-8 text-gray-500"
+                                        :href="route('event.pending.index')"
+                                        :active="route().current('event.pending.index')">
+                                           Pending Events
+                                        </AdminDropdownLink>
+                                        <AdminDropdownLink
+                                        class="ms-8 text-gray-500"
+                                        :href="route('event.accepted.index')"
+                                        :active="route().current('event.accepted.index')"
+                                        >
+                                          Accepted Events
+                                        </AdminDropdownLink>
+                                        <AdminDropdownLink
+                                        class="ms-8 text-gray-500"
+                                        :href="route('event.index')"
+                                        :active="route().current('event.index')"
+                                        >
+                                          Listed Events
+                                        </AdminDropdownLink>
+                                    </ul>
+                                </AdminDropdown>
+
+
                                 <AdminNavLink
                                     :href="route('package.index')"
                                     :active="route().current('package.index')"
@@ -300,44 +387,12 @@ onBeforeUnmount(() => {
                                     <span class="ml-3">Packages </span>
                                 </AdminNavLink>
 
-                                <AdminNavLink
-                                    :href="route('event.index')"
-                                    :active="route().current('event.index')"
-                                >
-                                    <svg
-                                        :class="[
-                                            'w-6 h-6 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white',
-                                            {
-                                                'text-pink-400':
-                                                    route().current(
-                                                        'event.index'
-                                                    ),
-                                                'text-gray-400 dark:text-gray-400':
-                                                    !route().current(
-                                                        'event.index'
-                                                    ),
-                                            },
-                                        ]"
-                                        fill="currentColor"
-                                        viewBox="0 0 22 22"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-
-                                    <span class="ml-3">Events </span>
-                                </AdminNavLink>
-
                                 <AdminDropdown
                                 :active="route().current('backdrop.index') ||  route().current('backdroptype.index')">
                                     <button
                                         type="button"
                                         class="flex items-center w-full font-medium text-base text-gray-600"
-                                        @click="toggleDropdown"
+                                        @click="toggleDropdownBackdrop"
                                     >
                                          <svg
                                         :class="[
@@ -370,7 +425,7 @@ onBeforeUnmount(() => {
                                         <svg
                                             class="w-3 h-3"
                                             :class="{
-                                                'rotate-180': isDropdownVisible,
+                                                'rotate-180': isDropdownVisibleBackdrop,
                                             }"
                                             aria-hidden="true"
                                             xmlns="http://www.w3.org/2000/svg"
@@ -389,7 +444,7 @@ onBeforeUnmount(() => {
                                     <ul
                                         id="dropdown-example"
                                         :class="{
-                                            hidden: !isDropdownVisible,
+                                            hidden: !isDropdownVisibleBackdrop,
                                             'py-2 space-y-2': true,
                                         }"
                                     >
@@ -424,7 +479,7 @@ onBeforeUnmount(() => {
 
             <div
                 id="main-content"
-                class="relative w-full h-full overflow-y-auto bg-gray-50 lg:ml-64 dark:bg-gray-900"
+                class="relative w-full h-full overflow-y-auto bg-gray-100 lg:ml-64 dark:bg-gray-900"
             >
                 <header v-if="$slots.header">
                     <div class="mx-auto">

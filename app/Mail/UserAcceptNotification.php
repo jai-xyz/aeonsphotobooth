@@ -14,13 +14,15 @@ class UserAcceptNotification extends Mailable
     use Queueable, SerializesModels;
 
     public $event;
+    public $checkout_url;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($event)
+    public function __construct($event, $checkout_url)
     {
         $this->event = $event;
+        $this->checkout_url = $checkout_url;
     }
 
        /**
@@ -30,8 +32,11 @@ class UserAcceptNotification extends Mailable
      */
     public function build()
     {
-        return $this->subject('Event Registration - Accepted')
-                    ->view('emails.user_accept_notification');
+        return $this->subject('Event Registration Accepted - Complete Your Payment')
+                    ->markdown('emails.user_accept_notification', [
+                        'event' => $this->event,
+                        'checkout_url' => $this->checkout_url,
+                    ]);
     }
 
     /**

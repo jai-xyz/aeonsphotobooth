@@ -17,13 +17,7 @@ const props = defineProps({
         type: [Array, Object],
         required: true,
     },
-    getEvents: {
-        type: Array,
-        required: true,
-    },
 });
-
-console.log(props.getEvents);
 
 /* #############################
             PAGINATION
@@ -43,7 +37,7 @@ const pagination = ref({
 
 const changePage = (page) => {
     Inertia.get(
-        route("event.index", { page }),
+        route("event.pending.index", { page }),
         {},
         {
             preserveScroll: true,
@@ -121,7 +115,7 @@ let search = ref(usePage().props.search),
     pageNumber = ref(1);
 
 let eventUrl = computed(() => {
-    let url = new URL(route("event.index"));
+    let url = new URL(route("event.pending.index"));
     url.searchParams.append("page", pageNumber.value);
 
     if (search.value) {
@@ -174,128 +168,6 @@ function formatTime(dateStr) {
     const minutesStr = minutes < 10 ? "0" + minutes : minutes;
     return `${hours}:${minutesStr} ${ampm}`;
 }
-
-let view = ref("table");
-
-/* #############################
-            VUECAL CODES
-    ############################# */
-
-// MIN DATES FOR INPUT DATE
-const minInputDate = computed(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 1);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-});
-
-// MIN DATES VUECAL
-const minDate = computed(() => {
-    const date = new Date();
-    date.setDate(date.getDate());
-    return date;
-});
-
-// SPLIT DAYS AND EVENTS VUECAL
-const splitsAndEvents = {
-    splits: [],
-    events: [],
-};
-
-if (props.getEvents && Array.isArray(props.getEvents)) {
-    // Split end times
-    const splitEndTimes = {
-        1: new Date(0),
-    };
-
-    // Filter events that are after the min date
-    splitsAndEvents.events = props.getEvents
-        .filter((event) => {
-            const startDateTime = new Date(`${event.date}T${event.time}`);
-            return startDateTime > minDate.value;
-        })
-        .flatMap((event) => {
-            const startDateTime = new Date(`${event.date}T${event.time}`);
-            const endDateTime = new Date(
-                startDateTime.getTime() + 2 * 60 * 60 * 1000
-            );
-
-            // If the start time is after 10pm, the end time will be the next day
-            if (startDateTime.getHours() >= 22) {
-                endDateTime.setDate(endDateTime.getDate());
-            }
-
-            // Add 1-hour allowance before and after the event
-            const allowanceStartDateTime = new Date(
-                startDateTime.getTime() - 1 * 60 * 60 * 1000
-            );
-            const allowanceEndDateTime = new Date(
-                endDateTime.getTime() + 1 * 60 * 60 * 1000
-            );
-
-            const endHours = String(endDateTime.getHours()).padStart(2, "0");
-            const endMinutes = String(endDateTime.getMinutes()).padStart(
-                2,
-                "0"
-            );
-            const end = `${endDateTime.getFullYear()}-${String(
-                endDateTime.getMonth() + 1
-            ).padStart(2, "0")}-${String(endDateTime.getDate()).padStart(
-                2,
-                "0"
-            )} ${endHours}:${endMinutes}`;
-
-            let split = 1;
-
-            const event_uid = event.id;
-            splitEndTimes[split] = endDateTime;
-
-            return [
-                {
-                    start: allowanceStartDateTime,
-                    end: startDateTime,
-                    title: "",
-                    class: "allowance",
-                    split: split,
-                    background: true,
-                },
-                {
-                    id: event_uid,
-                    start: startDateTime,
-                    end: endDateTime,
-                    title: event.event,
-                    class: "primary",
-                    split: split,
-                    // background: true,
-                },
-                {
-                    start: endDateTime,
-                    end: allowanceEndDateTime,
-                    title: "",
-                    class: "allowance",
-                    split: split,
-                    background: true,
-                },
-            ];
-        });
-}
-
-/* #############################
-        MODAL DIALOG
-   ############################# */
-const showDialog = ref(false);
-const selectedEvent = ref({});
-
-const onEventClick = (event) => {
-    if (event.title) {
-        const eventId = event.id; // Use the title (which is the event ID) to find the event
-        selectedEvent.value = props.getEvents.find((e) => e.id === eventId);
-        console.log("Selected Events: ", selectedEvent.value);
-        showDialog.value = true;
-    }
-};
 
 /* #############################
         COLLAPSIBLE ROWS
@@ -369,7 +241,7 @@ const isDetailsVisible = (eventId) => {
                     <h1
                         class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white"
                     >
-                        Listed events
+                        Pending events
                     </h1>
                 </div>
                 <div
@@ -430,32 +302,6 @@ const isDetailsVisible = (eventId) => {
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center align-center">
-                        <button
-                            @click="view = 'table'"
-                            class="rounded-e-none flex justify-center align-center px-4 py-2 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest transition ease-in-out duration-150"
-                            :class="{
-                                'bg-primary-500 text-white focus:outline-none focus:ring-none focus:ring-0':
-                                    view === 'table',
-                                'text-gray-500  bg-primary-700':
-                                    view !== 'table',
-                            }"
-                        >
-                            Table
-                        </button>
-                        <button
-                            @click="view = 'calendar'"
-                            class="rounded-s-none flex justify-center align-center px-4 py-2 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest transition ease-in-out duration-150"
-                            :class="{
-                                'bg-primary-500 text-white focus:outline-none focus:ring-none focus:ring-0':
-                                    view === 'calendar',
-                                'text-gray-500 bg-primary-700':
-                                    view !== 'calendar',
-                            }"
-                        >
-                            Calendar
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -464,7 +310,7 @@ const isDetailsVisible = (eventId) => {
             <div class="overflow-x-auto">
                 <div class="inline-block min-w-full align-middle">
                     <div class="overflow-hidden shadow">
-                        <div v-if="view === 'table'">
+                        <div>
                             <table
                                 class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600"
                             >
@@ -472,33 +318,40 @@ const isDetailsVisible = (eventId) => {
                                     <tr>
                                         <th
                                             scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                            class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
                                         >
                                             Event Title
                                         </th>
                                         <th
                                             scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                       class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
                                         >
                                             Date & Time
                                         </th>
                                         <th
                                             scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                         class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
                                         >
                                             Contact Person
                                         </th>
-
+                                    
                                         <th
                                             scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                     class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
                                         >
                                             Attachment/s
                                         </th>
 
+                                             <th
+                                            scope="col"
+                                                     class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
+                                        >
+                                            Status
+                                        </th>
+                        
                                         <th
                                             scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                       class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
                                         >
                                             Actions
                                         </th>
@@ -584,6 +437,29 @@ const isDetailsVisible = (eventId) => {
                                                 </div>
                                             </div>
                                         </td>
+                                           <td
+                                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                        >
+                                             <span
+                                                :class="{
+                                                    'bg-yellow-7 text-yellow-77 font-semibold me-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-7 dark:text-yellow-77':
+                                                        event.status ===
+                                                        'Pending',
+                                                
+                                                }"
+                                                class="px-2 py-1 rounded"
+                                            >
+                                                {{
+                                                    event.status
+                                                        ? event.status ===
+                                                        
+                                                              "Pending"
+                                                            ? "Pending"
+                                                            : ""
+                                                        : ""
+                                                }}
+                                            </span>
+                                        </td>
                                         <td
                                             class="p-4 space-x-2 whitespace-nowrap"
                                         >
@@ -638,20 +514,6 @@ const isDetailsVisible = (eventId) => {
                                                     />
                                                 </svg>
                                             </button>
-                                            <button
-                                                class="inline-flex items-center text-white rounded-md bg-blue-500 p-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-blue-300 dark:hover:bg-blue-400 dark:focus:ring-blue-200"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
-                                                    class="w-4 h-4"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        d="M18 3H6v4H3c-1.1 0-2 .9-2 2v6h4v6h14v-6h4v-6c0-1.1-.9-2-2-2h-3V3zM8 5h8v2H8V5zm10 14H6v-6h12v6zm4-8H4v-2h16v2z"
-                                                    />
-                                                </svg>
-                                            </button>
                                         </td>
                                     </tr>
 
@@ -661,7 +523,7 @@ const isDetailsVisible = (eventId) => {
                                         :key="'details-' + event.id"
                                         class="bg-gray-50 dark:bg-gray-700"
                                     >
-                                        <td colspan="5" class="p-2">
+                                        <td colspan="6" class="p-2">
                                             <table
                                                 class="min-w-full divide-y divide-gray-200 dark:divide-gray-600"
                                             >
@@ -671,25 +533,25 @@ const isDetailsVisible = (eventId) => {
                                                     <tr>
                                                         <th
                                                             scope="col"
-                                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                                      class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
                                                         >
                                                             Address
                                                         </th>
                                                         <th
                                                             scope="col"
-                                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                                        class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
                                                         >
                                                             Package
                                                         </th>
                                                         <th
                                                             scope="col"
-                                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                          class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
                                                         >
                                                             Backdrop
                                                         </th>
                                                         <th
                                                             scope="col"
-                                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                                       class="p-4 text-xs font-extrabold text-left text-gray-700  uppercase dark:text-gray-400"
                                                         >
                                                             Suggestion
                                                         </th>
@@ -786,7 +648,6 @@ const isDetailsVisible = (eventId) => {
             </div>
 
             <div
-                v-if="view === 'table'"
                 class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700"
             >
                 <div class="flex items-center mb-4 sm:mb-0">
@@ -895,165 +756,7 @@ const isDetailsVisible = (eventId) => {
                     </nav>
                 </div>
             </div>
-            <div
-                v-if="view === 'calendar'"
-                class="flex justify-center align-center"
-            >
-                <VueCal
-                    :events="splitsAndEvents.events"
-                    class="vuecal"
-                    events-count-on-year-view
-                    today-button
-                    sticky-split-labels
-                    style="width: 150%; height: 655px; max-width: 1400px"
-                    :disable-views="['day', 'years', 'year']"
-                    active-view="month"
-                    timeFormat="hh:mm {AM}"
-                    :min-date="minDate"
-                    :split-days="splitsAndEvents.splits"
-                    :on-event-click="onEventClick"
-                >
-                </VueCal>
-            </div>
         </div>
-
-        <Modal :show="showDialog" @close="showDialog = false">
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
-                <div
-                    class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
-                >
-                    <div
-                        class="text-xl font-semibold dark:text-white flex justify-center align-center"
-                    >
-                        Event Details
-                    </div>
-                    <button
-                        type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
-                        @click="showDialog = false"
-                    >
-                        <svg
-                            class="w-5 h-5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clip-rule="evenodd"
-                            ></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="flex align-center">
-                    <div class="m-6">
-                        <p class="text-gray-600">
-                            Title of the Event:
-                            <strong class="text-gray-800">{{
-                                selectedEvent.event
-                            }}</strong>
-                        </p>
-                        <p class="text-gray-600 mt-1">
-                            Contact Person:
-                            <strong class="text-gray-800">
-                                {{ selectedEvent.contactperson }}</strong
-                            >
-                        </p>
-                        <p class="text-gray-600 mt-1">
-                            Email:
-                            <strong class="text-gray-800">
-                                {{ selectedEvent.email }}</strong
-                            >
-                        </p>
-                        <p class="text-gray-600 mt-1">
-                            Contact Number:
-                            <strong class="text-gray-800">
-                                {{ selectedEvent.contactno }}</strong
-                            >
-                        </p>
-                        <p class="text-gray-600 mt-1">
-                            Exact time of photo booth session:
-                            <strong class="text-gray-800">
-                                {{
-                                    formatTime(
-                                        selectedEvent.date +
-                                            "T" +
-                                            selectedEvent.time
-                                    ) +
-                                    " " +
-                                    formatDate(selectedEvent.date)
-                                }}</strong
-                            >
-                        </p>
-                        <p class="text-gray-600 mt-1">
-                            Location of the Event:
-                            <strong class="text-gray-800">
-                                {{
-                                    selectedEvent.street +
-                                    ", " +
-                                    selectedEvent.barangay +
-                                    ", " +
-                                    selectedEvent.city +
-                                    ", " +
-                                    selectedEvent.province
-                                }}
-                            </strong>
-                        </p>
-
-                        <p class="text-gray-600 mt-1">
-                            Package:
-                            <strong class="text-gray-800">
-                                {{
-                                    selectedEvent.packagename +
-                                    " - " +
-                                    selectedEvent.alias
-                                }}
-                            </strong>
-                        </p>
-
-                        <p class="text-gray-600 mt-1">
-                            Package Details:
-                            <strong class="text-gray-800">
-                                {{
-                                    "₱" +
-                                    selectedEvent.price +
-                                    " - " +
-                                    selectedEvent.packagesize +
-                                    " - " +
-                                    selectedEvent.number_of_shots +
-                                    " shots"
-                                }}
-                            </strong>
-                        </p>
-
-                        <p class="text-gray-600 mt-1">
-                            Backdrop Details:
-                            <strong class="text-gray-800">
-                                {{
-                                    selectedEvent.backdroptype +
-                                    " - " +
-                                    selectedEvent.backdropcolor
-                                }}</strong
-                            >
-                        </p>
-
-                        <p class="text-gray-600 mt-1">
-                            Theme:
-                            <strong class="text-gray-800">
-                                {{ selectedEvent.theme }}</strong
-                            >
-                        </p>
-                        <p class="text-gray-600 mt-1">
-                            Suggestion:
-                            <strong class="text-gray-800">
-                                {{ selectedEvent.suggestion }}</strong
-                            >
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </Modal>
 
         <Modal :show="updatingEventStatus" @close="closeModal">
             <div class="p-6">

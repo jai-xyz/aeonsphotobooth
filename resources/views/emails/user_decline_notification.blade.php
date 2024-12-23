@@ -1,17 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Event Registration - Declined</title>
-</head>
-<body>
-    <h1>Your Event Registration has been Declined</h1>
-    <p>
-      Here's the possible reason why your registration for the event <strong>{{ $event->event }}</strong> is declined:
-    </p>
+<x-slot:header>
+    <x-mail::header :url="config('app.url')">
+        {{ config('app.name') }}
+    </x-mail::header>
+</x-slot:header>
 
-    {{-- <p>
-        <a href="{{ $adminUrl }}">Click here</a> to view the event registration details.
-    </p> --}}
-    <!-- Add other necessary details -->
-</body>
-</html>
+ @component('mail::message')
+Hi there,
+
+Unfortunately, your registration for the event **{{ $event->event }}** has been declined.
+
+## Possible Reasons:
+ - The event may have reached its maximum capacity.
+ - There could be incomplete or incorrect information in your registration.
+ - Payment requirements may not have been met.
+
+If you believe this was a mistake or need further assistance, feel free to contact us.
+
+Best,   
+Aeon's Photobooth team
+
+@endcomponent
+
+<x-slot:footer>
+    <x-mail::footer>
+        © {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')
+    </x-mail::footer>
+</x-slot:footer>

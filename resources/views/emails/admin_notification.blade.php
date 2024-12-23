@@ -1,23 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>New Event Registration</title>
-</head>
-<script>
+<x-slot:header>
+    <x-mail::header :url="config('app.url')">
+        {{ config('app.name') }}
+    </x-mail::header>
+</x-slot:header>
 
-</script>
-<body>
-    <h1>New Event Registration</h1>
-    <p>Title of the Event: {{ $userRegistration->event }}</p>
-    <p>Event Date: {{ $userRegistration->date . ' ' . $userRegistration->time }} </p>
-    <p>Contact Person: {{ $userRegistration->contactperson }}</p>
-    <p>Contact No.: {{ $userRegistration->contactno }}</p>
-    <p>Email: {{ $userRegistration->email }}</p>
+ @component('mail::message')
+Hello Admin,
 
+A new registration has been received for your photo booth service.
 
-    <p>
-        <a href="{{ $adminUrl }}">Click here</a> to view the event registration details.
-    </p>
-    <!-- Add other necessary details -->
-</body>
-</html>
+## Event Details:
+- Title of the Event: **{{ $userRegistration->event }}**
+- Event Date: **{{ $userRegistration->date . ' ' . $userRegistration->time }}**
+- Contact Person: **{{ $userRegistration->contactperson }}**
+- Contact No.: **{{ $userRegistration->contactno }}**
+- Email: **{{ $userRegistration->email }}**
+
+Please review the registration details and connect with the client to finalize preparations.
+
+To view the complete event registration details, please visit the following link: [{{ $adminUrl }}]({{ $adminUrl }})
+
+Thank you!
+
+@endcomponent
+
+<x-slot:footer>
+    <x-mail::footer>
+        © {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')
+    </x-mail::footer>
+</x-slot:footer>

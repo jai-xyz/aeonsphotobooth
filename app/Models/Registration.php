@@ -36,5 +36,8 @@ class Registration extends Model
         'theme',
         'suggestion',
         'images',
+        'status',
+        'payment_status',
+        'reference_number'
     ];
 }
