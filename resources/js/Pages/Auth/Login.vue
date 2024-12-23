@@ -160,7 +160,6 @@ const signInWithGoogle = () => {
                             ></div>
                         </div>
                     </div>
-
                     <SecondaryButton
                         class="mt-3 w-full flex align-center justify-center px-0"
                         :class="{ 'opacity-25': form.processing }"
