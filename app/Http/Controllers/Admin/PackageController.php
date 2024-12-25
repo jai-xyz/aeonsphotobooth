@@ -63,8 +63,6 @@ class PackageController extends Controller
             'size' => 'required|string|max:255',
             'size2' => 'nullable|string|max:255',
             'size3' => 'nullable|string|max:255',
-            'size4' => 'nullable|string|max:255',
-            'size5' => 'nullable|string|max:255',
             // 'number_of_shots' => 'required|string|max:255',
             'inclusion' => 'required|string|max:2500',
             'note' => 'required|string|max:255',
@@ -75,25 +73,11 @@ class PackageController extends Controller
             // 'extension' => 'required|string|max:255',
         ]);
 
-        $sizes = explode(', ', $request->input('size'));
-
-        if (count($sizes) > 1) {
-            $request->merge([
-                'size' => $sizes[0],
-                'size2' => $sizes[1] ?? null,
-                'size3' => $sizes[2] ?? null,
-                'size4' => $sizes[3] ?? null,
-                'size5' => $sizes[4] ?? null,
-            ]);
-        }
-
         $package = Packages::create($request->only(['name', 'alias',
             'duration',
             'size',
             'size2',
             'size3',
-            'size4',
-            'size5',
             'inclusion',
             'note'
         ]));

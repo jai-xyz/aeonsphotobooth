@@ -64,7 +64,7 @@ class UserRegistrationController extends Controller
         $getAllPackages = Packages::with('options')->get();
 
         //                                                       Accepted
-        $getEvents = DB::table('registrations')->where('status', 'Pending')->get();
+        $getEvents = DB::table('registrations')->where('status', 'Accept')->where('payment_status', 'paid')->get();
 
         $backdropTypes = DB::table('backdroptypes')->get();
 

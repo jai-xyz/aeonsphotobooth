@@ -16,6 +16,7 @@ import DangerButton from "@/Components/DangerButton.vue";
 import { Inertia } from "@inertiajs/inertia";
 import "../../../css/custom-styles.css";
 import Toast from "@/Components/Toast.vue";
+import Dropdown from "@/Components/Dropdown.vue";
 
 const props = defineProps({
     packages: {
@@ -84,6 +85,8 @@ const addForm = useForm({
     // price: "",
     duration: "",
     size: "",
+    size2: "",
+    size3: "",
     // number_of_shots: "",
     inclusion: "",
     note: "",
@@ -99,6 +102,8 @@ const addNewProduct = (pkg) => {
     // addForm.price = pkg.price;
     addForm.duration = pkg.duration;
     addForm.size = pkg.size;
+    addForm.size2 = pkg.size2 || "";
+    addForm.size3 = pkg.size3 || "";
     // addForm.number_of_shots = pkg.number_of_shots;
     addForm.inclusion = pkg.inclusion;
     addForm.note = pkg.note;
@@ -109,15 +114,40 @@ const addNewProduct = (pkg) => {
     addingNewProduct.value = true;
 };
 
-const addOption = () => {
-    addForm.options.push({ number_of_shots: "", price: "", extension: "" });
+const addFormOption = () => {
+    const lastOption = addForm.options[addForm.options.length - 1];
+    if (
+        lastOption.number_of_shots &&
+        lastOption.price &&
+        lastOption.extension
+    ) {
+        addForm.options.push({ number_of_shots: "", price: "", extension: "" });
+        addForm.errors.options = ""; // Clear error message
+    } else {
+        addForm.errors.options =
+            "Please fill in all fields before adding a new option.";
+    }
 };
 
-const removeOption = (index) => {
+const removeAddFormOption = (index) => {
     addForm.options.splice(index, 1);
 };
 
+
+/* #############################
+        SIZE DROPDOWN
+   ############################# */
+
+const isDropdownVisibleSize = ref(false);
+
+function toggleDropdownSize() {
+    isDropdownVisibleSize.value = !isDropdownVisibleSize.value;
+}
+
 const submitAdd = () => {
+  console.log("Add form size:", addForm.size);
+    console.log("Add form size2:", addForm.size2);
+    console.log("Add form size3:", addForm.size3);
     console.log("Submitting form with data:", addForm);
     addForm.post(route("package.store", { page: currentPage.value }), {
         preserveScroll: true,
@@ -131,7 +161,6 @@ const submitAdd = () => {
         },
         onFinish: () => {
             console.log("Form submission finished");
-            addForm.reset();
         },
     });
 };
@@ -139,6 +168,8 @@ const submitAdd = () => {
 const closeAddModal = () => {
     addingNewProduct.value = false;
     addForm.reset();
+    isDropdownVisibleSize.value = false;  
+    addForm.errors.options = "";
 };
 
 /* #############################
@@ -173,9 +204,13 @@ const openEditModal = (pkg) => {
     editForm.inclusion = pkg.inclusion;
     editForm.note = pkg.note;
     // editForm.extension = pkg.extension;
-    editForm.options = pkg.options || [
+   editForm.options = (pkg.options || [
         { number_of_shots: "", price: "", extension: "" },
-    ];
+    ]).map(option => ({
+        number_of_shots: String(option.number_of_shots),
+        price: String(option.price),
+        extension: String(option.extension)
+    }));
 
     // for checking if there are changes
     editForm.OrigId = pkg.id;
@@ -187,12 +222,32 @@ const openEditModal = (pkg) => {
         .filter((size) => size)
         .join(", ");
     editForm.OrigNumberOfShots = pkg.number_of_shots;
-    editForm.OrigInclusion = pkg.inclusion;
-    editForm.OrigNote = pkg.note;
-    editForm.OrigExtension = pkg.extension;
+    editForm.OrigInclusion = pkg.options.inclusion;
+    editForm.OrigNote = pkg.options.note;
+    editForm.OrigExtension = pkg.options.extension;
 
     editingProduct.value = true;
 };
+
+const addEditFormOption = () => {
+    const lastOption = editForm.options[editForm.options.length - 1];
+    if (
+        lastOption.number_of_shots &&
+        lastOption.price &&
+        lastOption.extension
+    ) {
+        editForm.options.push({ number_of_shots: "", price: "", extension: "" });
+        editForm.errors.options = ""; // Clear error message
+    } else {
+        editForm.errors.options =
+            "Please fill in all fields before adding a new option.";
+    }
+};
+
+const removeEditFormOption = (index) => {
+    editForm.options.splice(index, 1);
+};
+
 
 const submitEdit = () => {
     editForm.patch(
@@ -279,6 +334,21 @@ watch(
         });
     }
 );
+
+/* #############################
+        COLLAPSIBLE ROWS
+   ############################# */
+const visibleDetails = ref({});
+
+const toggleDetails = (pkgId) => {
+    visibleDetails.value[pkgId] = !visibleDetails.value[pkgId];
+};
+
+const isDetailsVisible = (pkgId) => {
+    return !!visibleDetails.value[pkgId];
+};
+
+
 </script>
 
 <template>
@@ -433,55 +503,26 @@ watch(
                                 <tr>
                                     <th
                                         scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
                                     >
                                         Package Name
                                     </th>
                                     <th
                                         scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
                                     >
-                                        Price
+                                        Price | Extension | Number of shots
                                     </th>
+
                                     <th
                                         scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                    >
-                                        Duration
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
                                     >
                                         Size/s
                                     </th>
                                     <th
                                         scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                    >
-                                        Number of shots
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                    >
-                                        Inclusion
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                    >
-                                        Note
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
-                                    >
-                                        Extension
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
                                     >
                                         Actions
                                     </th>
@@ -489,14 +530,15 @@ watch(
                             </thead>
                             <tbody
                                 class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
+                                v-for="pkg in packages.data"
+                                :key="pkg.id"
                             >
                                 <tr
-                                    v-for="pkg in packages.data"
-                                    :key="pkg.id"
                                     class="hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                     <td
-                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                        @click="toggleDetails(pkg.id)"
+                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400 cursor-pointer"
                                     >
                                         <div
                                             class="text-base font-semibold text-gray-900 dark:text-white"
@@ -512,17 +554,18 @@ watch(
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                     >
-                                        ₱{{
-                                            pkg.options
-                                                .map((option) => option.price)
-                                                .join(", ₱")
-                                        }}
+                                        <span
+                                            v-html="
+                                                pkg.options
+                                                    .map(
+                                                        (option) =>
+                                                            `Price: ₱${option.price}, Ext: ${option.extension}, Shots: ${option.number_of_shots}`
+                                                    )
+                                                    .join('<br>')
+                                            "
+                                        ></span>
                                     </td>
-                                    <td
-                                        class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                    >
-                                        {{ pkg.duration }}
-                                    </td>
+
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                     >
@@ -532,39 +575,6 @@ watch(
                                         }}{{ pkg.size4 ? ", " + pkg.size4 : ""
                                         }}{{
                                             pkg.size5 ? ", " + pkg.size5 : ""
-                                        }}
-                                    </td>
-                                    <td
-                                        class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                    >
-                                        {{
-                                            pkg.options
-                                                .map(
-                                                    (option) =>
-                                                        option.number_of_shots
-                                                )
-                                                .join(", ")
-                                        }}
-                                    </td>
-                                    <td
-                                        class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
-                                    >
-                                        {{ pkg.inclusion }}
-                                    </td>
-                                    <td
-                                        class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
-                                    >
-                                        {{ pkg.note }}
-                                    </td>
-                                    <td
-                                        class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                    >
-                                        {{
-                                            pkg.options
-                                                .map(
-                                                    (option) => option.extension
-                                                )
-                                                .join(", ")
                                         }}
                                     </td>
 
@@ -592,6 +602,7 @@ watch(
                                             </svg>
                                         </button>
                                         <button
+                                            v-if="!pkg.isUsed"
                                             type="button"
                                             id="deleteProductButton"
                                             @click="openDeleteModal(pkg)"
@@ -610,14 +621,91 @@ watch(
                                                 ></path>
                                             </svg>
                                         </button>
+                                        <button
+                                            @click="toggleDetails(pkg.id)"
+                                            class="inline-flex items-center text-white rounded-md bg-gray-500 p-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-gray-300 dark:hover:bg-gray-400 dark:focus:ring-gray-200"
+                                        >
+                                            <svg
+                                                class="w-4 h-4"
+                                                :class="{
+                                                    'rotate-180':
+                                                        isDetailsVisible(
+                                                            pkg.id
+                                                        ),
+                                                }"
+                                                aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 10 6"
+                                            >
+                                                <path
+                                                    stroke="white"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="m1 1 4 4 4-4"
+                                                />
+                                            </svg>
+                                        </button>
                                     </td>
                                 </tr>
-                                <tr v-if="packages.data.length === 0">
-                                    <td
-                                        colspan="12"
-                                        class="p-4 text-center text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
-                                    >
-                                        No records found
+
+                                <tr
+                                    v-if="isDetailsVisible(pkg.id)"
+                                    :key="'details-' + pkg.id"
+                                    class="bg-gray-50 dark:bg-gray-700"
+                                >
+                                    <td colspan="6" class="p-2">
+                                        <table
+                                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-600"
+                                        >
+                                            <thead
+                                                class="bg-gray-100 dark:bg-gray-700"
+                                            >
+                                                <tr>
+                                                    <th
+                                                        scope="col"
+                                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                    >
+                                                        Inclusion
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                    >
+                                                        Note
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td
+                                                        class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
+                                                    >
+                                                        {{ pkg.inclusion }}
+                                                    </td>
+                                                    <td
+                                                        class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
+                                                    >
+                                                        <div>
+                                                            {{ pkg.note }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tr
+                                                v-if="
+                                                    packages.data.length === 0
+                                                "
+                                            >
+                                                <td
+                                                    colspan="12"
+                                                    class="p-4 text-center text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                                >
+                                                    No records found
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                             </tbody>
@@ -807,27 +895,6 @@ watch(
                                 />
                             </div>
 
-                            <!-- <div class="col-span-6 sm:col-span-3">
-                                <InputLabel
-                                    for="price"
-                                    value="Price"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                />
-                                <NumberInput
-                                    id="price"
-                                    type="text"
-                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                                    v-model="addForm.price"
-                                    required
-                                    autocomplete="off"
-                                    placeholder="e.g. ₱3500"
-                                />
-                                <InputError
-                                    class="mt-2"
-                                    :message="addForm.errors.price"
-                                />
-                            </div> -->
-
                             <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="duration"
@@ -856,45 +923,107 @@ watch(
                                     value="Size"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                 />
-                                <TextInput
-                                    id="size"
-                                    type="text"
-                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                                    v-model="addForm.size"
-                                    required
-                                    autocomplete="off"
-                                    placeholder="e.g. 4r"
-                                />
+
+                                <div class="relative">
+                                    <button
+                                        class="text-gray-700 bg-gray-50 border shadow-sm border-gray-300 hover:bg-gray-100 focus:ring-primary-600 focus:ring-1 focus:border-primary-600 w-full font-medium rounded-lg text-sm px-5 p-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                        type="button"
+                                        @click="toggleDropdownSize"
+                                    >
+                                        Select size
+                                        <svg
+                                            class="w-2.5 h-2.5 ms-auto"
+                                            aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 10 6"
+                                        >
+                                            <path
+                                                stroke="currentColor"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="m1 1 4 4 4-4"
+                                            />
+                                        </svg>
+                                    </button>
+
+                                    <!-- Dropdown menu -->
+                                    <div
+                                        class="absolute z-10  bg-gray-50 divide-y w-full divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                                        :class="{
+                                            hidden: !isDropdownVisibleSize,
+                                        }"
+                                    >
+                                        <ul
+                                            class="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200"
+                                        >
+                                            <li>
+                                                <div class="flex items-center">
+                                                    <input
+                                                        id="checkbox-item-1"
+                                                        type="checkbox"
+                                                        :true-value="'4R'"
+                                                        :false-value="''"
+                                                        v-model="addForm.size"
+                                                        class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                                    />
+                                                    <label
+                                                        for="checkbox-item-1"
+                                                        class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                                    >
+                                                        4R
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="flex items-center">
+                                                    <input
+                                                        id="checkbox-item-2"
+                                                        type="checkbox"
+                                                        :true-value="'Strips'"
+                                                        :false-value="''"
+                                                        v-model="addForm.size2"
+                                                        class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                                    />
+                                                    <label
+                                                        for="checkbox-item-2"
+                                                        class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                                    >
+                                                        Strips  
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="flex items-center">
+                                                    <input
+                                                        id="checkbox-item-3"
+                                                        type="checkbox"
+                                                        :true-value="'Polaroid size'"
+                                                         :false-value="''"
+                                                        v-model="addForm.size3"
+                                                        class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                                    />
+                                                    <label
+                                                        for="checkbox-item-3"
+                                                        class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                                    >
+                                                        Polaroid size
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
 
                                 <InputError
                                     class="mt-2"
                                     :message="addForm.errors.size"
                                 />
+
                             </div>
 
-                            <!-- <div class="col-span-6 sm:col-span-3">
-                                <InputLabel
-                                    for="shots"
-                                    value="Number of shots"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                />
-                                <TextInput
-                                    id="shots"
-                                    type="text"
-                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                                    v-model="addForm.number_of_shots"
-                                    required
-                                    autocomplete="off"
-                                    placeholder="e.g. 4"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="addForm.errors.number_of_shots"
-                                />
-                            </div> -->
-
-                            <div class="col-span-6 sm:col-span-3">
+                            <div class="col-span-6">
                                 <InputLabel
                                     for="note"
                                     value="Note"
@@ -915,28 +1044,6 @@ watch(
                                     :message="addForm.errors.note"
                                 />
                             </div>
-                            <!-- 
-                            <div class="col-span-6 sm:col-span-3">
-                                <InputLabel
-                                    for="extension"
-                                    value="Extension"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                />
-                                <TextInput
-                                    id="extension"
-                                    type="text"
-                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                                    v-model="addForm.extension"
-                                    required
-                                    autocomplete="off"
-                                    placeholder="e.g. ₱1000.00 / hour extension"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="addForm.errors.extension"
-                                />
-                            </div> -->
 
                             <div class="col-span-6">
                                 <InputLabel
@@ -961,66 +1068,108 @@ watch(
                                 />
                             </div>
 
-                            <div class="mb-4">
-                                <h2 class="text-xl font-bold mb-2">
+                            <div class="mb-4 col-span-6">
+                                <h3 class="text-md font-bold mb-2">
                                     Package Options
-                                </h2>
+                                </h3>
                                 <div
                                     v-for="(option, index) in addForm.options"
                                     :key="index"
-                                    class="mb-4"
+                                    class="mb-4 flex justify-center align-center gap-3"
                                 >
-                                    <label
-                                        for="number_of_shots"
-                                        class="block text-gray-700"
-                                        >Number of Shots</label
-                                    >
-                                    <input
-                                        id="number_of_shots"
-                                        type="number"
-                                        v-model="option.number_of_shots"
-                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                                        required
-                                    />
-                                    <label
-                                        for="price"
-                                        class="block text-gray-700"
-                                        >Price</label
-                                    >
-                                    <input
-                                        id="price"
-                                        type="text"
-                                        v-model="option.price"
-                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                                        required
-                                    />
-                                    <label
-                                        for="extension"
-                                        class="block text-gray-700"
-                                        >Extension</label
-                                    >
-                                    <input
-                                        id="extension"
-                                        type="text"
-                                        v-model="option.extension"
-                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        @click="removeOption(index)"
-                                        class="mt-2 px-4 py-2 bg-red-500 text-white rounded-md"
-                                    >
-                                        Remove Option
-                                    </button>
+                                    <div>
+                                        <InputLabel
+                                            for="number_of_shots"
+                                            class="block text-gray-700"
+                                            >Number of Shots</InputLabel
+                                        >
+                                        <NumberInput
+                                            id="number_of_shots"
+                                            type="text"
+                                            v-model="option.number_of_shots"
+                                            class="mt-1 block w-full border bg-gray-50 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                            required
+                                            autocomplete="off"
+                                        />
+                                    </div>
+                                    <div>
+                                        <InputLabel
+                                            for="price"
+                                            class="block text-gray-700"
+                                            >Price</InputLabel
+                                        >
+
+                                        <NumberInput
+                                            id="price"
+                                            type="text"
+                                            v-model="option.price"
+                                            class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                            required
+                                            autocomplete="off"
+                                        />
+                                    </div>
+                                    <div>
+                                        <InputLabel
+                                            for="extension"
+                                            class="block text-gray-700"
+                                            >Extension</InputLabel
+                                        >
+                                        <NumberInput
+                                            id="extension"
+                                            type="text"
+                                            v-model="option.extension"
+                                            class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                            required
+                                            autocomplete="off"
+                                        />
+                                    </div>
+
+                                    <div class="flex gap-2 justify-end">
+                                        <button
+                                            v-if="addForm.options.length > 1"
+                                            type="button"
+                                            @click="removeAddFormOption(index)"
+                                            class="mt-6 px-2 bg-red-500 text-white rounded-md"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                width="24"
+                                                height="24"
+                                                fill="currentColor"
+                                            >
+                                                <path d="M19 11H5V13H19V11Z" />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            v-if="
+                                                index ===
+                                                addForm.options.length - 1
+                                            "
+                                            @click="addFormOption"
+                                            class="mt-6 px-2 bg-green-500 text-white rounded-md"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                width="24"
+                                                height="24"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    d="M19 11H13V5H11V11H5V13H11V19H13V13H19V11Z"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
-                                <button
-                                    type="button"
-                                    @click="addOption"
-                                    class="mt-2 px-4 py-2 bg-green-500 text-white rounded-md"
-                                >
-                                    Add Option
-                                </button>
+
+                                <InputError
+                                    class="mt-2"
+                                    v-if="addForm.errors.options"
+                                    :message="addForm.errors.options"
+                                />
                             </div>
                         </div>
                         <!-- Modal footer -->
@@ -1124,27 +1273,6 @@ watch(
 
                             <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
-                                    for="price"
-                                    value="Price"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                />
-                                <NumberInput
-                                    id="price"
-                                    type="text"
-                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                                    v-model="editForm.price"
-                                    required
-                                    autocomplete="off"
-                                    placeholder="e.g. ₱3500"
-                                />
-                                <InputError
-                                    class="mt-2"
-                                    :message="editForm.errors.price"
-                                />
-                            </div>
-
-                            <div class="col-span-6 sm:col-span-3">
-                                <InputLabel
                                     for="duration"
                                     value="Duration"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -1187,29 +1315,7 @@ watch(
                                 />
                             </div>
 
-                            <div class="col-span-6 sm:col-span-3">
-                                <InputLabel
-                                    for="shots"
-                                    value="Number of shots"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                />
-                                <TextInput
-                                    id="size"
-                                    type="text"
-                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                                    v-model="editForm.number_of_shots"
-                                    required
-                                    autocomplete="off"
-                                    placeholder="e.g. 4"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="editForm.errors.number_of_shots"
-                                />
-                            </div>
-
-                            <div class="col-span-6 sm:col-span-3">
+                            <div class="col-span-6">
                                 <InputLabel
                                     for="note"
                                     value="Note"
@@ -1228,28 +1334,6 @@ watch(
                                 <InputError
                                     class="mt-2"
                                     :message="editForm.errors.note"
-                                />
-                            </div>
-
-                            <div class="col-span-6 sm:col-span-3">
-                                <InputLabel
-                                    for="extension"
-                                    value="Extension"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                />
-                                <TextInput
-                                    id="extension"
-                                    type="text"
-                                    class="shadow-sm text-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                                    v-model="editForm.extension"
-                                    required
-                                    autocomplete="off"
-                                    placeholder="e.g. ₱1000.00 / hour extension"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="editForm.errors.extension"
                                 />
                             </div>
 
@@ -1273,6 +1357,110 @@ watch(
                                 <InputError
                                     class="mt-2"
                                     :message="editForm.errors.inclusion"
+                                />
+                            </div>
+
+                              <div class="mb-4 col-span-6">
+                                <h3 class="text-md font-bold mb-2">
+                                    Package Options
+                                </h3>
+                                <div
+                                    v-for="(option, index) in editForm.options"
+                                    :key="index"
+                                    class="mb-4 flex justify-center align-center gap-3"
+                                >
+                                    <div>
+                                        <InputLabel
+                                            for="number_of_shots"
+                                            class="block text-gray-700"
+                                            >Number of Shots</InputLabel
+                                        >
+                                        <NumberInput
+                                            id="number_of_shots"
+                                            type="text"
+                                            v-model="option.number_of_shots"
+                                            class="mt-1 block w-full border bg-gray-50 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                            required
+                                            autocomplete="off"
+                                        />
+                                    </div>
+                                    <div>
+                                        <InputLabel
+                                            for="price"
+                                            class="block text-gray-700"
+                                            >Price</InputLabel
+                                        >
+
+                                        <NumberInput
+                                            id="price"
+                                            type="text"
+                                            v-model="option.price"
+                                            class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                            required
+                                            autocomplete="off"
+                                        />
+                                    </div>
+                                    <div>
+                                        <InputLabel
+                                            for="extension"
+                                            class="block text-gray-700"
+                                            >Extension</InputLabel
+                                        >
+                                        <NumberInput
+                                            id="extension"
+                                            type="text"
+                                            v-model="option.extension"
+                                            class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                            required
+                                            autocomplete="off"
+                                        />
+                                    </div>
+
+                                    <div class="flex gap-2 justify-end">
+                                        <button
+                                            v-if="editForm.options.length > 1"
+                                            type="button"
+                                            @click="removeEditFormOption(index)"
+                                            class="mt-6 px-2 bg-red-500 text-white rounded-md"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                width="24"
+                                                height="24"
+                                                fill="currentColor"
+                                            >
+                                                <path d="M19 11H5V13H19V11Z" />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            v-if="
+                                                index ===
+                                                editForm.options.length - 1
+                                            "
+                                            @click="addEditFormOption"
+                                            class="mt-6 px-2 bg-green-500 text-white rounded-md"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                width="24"
+                                                height="24"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    d="M19 11H13V5H11V11H5V13H11V19H13V13H19V11Z"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <InputError
+                                    class="mt-2"
+                                    v-if="editForm.errors.options"
+                                    :message="editForm.errors.options"
                                 />
                             </div>
                         </div>
@@ -1372,19 +1560,6 @@ watch(
                                 No, cancel
                             </SecondaryButton>
                         </div>
-                        <!-- <a
-                            href="#"
-                            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-red-800"
-                        >
-                            Yes, I'm sure
-                        </a>
-                        <a
-                            href="#"
-                            class="text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-primary-300 border border-gray-200 font-medium inline-flex items-center rounded-lg text-base px-3 py-2.5 text-center dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-                            data-modal-hide="delete-user-modal"
-                        >
-                            No, cancel
-                        </a> -->
                     </div>
                 </div>
             </div>

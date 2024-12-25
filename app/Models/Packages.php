@@ -18,8 +18,6 @@ protected $table = "packages";
         'size',
         'size2',
         'size3',
-        'size4',
-        'size5',
         'inclusion',
         'note',
     ];

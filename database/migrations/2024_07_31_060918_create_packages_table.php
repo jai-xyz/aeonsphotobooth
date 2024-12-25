@@ -21,8 +21,6 @@ return new class extends Migration
             $table->string('size'); 
             $table->string('size2')->nullable();
             $table->string('size3')->nullable();
-            $table->string('size4')->nullable();
-            $table->string('size5')->nullable();
             $table->longText('inclusion');
             $table->string('note');
             // $table->string('extension');
