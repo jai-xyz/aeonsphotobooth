@@ -31,14 +31,7 @@ class PackageController extends Controller
     protected function applySearch($query, $search)
     {
         return $query->when($search, function($query, $search){
-            $query->where('name', 'LIKE', '%'.$search.'%')
-            ->orWhere('price', 'LIKE', '%'.$search.'%')
-            ->orWhere('duration', 'LIKE', '%'.$search.'%')
-            ->orWhere('size', 'LIKE', '%'.$search.'%')
-            ->orWhere('size2', 'LIKE', '%'.$search.'%')
-            ->orWhere('size3', 'LIKE', '%'.$search.'%')
-            ->orWhere('size4', 'LIKE', '%'.$search.'%')
-            ->orWhere('size5', 'LIKE', '%'.$search.'%') ;
+            $query->where('name', 'LIKE', '%'.$search.'%');
         });
     }
 
@@ -60,7 +53,7 @@ class PackageController extends Controller
             'alias' => 'required|string|max:255',
             // 'price' => 'required|string|max:255',
             'duration' => 'required|string|max:255',
-            'size' => 'required|string|max:255',
+            'size' => 'nullable|string|max:255',
             'size2' => 'nullable|string|max:255',
             'size3' => 'nullable|string|max:255',
             // 'number_of_shots' => 'required|string|max:255',
@@ -121,11 +114,9 @@ class PackageController extends Controller
             'alias' => 'required|string|max:255',
             // 'price' => 'required|string|max:255',
             'duration' => 'required|string|max:255',
-            'size' => 'required|string|max:255',
+            'size' => 'nullable|string|max:255',
             'size2' => 'nullable|string|max:255',
             'size3' => 'nullable|string|max:255',
-            'size4' => 'nullable|string|max:255',
-            'size5' => 'nullable|string|max:255',
             // 'number_of_shots' => 'required|string|max:255',
             'inclusion' => 'required|string|max:2500',
             'note' => 'required|string|max:255',
@@ -148,30 +139,11 @@ class PackageController extends Controller
             ]);
         }
 
-        $package->update($request->only([
-            'name' => $request->name,
-            'alias' => $request->alias,
-            // 'price' => $request->price,
-            'duration' => $request->duration,
-            'size' => $request->size,
-            'size2' => $request->size2,
-            'size3' => $request->size3,
-            'size4' => $request->size4,
-            'size5' => $request->size5,
-            // 'number_of_shots' => $request->number_of_shots,
-            'inclusion' => $request->inclusion,
-            'note' => $request->note,
-            // 'extension' => $request->extension
-            ]
-        ));
-        
         $package->update($request->only(['name', 'alias',
             'duration',
             'size',
             'size2',
             'size3',
-            'size4',
-            'size5',
             'inclusion',
             'note'
         ]));

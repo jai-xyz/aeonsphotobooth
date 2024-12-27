@@ -185,6 +185,8 @@ const editForm = useForm({
     alias: "",
     duration: "",
     size: "",
+    size2: "",
+    size3: "",
     inclusion: "",
     note: "",
     options: [{ number_of_shots: "", price: "", extension: "" }],
@@ -197,9 +199,9 @@ const openEditModal = (pkg) => {
     editForm.alias = pkg.alias;
     // editForm.price = pkg.price;
     editForm.duration = pkg.duration;
-    editForm.size = [pkg.size, pkg.size2, pkg.size3, pkg.size4, pkg.size5]
-        .filter((size) => size)
-        .join(", ");
+    editForm.size = pkg.size;
+    editForm.size2 = pkg.size2;
+    editForm.size3 = pkg.size3;
     // editForm.number_of_shots = pkg.number_of_shots;
     editForm.inclusion = pkg.inclusion;
     editForm.note = pkg.note;
@@ -216,16 +218,16 @@ const openEditModal = (pkg) => {
     editForm.OrigId = pkg.id;
     editForm.OrigName = pkg.name;
     editForm.OrigAlias = pkg.alias;
-    editForm.OrigPrice = pkg.price;
     editForm.OrigDuration = pkg.duration;
-    editForm.OrigSize = [pkg.size, pkg.size2, pkg.size3, pkg.size4, pkg.size5]
-        .filter((size) => size)
-        .join(", ");
-    editForm.OrigNumberOfShots = pkg.number_of_shots;
+    editForm.OrigSize = pkg.size;
+    editForm.OrigSize2 = pkg.size2;
+    editForm.OrigSize3 = pkg.size3;
     editForm.OrigInclusion = pkg.options.inclusion;
-    editForm.OrigNote = pkg.options.note;
-    editForm.OrigExtension = pkg.options.extension;
-
+       editForm.OrigOptions = editForm.options.map(option => ({
+        number_of_shots: option.number_of_shots,
+        price: option.price,
+        extension: option.extension
+    }));
     editingProduct.value = true;
 };
 
@@ -267,6 +269,8 @@ const submitEdit = () => {
 const closeEditModal = () => {
     editingProduct.value = false;
     editForm.reset();
+    isDropdownVisibleSize.value = false;  
+    addForm.errors.options = "";
 };
 
 const noChanges = computed(() => {
@@ -274,13 +278,12 @@ const noChanges = computed(() => {
         editForm.OrigId === editForm.id &&
         editForm.OrigName === editForm.name &&
         editForm.OrigAlias === editForm.alias &&
-        editForm.OrigPrice === editForm.price &&
         editForm.OrigDuration === editForm.duration &&
         editForm.OrigSize === editForm.size &&
-        editForm.OrigNumberOfShots === editForm.number_of_shots &&
+        editForm.OrigSize2 === editForm.size2 &&
+        editForm.OrigSize3 === editForm.size3 &&
         editForm.OrigInclusion === editForm.inclusion &&
-        editForm.OrigNote === editForm.note &&
-        editForm.OrigExtension === editForm.extension
+        editForm.OrigNote === editForm.note
     );
 });
 
@@ -680,12 +683,12 @@ const isDetailsVisible = (pkgId) => {
                                             <tbody>
                                                 <tr>
                                                     <td
-                                                        class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
+                                                        class="w-2/4 p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
                                                     >
-                                                        {{ pkg.inclusion }}
+                                                         <div v-html="pkg.inclusion.replace(/\n/g, '<br>')"></div>
                                                     </td>
                                                     <td
-                                                        class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
+                                                        class="w-1/4 p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
                                                     >
                                                         <div>
                                                             {{ pkg.note }}
@@ -1293,7 +1296,7 @@ const isDetailsVisible = (pkgId) => {
                                 />
                             </div>
 
-                            <div class="col-span-6 sm:col-span-3">
+                            <!-- <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="size"
                                     value="Size"
@@ -1313,6 +1316,111 @@ const isDetailsVisible = (pkgId) => {
                                     class="mt-2"
                                     :message="editForm.errors.size"
                                 />
+                            </div> -->
+                              <div class="col-span-6 sm:col-span-3">
+                                <InputLabel
+                                    for="size"
+                                    value="Size"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                />
+
+                                <div class="relative">
+                                    <button
+                                        class="text-gray-700 bg-gray-50 border shadow-sm border-gray-300 hover:bg-gray-100 focus:ring-primary-600 focus:ring-1 focus:border-primary-600 w-full font-medium rounded-lg text-sm px-5 p-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                        type="button"
+                                        @click="toggleDropdownSize"
+                                    >
+                                        Select size
+                                        <svg
+                                            class="w-2.5 h-2.5 ms-auto"
+                                            aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 10 6"
+                                        >
+                                            <path
+                                                stroke="currentColor"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="m1 1 4 4 4-4"
+                                            />
+                                        </svg>
+                                    </button>
+
+                                    <!-- Dropdown menu -->
+                                    <div
+                                        class="absolute z-10  bg-gray-50 divide-y w-full divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                                        :class="{
+                                            hidden: !isDropdownVisibleSize,
+                                        }"
+                                    >
+                                        <ul
+                                            class="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200"
+                                        >
+                                            <li>
+                                                <div class="flex items-center">
+                                                    <input
+                                                        id="checkbox-item-1"
+                                                        type="checkbox"
+                                                        :true-value="'4R'"
+                                                        :false-value="''"
+                                                        v-model="editForm.size"
+                                                        class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                                    />
+                                                    <label
+                                                        for="checkbox-item-1"
+                                                        class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                                    >
+                                                        4R
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="flex items-center">
+                                                    <input
+                                                        id="checkbox-item-2"
+                                                        type="checkbox"
+                                                        :true-value="'Strips'"
+                                                        :false-value="''"
+                                                        v-model="editForm.size2"
+                                                        class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                                    />
+                                                    <label
+                                                        for="checkbox-item-2"
+                                                        class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                                    >
+                                                        Strips  
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="flex items-center">
+                                                    <input
+                                                        id="checkbox-item-3"
+                                                        type="checkbox"
+                                                        :true-value="'Polaroid size'"
+                                                         :false-value="''"
+                                                        v-model="editForm.size3"
+                                                        class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                                    />
+                                                    <label
+                                                        for="checkbox-item-3"
+                                                        class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                                    >
+                                                        Polaroid size
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <InputError
+                                    class="mt-2"
+                                    :message="editForm.errors.size"
+                                />
+
                             </div>
 
                             <div class="col-span-6">
