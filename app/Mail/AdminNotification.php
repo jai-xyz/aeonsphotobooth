@@ -24,7 +24,7 @@ class AdminNotification extends Mailable
     public function __construct($userRegistration)
     {
         $this->userRegistration = $userRegistration;
-        $this->adminUrl = URL::route('event.index', ['id' => $userRegistration->id]);
+        $this->adminUrl = URL::route('event.pending.index');
     }
 
        /**

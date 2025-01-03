@@ -11,6 +11,7 @@ import InputError from "@/Components/InputError.vue";
 import { Inertia } from "@inertiajs/inertia";
 import Toast from "@/Components/Toast.vue";
 import "../../../css/admin-vuecal.css";
+import "../../../css/custom-styles.css";
 
 const props = defineProps({
     events: {
@@ -102,7 +103,7 @@ const closeModal = () => {
     form.reset();
 };
 
-const statusOptions = ["Pending", "Accept", "Decline"];
+const statusOptions = ["Accept", "Decline"];
 
 const isSameStatus = computed(() => {
     return form.status === form.originalStatus;
@@ -184,7 +185,7 @@ const isDetailsVisible = (eventId) => {
 </script>
 
 <template>
-    <Head title="Events" />
+    <Head title="Pending Events" />
 
     <Toast />
 

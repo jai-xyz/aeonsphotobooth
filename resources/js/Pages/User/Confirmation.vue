@@ -67,37 +67,42 @@ const props = defineProps({
                         <h2 class="text-center">
                             Thank you for completing your registration!
                         </h2>
-                        <p class="text-center">
-                            You will receive an email notification once your
-                            event is confirmed.
+                        <p class="text-center text-sm">
+                       You will receive an email notification once your event has been reviewed, 
+                        </p>    <p class="text-center">
+                letting you know if it has been accepted or declined.
                         </p>
-                        <p class="text-center">
+
+
+                        <p class="text-center text-sm">
                             <strong>
+                                <p>If your event is accepted:</p>
                                 Important: A down payment of ₱500 is required to
                                 secure your event booking. <br />
-                                Please check your email for payment details and
-                                confirmation updates.</strong
+                                Please check your email for payment instructions and confirmation updates once the payment is processed.</strong
                             >
                         </p>
-                        <div
+                       
+                    </div>
+                     <div
                             class="flex justify-center align-center gap-4 mt-6"
                         >
                             <Link
-                                :href="route('event.index')"
+                                :href="route('user.event.index')"
                                 class="text-pink-800 hover:underline active:text-pink-400"
                             >
-                                View Events
+                            Event List
                             </Link>
                             |
                             <Link
                                 :href="route('home')"
                                 class="text-pink-800 hover:underline active:text-pink-400"
                             >
-                                Go to Home
+                                 Home
                             </Link>
                         </div>
-                    </div>
                 </div>
+                
             </div>
         </div>
     </AuthenticatedLayout>

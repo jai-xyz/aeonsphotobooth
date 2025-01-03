@@ -15,8 +15,8 @@ use Inertia\Response;
 class BackdropController extends Controller
 {
     /** #####################################
-           * BACKDROP LIST AND COLOR CRUD
-    */ ######################################
+     * BACKDROP LIST AND COLOR CRUD
+     */ ######################################
     public function index(Request $request): Response
     {
         // TODO: filter by backdroptype plain - sequins - custom
@@ -29,7 +29,7 @@ class BackdropController extends Controller
         $backdroptypes = DB::table('backdroptypes')->get();
 
         return Inertia::render('Admin/BackdropList', [
-            'backdrops' => $backdrops,  
+            'backdrops' => $backdrops,
             'backdroptypes' => $backdroptypes
         ]);
     }
@@ -70,51 +70,51 @@ class BackdropController extends Controller
     }
 
     public function updateBackdrop(Request $request, BackdropColor $backdrop)
-{
-    $request->validate([
-        'backdroptype_id' => 'required|exists:backdroptypes,id',
-        'color' => 'required|string',
-        'image' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
-    ]);
+    {
+        $request->validate([
+            'backdroptype_id' => 'required|exists:backdroptypes,id',
+            'color' => 'required|string',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
+        ]);
 
-    if ($request->backdroptype_id == 1) {
-        $directory = 'plain';
-    } elseif ($request->backdroptype_id == 2) {
-        $directory = 'sequins';
-    } else {
-        $directory = 'custom';
-    }
-
-    // small letters and replace space with underscore
-    $color = strtolower(preg_replace('/\s+/', '_', $request->color));
-    $fileName = $backdrop->image; // Default to existing image
-
-    // Unlink the existing file if it exists and a new file is uploaded
-    if ($request->hasFile('image')) {
-        if ($backdrop->image) {
-            $existingFilePath = public_path('uploads/backdrop/' . $directory . '/' . $backdrop->image);
-            if (file_exists($existingFilePath)) {
-                unlink($existingFilePath);
-            }
+        if ($request->backdroptype_id == 1) {
+            $directory = 'plain';
+        } elseif ($request->backdroptype_id == 2) {
+            $directory = 'sequins';
+        } else {
+            $directory = 'custom';
         }
 
-        $file = $request->file('image');
-        $fileName = $color . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
+        // small letters and replace space with underscore
+        $color = strtolower(preg_replace('/\s+/', '_', $request->color));
+        $fileName = $backdrop->image; // Default to existing image
+
+        // Unlink the existing file if it exists and a new file is uploaded
+        if ($request->hasFile('image')) {
+            if ($backdrop->image) {
+                $existingFilePath = public_path('uploads/backdrop/' . $directory . '/' . $backdrop->image);
+                if (file_exists($existingFilePath)) {
+                    unlink($existingFilePath);
+                }
+            }
+
+            $file = $request->file('image');
+            $fileName = $color . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/backdrop/' . $directory . '/'), $fileName);
+        }
+
+        $backdrop->fill([
+            'backdroptype_id' => $request->backdroptype_id,
+            'color' => $request->color,
+            'image' => $fileName
+        ]);
+
+        if ($backdrop->save()) {
+            return redirect()->back()->with('success', 'Backdrop updated successfully.');
+        }
+
+        return redirect()->back()->with('error', 'Failed to update backdrop.');
     }
-
-    $backdrop->fill([
-        'backdroptype_id' => $request->backdroptype_id,
-        'color' => $request->color,
-        'image' => $fileName
-    ]);
-
-    if ($backdrop->save()) {
-        return redirect()->back()->with('success', 'Backdrop updated successfully.');
-    }
-
-    return redirect()->back()->with('error', 'Failed to update backdrop.');
-}
 
     public function destroyBackdrop(BackdropColor $backdrop): RedirectResponse
     {
@@ -126,14 +126,14 @@ class BackdropController extends Controller
 
 
     /** #####################################
-             * BACKDROP TYPE CRUD
-    */ ######################################
+     * BACKDROP TYPE CRUD
+     */ ######################################
 
     public function indexType(): Response
     {
 
         $backdroptypes = DB::table('backdroptypes')->paginate(10);
-        
+
         return Inertia::render('Admin/BackdropTypeList', [
             'backdroptypes' => $backdroptypes
         ]);

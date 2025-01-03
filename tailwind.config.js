@@ -14,8 +14,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                body: ["Lato", "sans-serif"],
-                sans: ["Lato", ...defaultTheme.fontFamily.sans],
+                body: ["Poppins", "sans-serif"],
+                sans: ["Poppins", ...defaultTheme.fontFamily.sans],
+                oswald: ["Oswald", "sans-serif"],
             },
             fontWeight: {
                 hairline: 100,
@@ -57,13 +58,17 @@ export default {
                 red: {
                     7: "rgb(201 62 62/0.2)",
                     77: "#9F2323"
+                },
+                blue: {
+                    7: "rgb(63 128 202/0.2)",
+                    77: "#23449F"
                 }
             },
             screens: {
                 xxs: "320px",
-                "xxs-xs": { min: "320px", max: "479px" },
-                xs: "480px",
-                "xs-sm": { min: "480px", max: "639px" },
+                "xxs-xs": { min: "320px", max: "474px" },
+                xs: "475px",
+                "xs-sm": { min: "475px", max: "639px" },
                 sm: "640px",
                 "sm-md": { min: "640px", max: "767px" },
                 md: "768px",

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\BackdropController;
 use App\Http\Controllers\Admin\RegistrationController;
@@ -12,31 +12,58 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Admin\UserController;
 
+Route::get('/',[HomeController::class, 'index'], function () {
+    if (Auth::check()) {
+        $user = Auth::user();
+        if ($user->type === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->type === 'user') {
+            return redirect()->route('home');
+        }
+    }
 
-Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
     ]);
-})->middleware(['auth', UserMiddleware::class])->name('home');
+})->name('home');
 
-// USER ROUTES
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', UserMiddleware::class])->name('dashboard');
+Route::get('/package/{packageId?}', [UserPackageController::class, 'index'], function ($packageId = null) {
+    if (Auth::check()) {
+        $user = Auth::user();
+        if ($user->type === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->type === 'user') {
+            return redirect()->route('home');
+        }
+    }
+
+    return Inertia::render('PackageDetails', [
+        'packageId' => $packageId,
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('user.package.index');
+
+// Route::get('/', [HomeController::class, 'index'])->middleware(['auth', 'verified', UserMiddleware::class])->name('home');
 
 Route::middleware('auth', UserMiddleware::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('user.profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('user.profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('user.profile.destroy');
 
-    Route::get('/event', [UserRegistrationController::class, 'index'])->name('user.event.index');
+    Route::get('/booked-events', [UserRegistrationController::class, 'index'])->name('user.event.index');
+    Route::patch('/booked-events/{event}', [UserRegistrationController::class, 'update'])->name('user.event.update');
+
     Route::get('/event/registration/{packageId?}', [UserRegistrationController::class, 'create'])->name('user.event.create');
     Route::post('/event/registration', [UserRegistrationController::class, 'store'])->name('user.event.store');
-    Route::get('/event', [UserRegistrationController::class, 'index'])->name('user.event.index');
     Route::get('/event/registration-confirmation', [UserRegistrationController::class, 'indexConfirmation'])->name('user.event.confirmation');
 
-    Route::get('/packages', [UserPackageController::class, 'index'])->name('user.package.index');
-    
+    // Route::get('/packages', [UserPackageController::class, 'index`'])->name('user.package.index');
+
 });
 
 // ADMIN ROUTES
@@ -73,8 +100,14 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
 
     // EVENTS LISTED ROUTES
     Route::get('/admin/listed-events', [RegistrationController::class, 'index'])->name('event.index');
+    Route::patch('/admin/listed-events/{event}', [RegistrationController::class, 'updateListedEvents'])->name('event.listed.update');
 
+    // EVENTS ARCHIEVE ROUTES
+    Route::get('/admin/archive-events', [RegistrationController::class, 'indexArchive'])->name('event.archive.index');
+    Route::patch('/admin/archive-events/{event}', [RegistrationController::class, 'updateRestoreEvents'])->name('event.archive.update');
 
+    // USER LIST ROUTES
+     Route::get('/admin/users', [UserController::class, 'index'])->name('user.index');
     // Route::get('/admin/pay', [RegistrationController::class, 'pay'])->name('event.pay');
 });
 

@@ -19,7 +19,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <nav class="sticky top-0 z-50  bg-white border-b border-gray-100">
+    <nav class="sticky top-0 z-50 bg-white border-b border-gray-100">
         <!-- Primary Navigation Menu -->
         <div class="max-w-full mx-auto px-2 sm:px-4 lg:px-6">
             <div class="flex justify-between h-16">
@@ -42,13 +42,13 @@ const props = defineProps({
                     >
                         Home
                     </NavLink>
-                    <NavLink
+                    <!-- <NavLink
                         :href="route('user.package.index')"
                         :active="route().current('user.package.index')"
                     >
                         Packages
-                    </NavLink>
-                    <NavLink
+                    </NavLink> -->
+                    <!-- <NavLink
                         :href="route('user.event.index')"
                         :active="route().current('user.event.index')"
                     >
@@ -59,39 +59,42 @@ const props = defineProps({
                         :active="route().current('user.event.index')"
                     >
                         Contact Us
-                    </NavLink>
-                </div>  
+                    </NavLink> -->
+                </div>
 
-                <div v-if="auth.user" class="hidden sm:flex align-center ms-auto">
-                        <div class="flex align-center m-auto">
-                            <Link
-                                :href="route('user.event.create')"
-                                class="text-primary-700 font-medium flex justify-center align-center m-auto gap-1"
+                <div
+                    v-if="auth.user"
+                    class="hidden sm:flex align-center ms-auto"
+                >
+                  
+                        <Link
+                            :href="route('user.event.create')"
+                            class="text-primary-700 font-medium flex justify-center align-center m-auto gap-1"
+                        >
+                          <div class="flex gap-x-1 justify-center items-center">
+                            <span class="uppercase"> Book Now</span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                class="w-5 h-5"
+                                fill="currentColor"
                             >
-                                Book Now
-                                <svg
-                                    fill="#f28ab0"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                    width="5"
-                                    height="5"
-                                    class="w-6 h-6 m-auto"
-                                >
-                                    <path
-                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                    />
-                                </svg>
-                            </Link>
-                        </div>
-                        <div
-                            class="border-l border-gray-300 mx-2 my-auto h-7"
-                        ></div>
+                                <path
+                                    d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7v-2H5V9h14v4h2V6a2 2 0 0 0-2-2zM5 7V6h14v1H5zm16 11v-3h-2v3h-3v2h3v3h2v-3h3v-2h-3z"
+                                />
+                            </svg>
+                    </div>
 
-                        <div class="me-2 flex align-center m-auto">
-                            <AButton :href="route('user.event.index')">
-                                Booked Events
-                            </AButton>
-                        </div>
+                        </Link>
+                    <div
+                        class="border-l border-gray-300 mx-2 my-auto h-7"
+                    ></div>
+
+                    <div class="me-2 flex align-center m-auto">
+                        <AButton :href="route('user.event.index')">
+                            Booked Events
+                        </AButton>
+                    </div>
                 </div>
 
                 <!-- Navigation Buttons -->
@@ -125,7 +128,7 @@ const props = defineProps({
                                     class="bg-white divide-y divide-gray-100 dark:bg-gray-700 dark:divide-gray-600"
                                 >
                                     <div>
-                                        <div class="pointer-events-none ms-4">
+                                        <div class="pointer-events-none ms-4 mx-auto">
                                             <div
                                                 class="font-medium text-base text-gray-800"
                                             >
@@ -135,7 +138,7 @@ const props = defineProps({
                                                 }}
                                             </div>
                                             <div
-                                                class="font-medium text-sm text-gray-500"
+                                                class="font-medium text-xs text-gray-500"
                                             >
                                                 {{
                                                     $page.props.auth.user.email
@@ -239,28 +242,28 @@ const props = defineProps({
                     Home
                 </ResponsiveNavLink>
 
-                <ResponsiveNavLink
+                <!-- <ResponsiveNavLink
                     :href="route('user.package.index')"
                     :active="route().current('user.package.index')"
                 >
                     Packages
-                </ResponsiveNavLink>
+                </ResponsiveNavLink> -->
 
-                <ResponsiveNavLink
+                <!-- <ResponsiveNavLink
                     :href="route('dashboard')"
                     :active="route().current('dashboard')"
                 >
                     Contact Us
-                </ResponsiveNavLink>
+                </ResponsiveNavLink> -->
 
-                 <ResponsiveNavLink
+                <ResponsiveNavLink
                     :href="route('user.event.create')"
                     :active="route().current('user.event.create')"
                 >
                     Book Now
                 </ResponsiveNavLink>
 
-                 <ResponsiveNavLink
+                <ResponsiveNavLink
                     :href="route('user.event.index')"
                     :active="route().current('user.event.index')"
                 >

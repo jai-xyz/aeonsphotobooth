@@ -15,6 +15,7 @@
     "axios": "^1.7.9",
     "flowbite": "^2.5.1",
     "roboto-fontface": "*",
+    "swiper": "^11.1.15",
     "vue-cal": "^4.9.0",
     "vue-router": "^4.0.13",
     "webfontloader": "^1.0.0"

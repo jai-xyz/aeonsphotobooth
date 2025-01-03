@@ -5,85 +5,418 @@
 // import DropdownLink from "@/Components/DropdownLink.vue";
 // import NavLink from "@/Components/NavLink.vue";
 // import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-// import { Link } from "@inertiajs/vue3";
 // import AButton from "@/Components/AButton.vue";
 // import AButtonSecondary from "@/Components/AButtonSecondary.vue";
-import { Head } from "@inertiajs/vue3";
-
+import { computed, onMounted } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
+import AButton from "@/Components/AButton.vue";
 // const showingNavigationDropdown = ref(false);
 import UserNavbar from "@/Components/UserNavbar.vue";
+import "../../css/custom-styles.css";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     auth: Object,
+    packages: {
+        type: [Array, Object],
+        required: true,
+    },
 });
+console.log(props.packages);
 
-function handleImageError() {
-    document.getElementById("screenshot-container")?.classList.add("!hidden");
-    document.getElementById("docs-card")?.classList.add("!row-span-1");
-    document.getElementById("docs-card-content")?.classList.add("!flex-row");
-    document.getElementById("background")?.classList.add("!hidden");
+function formattedAlias(name) {
+    return name === "Package A"
+        ? "Photo <strong>Standee</strong> in Strips or 4R for 2 hours"
+        : name === "Package B"
+        ? "Photo <strong>Magnetic</strong> in Strips or 4R for 2 hours"
+        : name === "Package C"
+        ? "<strong>Polaroid</strong> Style in Photo <strong>Magnet</strong> or 4R for 2 hours"
+        : name === "Package D"
+        ? "Single shot <strong>Standee</strong> Package for 2 hours"
+        : "";
 }
 
+function displayLetter(name) {
+    return name === "Package A"
+        ? "/images/a.png"
+        : name === "Package B"
+        ? "/images/b.png"
+        : name === "Package C"
+        ? "/images/c.png"
+        : name === "Package D"
+        ? "/images/d.png"
+        : "";
+}
+
+function displayGIF(name) {
+    return name === "Photo Man"
+        ? "/images/photoman.png"
+        : name === "Boomerang Booth"
+        ? "/images/boomerang.gif"
+        : "";
+}
+
+function getInclusionLines(inclusion, name) {
+    if (!inclusion) {
+        return [];
+    }
+    const svgIcon = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="inline-block w-4 h-4 text-gray-500 align-middle" fill="#1f2937" >
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l5.59-5.59L18 10l-7 7z"/>
+        </svg>
+    `;
+    const lines = inclusion
+        .split("\n")
+        .map(
+            (line) =>
+                `<span class="pb-1 inline-block text-xs align-middle">${svgIcon} ${line}</span>`
+        );
+    return lines ? lines.slice(0, 5) : "";
+}
+
+// onMounted(() => {
+//   const script = document.createElement('script');
+//   script.src = "https://static.elfsight.com/platform/platform.js";
+//   script.async = true;
+//   document.body.appendChild(script);
+// });
 </script>
 
 <template>
     <Head title="Welcome" />
     <Head>
-        <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
     </Head>
-    <!-- <div class="flex lg:justify-center lg:col-start-2">
-                        <svg
-                            class="h-12 w-auto text-white lg:h-16 lg:text-[#FF2D20]"
-                            viewBox="0 0 62 65"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M61.8548 14.6253C61.8778 14.7102 61.8895 14.7978 61.8897 14.8858V28.5615C61.8898 28.737 61.8434 28.9095 61.7554 29.0614C61.6675 29.2132 61.5409 29.3392 61.3887 29.4265L49.9104 36.0351V49.1337C49.9104 49.4902 49.7209 49.8192 49.4118 49.9987L25.4519 63.7916C25.3971 63.8227 25.3372 63.8427 25.2774 63.8639C25.255 63.8714 25.2338 63.8851 25.2101 63.8913C25.0426 63.9354 24.8666 63.9354 24.6991 63.8913C24.6716 63.8838 24.6467 63.8689 24.6205 63.8589C24.5657 63.8389 24.5084 63.8215 24.456 63.7916L0.501061 49.9987C0.348882 49.9113 0.222437 49.7853 0.134469 49.6334C0.0465019 49.4816 0.000120578 49.3092 0 49.1337L0 8.10652C0 8.01678 0.0124642 7.92953 0.0348998 7.84477C0.0423783 7.8161 0.0598282 7.78993 0.0697995 7.76126C0.0884958 7.70891 0.105946 7.65531 0.133367 7.6067C0.152063 7.5743 0.179485 7.54812 0.20192 7.51821C0.230588 7.47832 0.256763 7.43719 0.290416 7.40229C0.319084 7.37362 0.356476 7.35243 0.388883 7.32751C0.425029 7.29759 0.457436 7.26518 0.498568 7.2415L12.4779 0.345059C12.6296 0.257786 12.8015 0.211853 12.9765 0.211853C13.1515 0.211853 13.3234 0.257786 13.475 0.345059L25.4531 7.2415H25.4556C25.4955 7.26643 25.5292 7.29759 25.5653 7.32626C25.5977 7.35119 25.6339 7.37362 25.6625 7.40104C25.6974 7.43719 25.7224 7.47832 25.7523 7.51821C25.7735 7.54812 25.8021 7.5743 25.8196 7.6067C25.8483 7.65656 25.8645 7.70891 25.8844 7.76126C25.8944 7.78993 25.9118 7.8161 25.9193 7.84602C25.9423 7.93096 25.954 8.01853 25.9542 8.10652V33.7317L35.9355 27.9844V14.8846C35.9355 14.7973 35.948 14.7088 35.9704 14.6253C35.9792 14.5954 35.9954 14.5692 36.0053 14.5405C36.0253 14.4882 36.0427 14.4346 36.0702 14.386C36.0888 14.3536 36.1163 14.3274 36.1375 14.2975C36.1674 14.2576 36.1923 14.2165 36.2272 14.1816C36.2559 14.1529 36.292 14.1317 36.3244 14.1068C36.3618 14.0769 36.3942 14.0445 36.4341 14.0208L48.4147 7.12434C48.5663 7.03694 48.7383 6.99094 48.9133 6.99094C49.0883 6.99094 49.2602 7.03694 49.4118 7.12434L61.3899 14.0208C61.4323 14.0457 61.4647 14.0769 61.5021 14.1055C61.5333 14.1305 61.5694 14.1529 61.5981 14.1803C61.633 14.2165 61.6579 14.2576 61.6878 14.2975C61.7103 14.3274 61.7377 14.3536 61.7551 14.386C61.7838 14.4346 61.8 14.4882 61.8199 14.5405C61.8312 14.5692 61.8474 14.5954 61.8548 14.6253ZM59.893 27.9844V16.6121L55.7013 19.0252L49.9104 22.3593V33.7317L59.8942 27.9844H59.893ZM47.9149 48.5566V37.1768L42.2187 40.4299L25.953 49.7133V61.2003L47.9149 48.5566ZM1.99677 9.83281V48.5566L23.9562 61.199V49.7145L12.4841 43.2219L12.4804 43.2194L12.4754 43.2169C12.4368 43.1945 12.4044 43.1621 12.3682 43.1347C12.3371 43.1097 12.3009 43.0898 12.2735 43.0624L12.271 43.0586C12.2386 43.0275 12.2162 42.9888 12.1887 42.9539C12.1638 42.9203 12.1339 42.8916 12.114 42.8567L12.1127 42.853C12.0903 42.8156 12.0766 42.7707 12.0604 42.7283C12.0442 42.6909 12.023 42.656 12.013 42.6161C12.0005 42.5688 11.998 42.5177 11.9931 42.4691C11.9881 42.4317 11.9781 42.3943 11.9781 42.3569V15.5801L6.18848 12.2446L1.99677 9.83281ZM12.9777 2.36177L2.99764 8.10652L12.9752 13.8513L22.9541 8.10527L12.9752 2.36177H12.9777ZM18.1678 38.2138L23.9574 34.8809V9.83281L19.7657 12.2459L13.9749 15.5801V40.6281L18.1678 38.2138ZM48.9133 9.14105L38.9344 14.8858L48.9133 20.6305L58.8909 14.8846L48.9133 9.14105ZM47.9149 22.3593L42.124 19.0252L37.9323 16.6121V27.9844L43.7219 31.3174L47.9149 33.7317V22.3593ZM24.9533 47.987L39.59 39.631L46.9065 35.4555L36.9352 29.7145L25.4544 36.3242L14.9907 42.3482L24.9533 47.987Z"
-                                fill="currentColor"
-                            />
-                        </svg>
-                    </div>
-                    <nav v-if="canLogin" class="-mx-3 flex flex-1 justify-end">
-                        <Link
-                            v-if="$page.props.auth.user"
-                            :href="route('dashboard')"
-                            class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                        >
-                            Dashboard
-                        </Link>
 
-                        <template v-else>
-                            <Link
-                                :href="route('login')"
-                                class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                            >
-                                Log in
-                            </Link>
-
-                            <Link
-                                v-if="canRegister"
-                                :href="route('register')"
-                                class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                            >
-                                Register
-                            </Link>
-                        </template>
-                    </nav> -->
     <div>
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-[#f2f2f2]">
             <UserNavbar :auth="auth" :can-login="true" :can-register="true" />
 
             <!-- BANNER -->
-            <div class="">
+            <div class="flex justify-center items-center mx-auto">
                 <img
-                    src="/images/bannerbg.png"
+                    src="/images/bannerbgnew.png"
                     alt="banner image"
-                   
+                    class="h-full object-cover xs:min-h-[500px] xxs:min-h-[320px]"
                 />
+            </div>
+
+            <!-- PACKAGES -->
+            <div class="relative px-6 mx-auto bg-[#f2f2f2] 2xl:mx-16">
+                <div
+                    class="col-span-full text-start font-bold text-4xl text-gray-800 mb-6 font-oswald"
+                >
+                    Rates and Packages
+                </div>
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 me-2"
+                >
+                    <div
+                        v-for="pkg in packages"
+                        :key="pkg?.id"
+                        class="flex justify-center"
+                    >
+                        <div
+                            v-if="pkg"
+                            class="relative w-full sm:w-full md:w-full lg:w-full 2xl:w-[400px] pkg-shadow bg-white shadow-sm overflow-hidden rounded-tr-xl rounded-br-xl py-2"
+                        >
+                            <img
+                                class="absolute top-0 right-0"
+                                :src="displayLetter(pkg.name)"
+                                v-if="displayLetter(pkg.name)"
+                                :class="
+                                    displayLetter(pkg.name) == '/images/b.png'
+                                        ? 'w-12 mt-1 mr-4'
+                                        : displayLetter(pkg.name) ==
+                                          '/images/d.png'
+                                        ? 'w-16 mt-2 mr-2'
+                                        : 'w-16 mt-5 mr-4'
+                                "
+                                alt="letter image"
+                            />
+                            <div class="px-4 pt-8 pb-6">
+                                <strong class="text-lg">{{ pkg.name }}</strong>
+                            </div>
+                            <div class="px-4 pb-6">
+                                <i
+                                    class="text-gray-800 text-lg tracking-wider leading-4"
+                                >
+                                    <div
+                                        v-html="formattedAlias(pkg.name)"
+                                    ></div>
+                                </i>
+                            </div>
+
+                            <div class="px-4 pb-4">
+                                <div>
+                                    <div
+                                        v-for="line in getInclusionLines(
+                                            pkg.inclusion,
+                                            pkg.name
+                                        )"
+                                        :key="line"
+                                        class="items-center space-x-2"
+                                        v-html="line"
+                                    ></div>
+                                    <div
+                                        v-if="
+                                            pkg.inclusion &&
+                                            pkg.inclusion.split('\n').length > 4
+                                        "
+                                        class="text-primary-800 cursor-pointer"
+                                    >
+                                        <Link :href="`/package/${pkg.id}`">
+                                            More details...
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="border border-dashed border-gray-300 mx-1"
+                            ></div>
+
+                            <div
+                                v-if="pkg.options && pkg.options.length > 0"
+                                class="text-lg px-4 pt-4"
+                            >
+                                ₱<strong>{{ pkg.options[0].price }}</strong
+                                >/{{ pkg.duration }}
+                            </div>
+
+                            <div class="px-4">
+                                <AButton
+                                    class="w-full my-4 mx-auto shadow-lg flex justify-center align-center"
+                                    :href="`/event/registration/${pkg.id}`"
+                                >
+                                    Book Now
+                                </AButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="flex flex-col justify-center items-center gap-4 pt-4 col-span-full"
+                >
+                    <div
+                        class="col-span-full text-center font-bold text-xl text-primary-800 font-oswald py-2"
+                    >
+                        Exciting Packages Coming Soon!
+                    </div>
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2 mx-6"
+                    >
+                        <!-- -->
+                        <div
+                            class="w-full sm:w-full md:w-full lg:w-full 2xl:w-[400px] shadow-sm overflow-hidden rounded-xl"
+                        >
+                            <img
+                                class=""
+                                src="/images/boomerang.gif"
+                                alt="boomerang gif"
+                            />
+                        </div>
+                        <div
+                            class="w-full sm:w-full md:w-full lg:w-full 2xl:w-[400px] shadow-sm overflow-hidden rounded-xl"
+                        >
+                            <img
+                                class=""
+                                src="/images/boomerang.gif"
+                                alt="boomerang gif"
+                            />
+                        </div>
+                    </div>
+
+                    <div
+                        class="flex flex-col justify-center items-center gap-4 py-4"
+                    >
+                        <div class="flex items-center gap-x-4">
+                            <div class="flex items-center gap-2">
+                                <img
+                                    class="w-16"
+                                    src="/images/dti.png"
+                                    alt="DTI logo"
+                                />
+                            </div>
+
+                            <div class="text-center">
+                                <span> We Are Legitimate! </span>
+                                <div
+                                    class="flex align-center gap-x-2 justify-center"
+                                >
+                                    <span class="text-xs">DTI Registered</span>
+                                    <span class="text-xs">BIR Registered</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <img
+                                    class="w-16"
+                                    src="/images/bir.png"
+                                    alt="BIR logo"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPECIAL PACKAGES & ADD-ONS -->
+            <img
+                src="/images/ribbon.png"
+                alt="ribbon image"
+                class="h-full w-full object-fill bg-[#f2f2f2]"
+            />
+            <div
+                class="relative mx-auto py-8"
+                style="
+                    background: url('/images/board.jpeg');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    margin-left: 10px;
+                    margin-right: 10px;
+                    border-radius: 16px;
+                "
+            >
+                <div
+                    class="col-span-full text-end font-bold text-4xl text-white mb-2 px-6 font-oswald 2xl:mx-16"
+                >
+                    Special Packages and Add-ons
+                </div>
+                <div
+                    class="relative flex justify-center items-center rounded-lg 2xl:mx-16"
+                >
+                    <div
+                        class="relative grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 m-8"
+                    >
+                        <div class="relative flex items-center justify-center">
+                            <img
+                                src="/images/polaroid1.png"
+                                class="w-full sm:w-[360px] md:w-full lg:w-full 2xl:w-[400px] drop-shadow-xl"
+                                alt="Polaroid 1"
+                            />
+                            <div
+                                class="absolute pb-6 text-center font-oswald text-xl text-gray-700"
+                                style="transform: rotate(-9deg)"
+                            >
+                                special backdrop designs
+                                <p class="pt-auto text-sm px-8 text-gray-600">
+                                    starry night backdrop, grass wall backdrop,
+                                    backdrop styling, personalized tarpaulin
+                                    backdrop
+                                </p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-center justify-center">
+                            <img
+                                src="/images/polaroid2.png"
+                                class="w-full sm:w-[360px] md:w-full lg:w-full 2xl:w-[400px] drop-shadow-xl"
+                                alt="Polaroid 2"
+                            />
+                            <div
+                                class="absolute pb-6 text-center xxs:px-8 font-oswald text-xl text-gray-700"
+                                style="transform: rotate(7deg)"
+                            >
+                                print out designs and accessories
+                                <p class="text-sm px-8 text-gray-600">
+                                    guest books, message boards, additional
+                                    print outs
+                                </p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-center justify-center">
+                            <img
+                                src="/images/polaroid3.png"
+                                class="w-full sm:w-[360px] md:w-full lg:w-full 2xl:w-[400px] drop-shadow-xl"
+                                alt="Polaroid 3"
+                            />
+                            <div
+                                class="absolute pb-6 text-center font-oswald text-xl text-gray-700"
+                                style="transform: rotate(-4deg)"
+                            >
+                                event add-ons
+                                <p class="text-sm px-8 text-gray-600">
+                                    flashdrive, photo/message display stand, red
+                                    carpet
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="flex justify-center text-sm bg-white rounded-lg shadow-lg p-2 xxs-xs:mx-4 xs-sm:mx-4 sm-md:mx-8 md-lg:mx-16 lg-xl:mx-40 xl-2xl:mx-64 mx-96"
+                >
+                    Note: Please send us your desired design, additional charges
+                    may apply for complicated ones.
+                </div>
+            </div>
+
+            <!-- REVIEWS AND GOOGLE MAPS -->
+            <div class="flex flex-col min-h-100">
+                <!-- Main content -->
+                <div class="flex-grow">
+                    <!-- Section with background image -->
+                    <div
+                        class="relative flex flex-col items-center bg-white mt-4"
+                    >
+                        <img
+                            id="background"
+                            class="absolute inset-0 w-full h-full object-cover"
+                            src="images/finalbanner4.png"
+                            alt=""
+                        />
+                        <div
+                            class="relative col-span-full font-light text-4xl font-oswald my-8 text-center"
+                        >
+                            <span class="text-blue-500">Facebook</span> Reviews
+                            <p class="text-lg">We've got their trust</p>
+                            <div
+                                class="relative flex flex-col items-center mt-4"
+                            >
+                                <iframe
+                                    class="rounded-3xl drop-shadow-xl xs:h-[200px] sm:w-[500px] sm:h-[225px] md:w-[600px] md:h-[250px] lg:w-[800px] lg:h-[350px] xl:w-[1000px] xl:h-[450px] 2xl:w-[1100px] 2xl:h-[500px]"
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1182.764288940067!2d120.92650159495922!3d14.365145408701999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d49c7bd107c3%3A0x628349f6e9f16df5!2sAeon&#39;s%20Photobooth!5e0!3m2!1sen!2sph!4v1735768675678!5m2!1sen!2sph"
+                                    allowfullscreen=""
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade"
+                                ></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div
+                    class="relative mx-auto pb-8 bg-gradient-to-tr from-primary-200 to-primary-800 w-full"
+                >
+                    <div
+                        class="relative flex justify-center items-center rounded-lg 2xl:mx-16"
+                    >
+                        <div
+                            class="relative grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 m-8"
+                        >
+                            <div
+                                class="relative flex items-center justify-center"
+                            >
+                                <img
+                                    src="/images/logo.png"
+                                    class="w-full sm:w-[360px] md:w-full lg:w-full 2xl:w-[400px] drop-shadow-xl"
+                                />
+                                <div class="text-xs">
+                                    <!-- Make your event unforgettable with our expert photo booth services! With 7+ years of experience and over 2,000 events covered, we bring fun, creativity, and cherished memories to every celebration. Explore our packages and book us today! -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
             </div>
         </div>
     </div>
+
+    <!-- <script type="text/javascript">!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});</script>
+<script type="text/javascript">window.Beacon('init', 'decd8946-c894-47ad-8efa-9714bc2e8eec')</script> -->
 </template>

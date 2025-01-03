@@ -15,6 +15,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Toast from "@/Components/Toast.vue";
 import { Inertia } from "@inertiajs/inertia";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 
 const userId = usePage().props.auth.user.id;
 
@@ -76,7 +77,6 @@ const form = useForm({
     user_id: userId,
 });
 
-
 const submitForm = async () => {
     if (validateStep()) {
         try {
@@ -108,14 +108,28 @@ const submitForm = async () => {
 };
 
 /* #############################
-            IMAGE HANDLER
+     IMAGE HANDLER & PREVIEW
     ############################# */
-
 const handleFileUpload = (event) => {
     form.images = Array.from(event.target.files);
     console.log(form.images);
 };
+// const handleFileUpload = (event) => {
+//     const files = Array.from(event.target.files);
+//     form.images = [];
 
+//     files.forEach((file) => {
+//         const reader = new FileReader();
+//         reader.onload = (e) => {
+//             form.images.push({
+//                 name: file.name,
+//                 preview: e.target.result,
+//                 file: file,
+//             });
+//         };
+//         reader.readAsDataURL(file);
+//     });
+// };
 const packageSizes = computed(() => {
     return [
         props.pkg.size,
@@ -373,7 +387,10 @@ if (props.getEvents && Array.isArray(props.getEvents)) {
                 {
                     start: startDateTime,
                     end: endDateTime,
-                    title: "Event",
+                    title:
+                        props.auth.user.id === event.user_id
+                            ? props.getEvents[0].event
+                            : "Booked Event",
                     class: color,
                     split: split,
                     // background: true,
@@ -489,108 +506,107 @@ const validateStep = () => {
     form.errors = {}; // Clear previous errors
 
     if (activeStep.value === 1) {
-        if (!form.event) {
-            form.errors.event = "Event name is required.";
-            isValid = false;
-        }
-        if (!form.region) {
-            form.errors.region = "Region is required.";
-            isValid = false;
-        }
-        if (!form.province) {
-            form.errors.province = "Province is required.";
-            isValid = false;
-        }
-        if (!form.city) {
-            form.errors.city = "City is required.";
-            isValid = false;
-        }
-        if (!form.barangay) {
-            form.errors.barangay = "Barangay is required.";
-            isValid = false;
-        }
-        if (!form.street) {
-            form.errors.street = "Street is required.";
-            isValid = false;
-        }
-        if (!form.zipcode) {
-            form.errors.zipcode = "Zip code is required.";
-            isValid = false;
-        }
-        if (!form.contactperson) {
-            form.errors.contactperson = "Contact person is required.";
-            isValid = false;
-        }
-        if (!form.contactno) {
-            form.errors.contactno = "Contact number is required.";
-            isValid = false;
-        }
-        if (!form.email) {
-            form.errors.email = "Email address is required.";
-            isValid = false;
-        }
-        if (!form.hour) {
-            form.errors.hour = "Hour is required.";
-            isValid = false;
-        }
-        if (!form.minute) {
-            form.errors.minute = "Minute is required.";
-            isValid = false;
-        }
-        if (!form.ampm) {
-            form.errors.ampm = "AMPM is required.";
-            isValid = false;
-        }
-        if (!form.date) {
-            form.errors.date = "Date is required.";
-            isValid = false;
-        } else if (!validateDate(form.date)) {
-            form.errors.date = "Date must be a future date.";
-            isValid = false;
-        } else if (
-            isDateTimeTaken(form.date, form.hour, form.minute, form.ampm)
-        ) {
-            form.errors.date = "The selected date and time are not available.";
-            isValid = false;
-        }
-        if (!form.hour && !form.minute && !form.ampm) {
-            form.errors.time = "Time is required.";
-            isValid = false;
-        }
+        // if (!form.event) {
+        //     form.errors.event = "Event name is required.";
+        //     isValid = false;
+        // }
+        // if (!form.region) {
+        //     form.errors.region = "Region is required.";
+        //     isValid = false;
+        // }
+        // if (!form.province) {
+        //     form.errors.province = "Province is required.";
+        //     isValid = false;
+        // }
+        // if (!form.city) {
+        //     form.errors.city = "City is required.";
+        //     isValid = false;
+        // }
+        // if (!form.barangay) {
+        //     form.errors.barangay = "Barangay is required.";
+        //     isValid = false;
+        // }
+        // if (!form.street) {
+        //     form.errors.street = "Street is required.";
+        //     isValid = false;
+        // }
+        // if (!form.zipcode) {
+        //     form.errors.zipcode = "Zip code is required.";
+        //     isValid = false;
+        // }
+        // if (!form.contactperson) {
+        //     form.errors.contactperson = "Contact person is required.";
+        //     isValid = false;
+        // }
+        // if (!form.contactno) {
+        //     form.errors.contactno = "Contact number is required.";
+        //     isValid = false;
+        // }
+        // if (!form.email) {
+        //     form.errors.email = "Email address is required.";
+        //     isValid = false;
+        // }
+        // if (!form.hour) {
+        //     form.errors.hour = "Hour is required.";
+        //     isValid = false;
+        // }
+        // if (!form.minute) {
+        //     form.errors.minute = "Minute is required.";
+        //     isValid = false;
+        // }
+        // if (!form.ampm) {
+        //     form.errors.ampm = "AMPM is required.";
+        //     isValid = false;
+        // }
+        // if (!form.date) {
+        //     form.errors.date = "Date is required.";
+        //     isValid = false;
+        // } else if (!validateDate(form.date)) {
+        //     form.errors.date = "Date must be a future date.";
+        //     isValid = false;
+        // } else if (
+        //     isDateTimeTaken(form.date, form.hour, form.minute, form.ampm)
+        // ) {
+        //     form.errors.date = "The selected date and time are not available.";
+        //     isValid = false;
+        // }
+        // if (!form.hour && !form.minute && !form.ampm) {
+        //     form.errors.time = "Time is required.";
+        //     isValid = false;
+        // }
     } else if (activeStep.value === 2) {
-        if (!form.packagename) {
-            form.errors.packagename = "Package name is required.";
-            isValid = false;
-        }
-        if (!form.packagesize) {
-            form.errors.packagesize = "Package size is required.";
-            isValid = false;
-        }
-        if (!form.number_of_shots) {
-            form.errors.number_of_shots = "Number of shots is required.";
-            isValid = false;
-        }
-        if (!form.price) {
-            form.errors.price = "Price is required.";
-            isValid = false;
-        }
-        if (!form.extension) {
-            form.errors.extension = "Extension is required.";
-            isValid = false;
-        }
-        if (!form.backdroptype) {
-            form.errors.backdroptype = "Backdrop type is required.";
-            isValid = false;
-        }
-        if (!form.backdropcolor) {
-            form.errors.backdropcolor = "Backdrop color is required.";
-            isValid = false;
-        }
-        if (!form.theme) {
-            form.errors.theme = "Theme is required.";
-            isValid = false;
-        }
-
+        // if (!form.packagename) {
+        //     form.errors.packagename = "Package name is required.";
+        //     isValid = false;
+        // }
+        // if (!form.packagesize) {
+        //     form.errors.packagesize = "Package size is required.";
+        //     isValid = false;
+        // }
+        // if (!form.number_of_shots) {
+        //     form.errors.number_of_shots = "Number of shots is required.";
+        //     isValid = false;
+        // }
+        // if (!form.price) {
+        //     form.errors.price = "Price is required.";
+        //     isValid = false;
+        // }
+        // if (!form.extension) {
+        //     form.errors.extension = "Extension is required.";
+        //     isValid = false;
+        // }
+        // if (!form.backdroptype) {
+        //     form.errors.backdroptype = "Backdrop type is required.";
+        //     isValid = false;
+        // }
+        // if (!form.backdropcolor) {
+        //     form.errors.backdropcolor = "Backdrop color is required.";
+        //     isValid = false;
+        // }
+        // if (!form.theme) {
+        //     form.errors.theme = "Theme is required.";
+        //     isValid = false;
+        // }
     } else if (activeStep.value === 3) {
     }
     return isValid;
@@ -768,7 +784,23 @@ const handleModalSubmit = () => {
     }
 };
 
+/* #############################
+        CONFIRMATION BACKDROP 
+   ############################# */
+const confirmationModal = ref(false);
 
+const openConfirmationModal = () => {
+    confirmationModal.value = true;
+};
+
+const closeConfirmationModal = () => {
+    confirmationModal.value = false;
+};
+
+const handleConfirm = () => {
+    confirmationModal.value = false;
+    submitForm();
+};
 </script>
 
 <template>
@@ -783,7 +815,7 @@ const handleModalSubmit = () => {
         <Toast />
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1400px] mx-auto sm:px-18 lg:px-2">
                 <div
                     class="bg-white overflow-hidden shadow-sm sm:rounded-lg pb-6"
                 >
@@ -912,24 +944,79 @@ const handleModalSubmit = () => {
                         </ol>
                     </div>
                     <div class="px-14 pt-6">
-                        
                         <form @submit.prevent="submitForm">
                             <!-- STEP 1: BACKDROP DETAILS -->
                             <div v-if="activeStep === 1">
+                                <div class="row">
+                                    <div
+                                        class="flex justify-center align-center gap-2 pb-6"
+                                    >
+                                        <svg
+                                            class="w-6 h-6 text-primary-800 group-hover:text-gray-900 dark:group-hover:text-white"
+                                            fill="currentColor"
+                                            viewBox="0 0 22 22"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
+                                        <h1
+                                            class="text-center text-lg font-bold text-primary-800"
+                                        >
+                                            Browse Available Dates
+                                        </h1>
+                                    </div>
+
+                                    <div
+                                        class="col-12 flex justify-center align-center"
+                                    >
+                                        <VueCal
+                                            :events="splitsAndEvents.events"
+                                            class="vuecal"
+                                            events-count-on-year-view
+                                            today-button
+                                            sticky-split-labels
+                                            style="
+                                                width: 150%;
+                                                height: 615px;
+                                                max-width: 1150px;
+                                            "
+                                            :disable-views="[
+                                                'day',
+                                                'years',
+                                                'year',
+                                            ]"
+                                            active-view="month"
+                                            timeFormat="hh:mm {AM}"
+                                            :min-date="minDate"
+                                            :split-days="splitsAndEvents.splits"
+                                        >
+                                        </VueCal>
+                                    </div>
+                                </div>
+
                                 <div
-                                    class="flex justify-center align-center gap-2"
+                                    class="flex justify-center align-center gap-2 py-6"
                                 >
                                     <svg
-                                        class="w-6 h-6 text-primary-800 group-hover:text-gray-900 dark:group-hover:text-white"
-                                        fill="currentColor"
-                                        viewBox="0 0 22 22"
                                         xmlns="http://www.w3.org/2000/svg"
+                                        class="w-6 h-7 text-primary-800 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
                                     >
                                         <path
-                                            fill-rule="evenodd"
-                                            d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
-                                            clip-rule="evenodd"
-                                        />
+                                            d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+                                        ></path>
+                                        <path d="M9 3v2h6V3"></path>
+                                        <path d="M8 10h8"></path>
+                                        <path d="M8 14h5"></path>
                                     </svg>
                                     <h1
                                         class="text-center text-lg font-bold text-primary-800"
@@ -939,7 +1026,7 @@ const handleModalSubmit = () => {
                                 </div>
 
                                 <div
-                                    class="grid grid-cols-1 mt-6 md:grid-cols-3 gap-4"
+                                    class="grid grid-cols-1 md:grid-cols-3 gap-4"
                                 >
                                     <div>
                                         <InputLabel
@@ -1024,8 +1111,7 @@ const handleModalSubmit = () => {
                                     <div>
                                         <InputLabel
                                             for="date"
-                                            value="*Check the calendar below for available dates and times."
-                                            class="text-pink-900"
+                                            class="text-green-600"
                                         />
                                         <!-- Button to open modal -->
                                         <PrimaryButton
@@ -1054,7 +1140,7 @@ const handleModalSubmit = () => {
                                         <InputLabel
                                             for="date"
                                             value="*Selected Date & Time displays here."
-                                            class="text-pink-900"
+                                            class="text-green-600"
                                         />
 
                                         <div class="flex">
@@ -1092,10 +1178,23 @@ const handleModalSubmit = () => {
                                     </div>
                                 </div>
                                 <div
-                                    class="mt-4 font-semibold text-gray-600 text-center"
+                                    class="flex items-center justify-center mt-4 text-lg text-gray-400"
                                 >
-                                    Event Venue
+                                    <div class="flex items-center w-full">
+                                        <div
+                                            class="flex-grow border-t border-gray-300"
+                                        ></div>
+                                        <span
+                                            class="font-semibold text-gray-600 mx-2"
+                                        >
+                                            Event Venue</span
+                                        >
+                                        <div
+                                            class="flex-grow border-t border-gray-300"
+                                        ></div>
+                                    </div>
                                 </div>
+
                                 <div
                                     class="grid grid-cols-1 mt-2 md:grid-cols-3 gap-4"
                                 >
@@ -1103,6 +1202,7 @@ const handleModalSubmit = () => {
                                         <InputLabel
                                             for="region"
                                             value="Region"
+                                            class="text-pink-900"
                                         />
                                         <select
                                             id="region"
@@ -1130,6 +1230,7 @@ const handleModalSubmit = () => {
                                         <InputLabel
                                             for="province"
                                             value="Province"
+                                            class="text-pink-900"
                                         />
                                         <select
                                             id="province"
@@ -1162,6 +1263,7 @@ const handleModalSubmit = () => {
                                         <InputLabel
                                             for="city"
                                             value="City/Municipality"
+                                            class="text-pink-900"
                                         />
                                         <select
                                             id="city"
@@ -1194,6 +1296,7 @@ const handleModalSubmit = () => {
                                         <InputLabel
                                             for="barangay"
                                             value="Barangay"
+                                            class="text-pink-900"
                                         />
                                         <select
                                             id="barangay"
@@ -1260,36 +1363,6 @@ const handleModalSubmit = () => {
                                         />
                                     </div>
                                 </div>
-
-                                <br /><br />
-                                <div class="row">
-                                    <div
-                                        class="col-12 flex justify-center align-center"
-                                    >
-                                        <VueCal
-                                            :events="splitsAndEvents.events"
-                                            class="vuecal"
-                                            events-count-on-year-view
-                                            today-button
-                                            sticky-split-labels
-                                            style="
-                                                width: 150%;
-                                                height: 655px;
-                                                max-width: 1500px;
-                                            "
-                                            :disable-views="[
-                                                'day',
-                                                'years',
-                                                'year',
-                                            ]"
-                                            active-view="month"
-                                            timeFormat="hh:mm {AM}"
-                                            :min-date="minDate"
-                                            :split-days="splitsAndEvents.splits"
-                                        >
-                                        </VueCal>
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- STEP 2: EVENT DATE DETAILS -->
@@ -1320,7 +1393,7 @@ const handleModalSubmit = () => {
                                     </h1>
                                 </div>
                                 <div
-                                    class="flex gap-12 justify-center align-center"
+                                    class="flex gap-12 mx-6 justify-center align-center"
                                 >
                                     <div
                                         class="grid grid-rows-1 mt-6 gap-4 w-1/3"
@@ -1588,13 +1661,12 @@ const handleModalSubmit = () => {
                                                 v-model="form.suggestion"
                                                 autocomplete="off"
                                             />
-
                                         </div>
 
                                         <div>
                                             <InputLabel
                                                 for="image"
-                                                value="Picture/s of Celebrant"
+                                                value="Upload Your Preferred Theme:"
                                                 class="text-pink-900"
                                             />
                                             <div
@@ -1662,99 +1734,149 @@ const handleModalSubmit = () => {
                                                 >
                                                     Uploaded Files:
                                                 </h4>
+
                                                 <ul
                                                     class="list-disc list-inside"
                                                 >
-                                                    <li
-                                                        v-for="(
-                                                            image, index
-                                                        ) in form.images"
-                                                        :key="index"
-                                                        class="text-gray-600 text-sm"
+                                                    <div
+                                                        class="flex gap-2 flex-wrap"
                                                     >
-                                                        {{ image.name }}
-                                                    </li>
+                                                        <li
+                                                            v-for="(
+                                                                image, index
+                                                            ) in form.images"
+                                                            :key="index"
+                                                            class="text-gray-600 text-sm"
+                                                        >
+                                                            {{ image.name }}
+
+                                                            <img
+                                                                :src="
+                                                                    image.preview
+                                                                "
+                                                                :alt="
+                                                                    image.name
+                                                                "
+                                                                class="w-32 object-cover mt-2"
+                                                            />
+                                                        </li>
+                                                    </div>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
                                     <div
-                                        class="w-3/5 mt-8 border rounded-lg border-primary-200 self-start"
+                                        class="flex flex-col justify-center items-center self-start w-3/5 mt-8"
                                     >
-                                        <h1
-                                            class="bg-primary-200 py-2 text-center rounded-tl rounded-tr"
-                                        >
-                                            Backdrop Preview
-                                        </h1>
-                                        <!-- If there's no packagesize and number of shots selected, it display a height:100% 
-                                            else it absorbs the height of the mockups -->
                                         <div
-                                            class="flex justify-center items-center"
-                                            :style="{
-                                                height:
-                                                    (!form.packagesize &&
-                                                        !form.number_of_shots) ||
-                                                    !form.packagesize ||
-                                                    !form.number_of_shots
-                                                        ? '400px'
-                                                        : '100%',
-                                            }"
+                                            class="w-full border rounded-lg border-primary-200"
                                         >
-                                            <!-- If there's no packagesize and number of shots selected, there's no mockups showing
-                                                height, and weight of the mockups depends on the packagesize  -->
+                                            <h1
+                                                class="bg-primary-200 py-2 text-center rounded-tl rounded-tr"
+                                            >
+                                                Package and Backdrop Preview
+                                            </h1>
+                                            <!-- If there's no packagesize and number of shots selected, it display a height:100% 
+                                            else it absorbs the height of the mockups -->
                                             <div
-                                                v-show="
-                                                    form.packagesize &&
-                                                    form.number_of_shots
-                                                "
-                                                class="mx-auto my-6"
+                                                class="flex justify-center items-center"
                                                 :style="{
-                                                    backgroundImage:
-                                                        backdropImage
-                                                            ? `url(${backdropImage})`
-                                                            : 'none',
-                                                    backgroundColor:
-                                                        backdropImage
-                                                            ? 'transparent'
-                                                            : '#d3d3d3',
-                                                    backgroundSize: 'cover',
-                                                    backgroundPosition:
-                                                        'center',
-                                                    width:
-                                                        form.packagesize.toLowerCase() ===
-                                                        'strips'
-                                                            ? '300px'
-                                                            : form.packagesize.toLowerCase() ===
-                                                              '4r'
-                                                            ? '550px'
-                                                            : '300px',
                                                     height:
-                                                        form.packagesize.toLowerCase() ===
-                                                        'strips'
-                                                            ? '450px'
-                                                            : form.packagesize.toLowerCase() ===
-                                                              '4r'
-                                                            ? '415px'
-                                                            : '450px',
-                                                    position: 'relative',
-                                                    boxShadow:
-                                                        '0 4px 8px rgba(0, 0, 0, .5)',
+                                                        (!form.packagesize &&
+                                                            !form.number_of_shots) ||
+                                                        !form.packagesize ||
+                                                        !form.number_of_shots
+                                                            ? '400px'
+                                                            : '100%',
                                                 }"
                                             >
-                                                <img
-                                                    :src="mockupImage"
-                                                    v-if="mockupImage"
-                                                    style="
-                                                        width: 100%;
-                                                        height: 100%;
-                                                        object-fit: fill;
-                                                        position: absolute;
-                                                        top: 0;
-                                                        left: 0;
-                                                        boxshadow: '0 4px 8px rgba(0, 0, 0, 0.1)';
-                                                        margin: auto;
+                                                <!-- If there's no packagesize and number of shots selected, there's no mockups showing
+                                                height, and weight of the mockups depends on the packagesize  -->
+                                                <div
+                                                    v-show="
+                                                        form.packagesize &&
+                                                        form.number_of_shots
                                                     "
-                                                />
+                                                    class="mx-auto my-6"
+                                                    :style="{
+                                                        backgroundImage:
+                                                            backdropImage
+                                                                ? `url(${backdropImage})`
+                                                                : 'none',
+                                                        backgroundColor:
+                                                            backdropImage
+                                                                ? 'transparent'
+                                                                : '#d3d3d3',
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition:
+                                                            'center',
+                                                        width:
+                                                            form.packagesize.toLowerCase() ===
+                                                            'strips'
+                                                                ? '300px'
+                                                                : form.packagesize.toLowerCase() ===
+                                                                  '4r'
+                                                                ? '550px'
+                                                                : form.packagesize() ===
+                                                                  'Polaroid size'
+                                                                ? '550px'
+                                                                : '300px',
+                                                        height:
+                                                            form.packagesize.toLowerCase() ===
+                                                            'strips'
+                                                                ? '450px'   
+                                                                : form.packagesize.toLowerCase() ===
+                                                                  '4r'
+                                                                ? '415px'
+                                                                : form.packagesize() ===
+                                                                  'Polaroid size'
+                                                                ? '415px'
+                                                                : '450px',
+                                                        position: 'relative',
+                                                        boxShadow:
+                                                            '0 4px 8px rgba(0, 0, 0, .5)',
+                                                    }"
+                                                >
+                                                    <img
+                                                        :src="mockupImage"
+                                                        v-if="mockupImage"
+                                                        style="
+                                                            width: 100%;
+                                                            height: 100%;
+                                                            object-fit: fill;
+                                                            position: absolute;
+                                                            top: 0;
+                                                            left: 0;
+                                                            boxshadow: '0 4px 8px rgba(0, 0, 0, 0.1)';
+                                                            margin: auto;
+                                                        "
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div
+                                                v-show="
+                                                    form.packagesize.toLowerCase() ===
+                                                        '4r' &&
+                                                    form.number_of_shots == 2
+                                                "
+                                                class="flex align-center pb-4 justify-center font-bold text-center"
+                                            >
+                                                Picture placement may change
+                                                depending on the design and
+                                                layout.
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="mt-8 border rounded-lg border-primary-200 w-full"
+                                        >
+                                            <h1
+                                                class="bg-primary-200 py-2 text-center rounded-tl rounded-tr"
+                                            >
+                                                Add-ons
+                                            </h1>
+                                            <div class="p-4">
+                                                <!-- New content here -->
+                                                <p></p>
                                             </div>
                                         </div>
                                     </div>
@@ -2076,13 +2198,12 @@ const handleModalSubmit = () => {
                                                 v-model="form.suggestion"
                                                 autocomplete="off"
                                             />
-
                                         </div>
 
                                         <div>
                                             <InputLabel
                                                 for="image"
-                                                value="Picture/s of Celebrant"
+                                                value="Upload Your Preferred Theme:"
                                                 class="text-pink-900"
                                             />
                                             <div
@@ -2161,88 +2282,129 @@ const handleModalSubmit = () => {
                                                         class="text-gray-600 text-sm"
                                                     >
                                                         {{ image.name }}
+                                                        <img
+                                                            :src="image.preview"
+                                                            :alt="image.name"
+                                                            class="w-32 h-32 object-cover mt-2"
+                                                        />
                                                     </li>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
                                     <div
-                                        class="w-3/5 mt-8 border rounded-lg border-primary-200 self-start"
+                                        class="flex flex-col justify-center items-center self-start w-3/5 mt-8"
                                     >
-                                        <h1
-                                            class="bg-primary-200 py-2 text-center rounded-tl rounded-tr"
-                                        >
-                                            Backdrop Preview
-                                        </h1>
-                                        <!-- If there's no packagesize and number of shots selected, it display a height:100% 
-                                            else it absorbs the height of the mockups -->
                                         <div
-                                            class="flex justify-center items-center"
-                                            :style="{
-                                                height:
-                                                    (!form.packagesize &&
-                                                        !form.number_of_shots) ||
-                                                    !form.packagesize ||
-                                                    !form.number_of_shots
-                                                        ? '400px'
-                                                        : '100%',
-                                            }"
+                                            class="w-full border rounded-lg border-primary-200"
                                         >
-                                            <!-- If there's no packagesize and number of shots selected, there's no mockups showing
-                                                height, and weight of the mockups depends on the packagesize  -->
+                                            <h1
+                                                class="bg-primary-200 py-2 text-center rounded-tl rounded-tr"
+                                            >
+                                                Package and Backdrop Preview
+                                            </h1>
+                                            <!-- If there's no packagesize and number of shots selected, it display a height:100% 
+                                            else it absorbs the height of the mockups -->
                                             <div
-                                                v-show="
-                                                    form.packagesize &&
-                                                    form.number_of_shots
-                                                "
-                                                class="mx-auto my-6"
+                                                class="flex justify-center items-center"
                                                 :style="{
-                                                    backgroundImage:
-                                                        backdropImage
-                                                            ? `url(${backdropImage})`
-                                                            : 'none',
-                                                    backgroundColor:
-                                                        backdropImage
-                                                            ? 'transparent'
-                                                            : '#d3d3d3',
-                                                    backgroundSize: 'cover',
-                                                    backgroundPosition:
-                                                        'center',
-                                                    width:
-                                                        form.packagesize.toLowerCase() ===
-                                                        'strips'
-                                                            ? '300px'
-                                                            : form.packagesize.toLowerCase() ===
-                                                              '4r'
-                                                            ? '550px'
-                                                            : '300px',
                                                     height:
-                                                        form.packagesize.toLowerCase() ===
-                                                        'strips'
-                                                            ? '450px'
-                                                            : form.packagesize.toLowerCase() ===
-                                                              '4r'
-                                                            ? '415px'
-                                                            : '450px',
-                                                    position: 'relative',
-                                                    boxShadow:
-                                                        '0 4px 8px rgba(0, 0, 0, .5)',
+                                                        (!form.packagesize &&
+                                                            !form.number_of_shots) ||
+                                                        !form.packagesize ||
+                                                        !form.number_of_shots
+                                                            ? '400px'
+                                                            : '100%',
                                                 }"
                                             >
-                                                <img
-                                                    :src="mockupImage"
-                                                    v-if="mockupImage"
-                                                    style="
-                                                        width: 100%;
-                                                        height: 100%;
-                                                        object-fit: fill;
-                                                        position: absolute;
-                                                        top: 0;
-                                                        left: 0;
-                                                        boxshadow: '0 4px 8px rgba(0, 0, 0, 0.1)';
-                                                        margin: auto;
+                                                <!-- If there's no packagesize and number of shots selected, there's no mockups showing
+                                                height, and weight of the mockups depends on the packagesize  -->
+                                                <div
+                                                    v-show="
+                                                        form.packagesize &&
+                                                        form.number_of_shots
                                                     "
-                                                />
+                                                    class="mx-auto my-6"
+                                                    :style="{
+                                                        backgroundImage:
+                                                            backdropImage
+                                                                ? `url(${backdropImage})`
+                                                                : 'none',
+                                                        backgroundColor:
+                                                            backdropImage
+                                                                ? 'transparent'
+                                                                : '#d3d3d3',
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition:
+                                                            'center',
+                                                         width:
+                                                            form.packagesize.toLowerCase() ===
+                                                            'strips'
+                                                                ? '300px'
+                                                                : form.packagesize.toLowerCase() ===
+                                                                  '4r'
+                                                                ? '550px'
+                                                                : form.packagesize.toLowerCase() ===
+                                                                  'polaroid size'
+                                                                ? '550px'
+                                                                : '300px',
+                                                        height:
+                                                            form.packagesize.toLowerCase() ===
+                                                            'strips'
+                                                                ? '450px'   
+                                                                : form.packagesize.toLowerCase() ===
+                                                                  '4r'
+                                                                ? '415px'
+                                                                : form.packagesize.toLowerCase() ===
+                                                                  'polaroid size'
+                                                                ? '415px'
+                                                                : '450px',
+                                                        position: 'relative',
+                                                        boxShadow:
+                                                            '0 4px 8px rgba(0, 0, 0, .5)',
+                                                    }"
+                                                >
+                                                    <img
+                                                        :src="mockupImage"
+                                                        v-if="mockupImage"
+                                                        style="
+                                                            width: 100%;
+                                                            height: 100%;
+                                                            object-fit: fill;
+                                                            position: absolute;
+                                                            top: 0;
+                                                            left: 0;
+                                                            boxshadow: '0 4px 8px rgba(0, 0, 0, 0.1)';
+                                                            margin: auto;
+                                                        "
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div
+                                                v-show="
+                                                    form.packagesize.toLowerCase() ===
+                                                        '4r' &&
+                                                    form.number_of_shots == 3 &&
+                                                    form.number_of_shots == 4
+                                                "
+                                                class="flex align-center pb-4 justify-center font-bold text-center"
+                                            >
+                                                Picture placement may change
+                                                depending on the design and
+                                                layout.
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="mt-8 border rounded-lg border-primary-200 w-full"
+                                        >
+                                            <h1
+                                                class="bg-primary-200 py-2 text-center rounded-tl rounded-tr"
+                                            >
+                                                Add-ons
+                                            </h1>
+                                            <div class="p-4">
+                                                <!-- New content here -->
+                                                <p></p>
                                             </div>
                                         </div>
                                     </div>
@@ -2267,7 +2429,7 @@ const handleModalSubmit = () => {
                                     <h1
                                         class="text-center text-lg font-bold text-primary-800"
                                     >
-                                        Confirmation
+                                        Details Confirmation
                                     </h1>
                                 </div>
 
@@ -2501,14 +2663,16 @@ const handleModalSubmit = () => {
                             </PrimaryButton>
 
                             <PrimaryButton
-                            class="mt-6 flex float-right"
-                            v-if="activeStep === 3"
-                            type="button"
-                            :class="{ 'opacity-25': form.processing }"
-                            :disabled="form.processing"
-                            @click="submitForm"
+                                class="mt-6 flex float-right"
+                                v-if="activeStep === 3"
+                                type="button"
+                                :class="{ 'opacity-25': form.processing }"
+                                :disabled="form.processing"
+                                @click="openConfirmationModal()"
                             >
-                                <span v-if="form.processing">Submitting...</span>
+                                <span v-if="form.processing"
+                                    >Submitting...</span
+                                >
                                 <span v-else>Submit</span>
                             </PrimaryButton>
                         </form>
@@ -2516,6 +2680,72 @@ const handleModalSubmit = () => {
                 </div>
             </div>
         </div>
+
+        <!-- CONFIRMATION MODAL -->
+        <ConfirmationModal
+            :show="confirmationModal"
+            @close="closeConfirmationModal"
+        >
+            <div class="relative w-full h-full max-w-md md:h-auto">
+                <!-- Modal content -->
+                <div
+                    class="relative bg-white rounded-lg shadow dark:bg-gray-800"
+                >
+                    <!-- Modal header -->
+                    <div class="flex justify-end p-2">
+                        <button
+                            type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                            @click="closeConfirmationModal"
+                        >
+                            <svg
+                                class="w-5 h-5"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 pt-0 text-center">
+                        <h3 class="mt-5 mb-8 text-gray-700 dark:text-gray-400">
+                            Are you sure you want to submit? Please review your
+                            details before submitting.
+                        </h3>
+                        <!-- Modal footer -->
+                        <div class="mt-8 flex justify-center gap-6">
+                            <SecondaryButton
+                                class="uppercase px-5"
+                                @click="closeConfirmationModal"
+                            >
+                                No, go back
+                            </SecondaryButton>
+
+                            <PrimaryButton
+                                class="uppercase bg-danger px-10"
+                                :class="{
+                                    'opacity-25': form.processing,
+                                }"
+                                :disabled="form.processing"
+                                @click="submitForm"
+                            >
+                                <span v-if="form.processing"
+                                    >Submitting...</span
+                                >
+                                <span v-else>Submit</span>
+                            </PrimaryButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ConfirmationModal>
+
         <div
             v-if="showModal"
             class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75"

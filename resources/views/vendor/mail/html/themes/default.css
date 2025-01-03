@@ -11,8 +11,8 @@ body *:not(html):not(style):not(br):not(tr):not(code) {
 body {
     -webkit-text-size-adjust: none;
     background-color: #ffffff;
-    color: #718096;
-    height: 100%;
+    color: black;
+    height: 100%; 
     line-height: 1.4;
     margin: 0;
     padding: 0;
@@ -39,7 +39,7 @@ a img {
 /* Typography */
 
 h1 {
-    color: #3d4852;
+    color: #fff;
     font-size: 18px;
     font-weight: bold;
     margin-top: 0;
@@ -81,7 +81,7 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 100%;
-    background-color: #edf2f7;
+    background: linear-gradient(to right, #f095b6, #f7dee7);
     margin: 0;
     padding: 0;
     width: 100%;
@@ -104,7 +104,7 @@ img {
 }
 
 .header a {
-    color: #3d4852;
+    color: #fff;
     font-size: 19px;
     font-weight: bold;
     text-decoration: none;
@@ -124,9 +124,9 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 100%;
-    background-color: #edf2f7;
-    border-bottom: 1px solid #edf2f7;
-    border-top: 1px solid #edf2f7;
+    background: linear-gradient(to right, #f095b6, #f7dee7);
+    border-bottom: 1px solid #f095b6;
+    border-top: 1px solid #f095b6;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -171,13 +171,13 @@ img {
 }
 
 .footer p {
-    color: #b0adc5;
+    color: #fff;
     font-size: 12px;
     text-align: center;
 }
 
 .footer a {
-    color: #b0adc5;
+    color: #fff;
     text-decoration: underline;
 }
 
@@ -267,13 +267,14 @@ img {
 }
 
 .panel-content {
-    background-color: #edf2f7;
-    color: #718096;
+    background: linear-gradient(to right, #f095b6, #f7dee7);
+
+    color: black;
     padding: 16px;
 }
 
 .panel-content p {
-    color: #718096;
+    color: black;
 }
 
 .panel-item {

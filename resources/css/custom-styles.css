@@ -142,3 +142,25 @@
         opacity: 1;
     }
 }
+
+
+/* PACKAGES */
+
+.pkg-shadow{
+    box-shadow: 10px 10px 4px -4px rgba(201,201,201,1);
+}
+
+/* SWIPER */
+
+/* Custom Swiper Pagination Styles */
+.swiper-pagination-bullet {
+    background-color: #333333; /* Change this to your desired color */
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #f57da9; /* Change this to your desired active color */
+}
+
+.swiper-button-next, .swiper-button-prev {
+    color: #f57da9;
+}

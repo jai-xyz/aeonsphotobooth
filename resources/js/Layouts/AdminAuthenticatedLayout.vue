@@ -8,7 +8,7 @@ import AdminNavLink from "@/Components/AdminNavLink.vue";
 import AdminDropdown from "@/Components/AdminDropdown.vue";
 import { Link } from "@inertiajs/vue3";
 import AdminDropdownLink from "@/Components/AdminDropdownLink.vue";
-import { Head } from '@inertiajs/vue3';
+import { Head } from "@inertiajs/vue3";
 
 const isSidebarVisible = ref(false);
 const showingNavigationDropdown = ref(false);
@@ -92,8 +92,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
- <Head>
-        <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    <Head>
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
     </Head>
     <div class="min-h-screen bg-gray-100">
         <div :class="['flex flex-col flex-1 transition-all duration-300']">
@@ -274,34 +274,65 @@ onBeforeUnmount(() => {
                                     <span class="ml-3">Dashboard</span>
                                 </AdminNavLink>
 
-                                
-                                   <AdminDropdown
-                                :active="route().current('event.index') ||  route().current('event.pending.index') ||  route().current('event.accepted.index')">
+                                <AdminDropdown
+                                    :active="
+                                        route().current('event.index') ||
+                                        route().current(
+                                            'event.pending.index'
+                                        ) ||
+                                        route().current(
+                                            'event.accepted.index'
+                                        ) ||
+                                        route().current('event.archive.index')
+                                    "
+                                >
                                     <button
                                         type="button"
                                         class="flex items-center w-full font-medium text-base text-gray-600"
                                         @click="toggleDropdownEvent"
                                     >
-                                       <svg
-                                        :class="[
-                                            'w-6 h-6 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white',
-                                             {
-                                                'text-pink-400':
-                                                    route().current('event.index') ||  route().current('event.pending.index') ||  route().current('event.accepted.index'),
-                                                'text-gray-400 dark:text-gray-400':
-                                                   !route().current('event.index') ||  !route().current('event.pending.index') ||  !route().current('event.accepted.index'),
-                                            },
-                                        ]"
-                                        fill="currentColor"
-                                        viewBox="0 0 22 22"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
+                                        <svg
+                                            :class="[
+                                                'w-6 h-6 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white',
+                                                {
+                                                    'text-pink-400':
+                                                        route().current(
+                                                            'event.index'
+                                                        ) ||
+                                                        route().current(
+                                                            'event.pending.index'
+                                                        ) ||
+                                                        route().current(
+                                                            'event.accepted.index'
+                                                        ) ||
+                                                        route().current(
+                                                            'event.archive.index'
+                                                        ),
+                                                    'text-gray-400 dark:text-gray-400':
+                                                        !route().current(
+                                                            'event.index'
+                                                        ) ||
+                                                        !route().current(
+                                                            'event.pending.index'
+                                                        ) ||
+                                                        !route().current(
+                                                            'event.accepted.index'
+                                                        ) ||
+                                                        route().current(
+                                                            'event.archive.index'
+                                                        ),
+                                                },
+                                            ]"
+                                            fill="currentColor"
+                                            viewBox="0 0 22 22"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
                                         <span
                                             class="flex-1 ms-2 text-left rtl:text-right whitespace-nowrap"
                                             >Events</span
@@ -309,7 +340,8 @@ onBeforeUnmount(() => {
                                         <svg
                                             class="w-3 h-3"
                                             :class="{
-                                                'rotate-180': isDropdownVisibleEvent,
+                                                'rotate-180':
+                                                    isDropdownVisibleEvent,
                                             }"
                                             aria-hidden="true"
                                             xmlns="http://www.w3.org/2000/svg"
@@ -333,28 +365,51 @@ onBeforeUnmount(() => {
                                         }"
                                     >
                                         <AdminDropdownLink
-                                        class="ms-8 text-gray-500"
-                                        :href="route('event.pending.index')"
-                                        :active="route().current('event.pending.index')">
-                                           Pending Events
+                                            class="ms-8 text-gray-500"
+                                            :href="route('event.pending.index')"
+                                            :active="
+                                                route().current(
+                                                    'event.pending.index'
+                                                )
+                                            "
+                                        >
+                                            Pending Events
                                         </AdminDropdownLink>
                                         <AdminDropdownLink
-                                        class="ms-8 text-gray-500"
-                                        :href="route('event.accepted.index')"
-                                        :active="route().current('event.accepted.index')"
+                                            class="ms-8 text-gray-500"
+                                            :href="
+                                                route('event.accepted.index')
+                                            "
+                                            :active="
+                                                route().current(
+                                                    'event.accepted.index'
+                                                )
+                                            "
                                         >
-                                          Accepted Events
+                                            Accepted Events
                                         </AdminDropdownLink>
                                         <AdminDropdownLink
-                                        class="ms-8 text-gray-500"
-                                        :href="route('event.index')"
-                                        :active="route().current('event.index')"
+                                            class="ms-8 text-gray-500"
+                                            :href="route('event.index')"
+                                            :active="
+                                                route().current('event.index')
+                                            "
                                         >
-                                          Listed Events
+                                            Listed Events
+                                        </AdminDropdownLink>
+                                        <AdminDropdownLink
+                                            class="ms-8 text-gray-500"
+                                            :href="route('event.archive.index')"
+                                            :active="
+                                                route().current(
+                                                    'event.archive.index'
+                                                )
+                                            "
+                                        >
+                                            Archive Events
                                         </AdminDropdownLink>
                                     </ul>
                                 </AdminDropdown>
-
 
                                 <AdminNavLink
                                     :href="route('package.index')"
@@ -388,36 +443,49 @@ onBeforeUnmount(() => {
                                 </AdminNavLink>
 
                                 <AdminDropdown
-                                :active="route().current('backdrop.index') ||  route().current('backdroptype.index')">
+                                    :active="
+                                        route().current('backdrop.index') ||
+                                        route().current('backdroptype.index')
+                                    "
+                                >
                                     <button
                                         type="button"
                                         class="flex items-center w-full font-medium text-base text-gray-600"
                                         @click="toggleDropdownBackdrop"
                                     >
-                                         <svg
-                                        :class="[
-                                            'w-7 h-7 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white',
-                                            {
-                                                'text-pink-400':
-                                                    route().current('backdrop.index') || route().current('backdroptype.index'),
-                                                'text-gray-400 dark:text-gray-400':
-                                                    !route().current('backdrop.index') || !route().current('backdroptype.index'
-                                                    ),
-                                            },
-                                        ]"
-                                        fill="currentColor"
-                                        viewBox="0 0 240 240"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M0 0 C51.48 0 102.96 0 156 0 C156 51.81 156 103.62 156 157 C104.52 157 53.04 157 0 157 C0 105.19 0 53.38 0 0 Z "
-                                            transform="translate(34,60)"
-                                        />
-                                        <path
-                                            d="M0 0 C1.9375 2 1.9375 2 3 4 C3.33 2.68 3.66 1.36 4 0 C57.46 0 110.92 0 166 0 C166.33 1.32 166.66 2.64 167 4 C167.350625 3.34 167.70125 2.68 168.0625 2 C170 0 170 0 173.5 -0.5 C177 0 177 0 178.9375 1.6875 C180.19214083 4.41818887 180.45702746 6.02932151 180 9 C179.25823407 9.66463367 179.25823407 9.66463367 178.50148296 10.34269428 C176.46557583 12.5898863 176.61683472 13.95089849 176.60127258 16.95439148 C176.58873444 17.97662811 176.57619629 18.99886475 176.5632782 20.05207825 C176.56471329 21.17273178 176.56614838 22.29338531 176.56762695 23.44799805 C176.5574353 24.62861816 176.54724365 25.80923828 176.53674316 27.02563477 C176.51170658 30.26302093 176.49988349 33.50013463 176.49388909 36.737602 C176.48451551 40.12094079 176.45831302 43.50414785 176.43388367 46.8874054 C176.39018684 53.29402789 176.36165953 59.70062487 176.33856028 66.10735112 C176.31152559 73.40119067 176.26761308 80.69489791 176.22227156 87.98864305 C176.12937978 102.99235742 176.05771989 117.99610602 176 133 C178.31 133 180.62 133 183 133 C182.91516357 133.5681543 182.83032715 134.13630859 182.74291992 134.72167969 C182.03814368 143.35798542 185.88297524 149.13361478 190.3125 156.25 C191.01182862 157.40500342 191.70911028 158.56124881 192.40429688 159.71875 C193.68631465 161.84925297 194.97792232 163.97403832 196.2824707 166.09082031 C198.00065528 169.00110992 199.5245614 171.96052311 201 175 C199.02 175.99 199.02 175.99 197 177 C189.9767809 165.86613208 183.49903397 154.4471621 177 143 C176.67 154.22 176.34 165.44 176 177 C174.35 177 172.7 177 171 177 C170.67 166.11 170.34 155.22 170 144 C168.68 146.31 167.36 148.62 166 151 C165.34 151 164.68 151 164 151 C163.97315688 148.18743719 163.95323812 145.37512759 163.9375 142.5625 C163.92912109 141.76005859 163.92074219 140.95761719 163.91210938 140.13085938 C163.9034857 138.08704779 163.9477185 136.04316098 164 134 C164.33 133.67 164.66 133.34 165 133 C166.98 133 168.96 133 171 133 C170.67 93.07 170.34 53.14 170 12 C168.02 11.01 168.02 11.01 166 10 C166 13.3 166 16.6 166 20 C112.54 20 59.08 20 4 20 C4 16.7 4 13.4 4 10 C2.02 10.66 0.04 11.32 -2 12 C-2 51.93 -2 91.86 -2 133 C0.31 133 2.62 133 5 133 C6 134 6 134 6.09765625 137.81640625 C6.09098089 139.39846682 6.07901875 140.98051159 6.0625 142.5625 C6.05798828 143.36880859 6.05347656 144.17511719 6.04882812 145.00585938 C6.03700518 147.00393756 6.01906914 149.00197783 6 151 C5.34 151 4.68 151 4 151 C0 144.25 0 144.25 0 142 C-0.66 142 -1.32 142 -2 142 C-2 153.55 -2 165.1 -2 177 C-3.32 177 -4.64 177 -6 177 C-6.33 165.78 -6.66 154.56 -7 143 C-10.9665142 150.07189268 -10.9665142 150.07189268 -14.92602539 157.14770508 C-18.73466149 163.91186684 -22.76541194 170.49433001 -27 177 C-28.32 176.34 -29.64 175.68 -31 175 C-30.25364216 173.6022158 -29.50240277 172.20703962 -28.75 170.8125 C-27.94949219 169.32363281 -27.94949219 169.32363281 -27.1328125 167.8046875 C-25.48033567 164.79913154 -23.71719293 161.87239333 -21.9296875 158.9453125 C-21.38731445 158.04063232 -20.84494141 157.13595215 -20.28613281 156.20385742 C-19.19618735 154.38872337 -18.08922493 152.58367739 -16.96386719 150.7902832 C-13.32924804 144.67704617 -12.2297496 140.09105827 -13 133 C-10.69 133 -8.38 133 -6 133 C-6.06049303 117.27524648 -6.13796327 101.55067459 -6.23571491 85.8261137 C-6.28070447 78.52512237 -6.32011172 71.22418016 -6.34643555 63.9230957 C-6.36939018 57.56038884 -6.40275951 51.19783702 -6.44870156 44.83525306 C-6.47266833 41.46544414 -6.49137431 38.09578909 -6.49761391 34.72589684 C-6.50719094 30.96636283 -6.53517413 27.20739422 -6.56762695 23.44799805 C-6.56619186 22.32734451 -6.56475677 21.20669098 -6.5632782 20.05207825 C-6.58208542 18.5187233 -6.58208542 18.5187233 -6.60127258 16.95439148 C-6.60588155 16.06486125 -6.61049051 15.17533102 -6.61523914 14.25884533 C-7.08024929 11.52887431 -8.00786318 10.83172211 -10 9 C-10.38976435 5.88188517 -10.50422245 3.88980433 -8.9375 1.125 C-5.85928089 -0.66235303 -3.47093932 -0.43386742 0 0 Z "
-                                            transform="translate(26,39)"
-                                        />
-                                    </svg>  
+                                        <svg
+                                            :class="[
+                                                'w-7 h-7 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white',
+                                                {
+                                                    'text-pink-400':
+                                                        route().current(
+                                                            'backdrop.index'
+                                                        ) ||
+                                                        route().current(
+                                                            'backdroptype.index'
+                                                        ),
+                                                    'text-gray-400 dark:text-gray-400':
+                                                        !route().current(
+                                                            'backdrop.index'
+                                                        ) ||
+                                                        !route().current(
+                                                            'backdroptype.index'
+                                                        ),
+                                                },
+                                            ]"
+                                            fill="currentColor"
+                                            viewBox="0 0 240 240"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M0 0 C51.48 0 102.96 0 156 0 C156 51.81 156 103.62 156 157 C104.52 157 53.04 157 0 157 C0 105.19 0 53.38 0 0 Z "
+                                                transform="translate(34,60)"
+                                            />
+                                            <path
+                                                d="M0 0 C1.9375 2 1.9375 2 3 4 C3.33 2.68 3.66 1.36 4 0 C57.46 0 110.92 0 166 0 C166.33 1.32 166.66 2.64 167 4 C167.350625 3.34 167.70125 2.68 168.0625 2 C170 0 170 0 173.5 -0.5 C177 0 177 0 178.9375 1.6875 C180.19214083 4.41818887 180.45702746 6.02932151 180 9 C179.25823407 9.66463367 179.25823407 9.66463367 178.50148296 10.34269428 C176.46557583 12.5898863 176.61683472 13.95089849 176.60127258 16.95439148 C176.58873444 17.97662811 176.57619629 18.99886475 176.5632782 20.05207825 C176.56471329 21.17273178 176.56614838 22.29338531 176.56762695 23.44799805 C176.5574353 24.62861816 176.54724365 25.80923828 176.53674316 27.02563477 C176.51170658 30.26302093 176.49988349 33.50013463 176.49388909 36.737602 C176.48451551 40.12094079 176.45831302 43.50414785 176.43388367 46.8874054 C176.39018684 53.29402789 176.36165953 59.70062487 176.33856028 66.10735112 C176.31152559 73.40119067 176.26761308 80.69489791 176.22227156 87.98864305 C176.12937978 102.99235742 176.05771989 117.99610602 176 133 C178.31 133 180.62 133 183 133 C182.91516357 133.5681543 182.83032715 134.13630859 182.74291992 134.72167969 C182.03814368 143.35798542 185.88297524 149.13361478 190.3125 156.25 C191.01182862 157.40500342 191.70911028 158.56124881 192.40429688 159.71875 C193.68631465 161.84925297 194.97792232 163.97403832 196.2824707 166.09082031 C198.00065528 169.00110992 199.5245614 171.96052311 201 175 C199.02 175.99 199.02 175.99 197 177 C189.9767809 165.86613208 183.49903397 154.4471621 177 143 C176.67 154.22 176.34 165.44 176 177 C174.35 177 172.7 177 171 177 C170.67 166.11 170.34 155.22 170 144 C168.68 146.31 167.36 148.62 166 151 C165.34 151 164.68 151 164 151 C163.97315688 148.18743719 163.95323812 145.37512759 163.9375 142.5625 C163.92912109 141.76005859 163.92074219 140.95761719 163.91210938 140.13085938 C163.9034857 138.08704779 163.9477185 136.04316098 164 134 C164.33 133.67 164.66 133.34 165 133 C166.98 133 168.96 133 171 133 C170.67 93.07 170.34 53.14 170 12 C168.02 11.01 168.02 11.01 166 10 C166 13.3 166 16.6 166 20 C112.54 20 59.08 20 4 20 C4 16.7 4 13.4 4 10 C2.02 10.66 0.04 11.32 -2 12 C-2 51.93 -2 91.86 -2 133 C0.31 133 2.62 133 5 133 C6 134 6 134 6.09765625 137.81640625 C6.09098089 139.39846682 6.07901875 140.98051159 6.0625 142.5625 C6.05798828 143.36880859 6.05347656 144.17511719 6.04882812 145.00585938 C6.03700518 147.00393756 6.01906914 149.00197783 6 151 C5.34 151 4.68 151 4 151 C0 144.25 0 144.25 0 142 C-0.66 142 -1.32 142 -2 142 C-2 153.55 -2 165.1 -2 177 C-3.32 177 -4.64 177 -6 177 C-6.33 165.78 -6.66 154.56 -7 143 C-10.9665142 150.07189268 -10.9665142 150.07189268 -14.92602539 157.14770508 C-18.73466149 163.91186684 -22.76541194 170.49433001 -27 177 C-28.32 176.34 -29.64 175.68 -31 175 C-30.25364216 173.6022158 -29.50240277 172.20703962 -28.75 170.8125 C-27.94949219 169.32363281 -27.94949219 169.32363281 -27.1328125 167.8046875 C-25.48033567 164.79913154 -23.71719293 161.87239333 -21.9296875 158.9453125 C-21.38731445 158.04063232 -20.84494141 157.13595215 -20.28613281 156.20385742 C-19.19618735 154.38872337 -18.08922493 152.58367739 -16.96386719 150.7902832 C-13.32924804 144.67704617 -12.2297496 140.09105827 -13 133 C-10.69 133 -8.38 133 -6 133 C-6.06049303 117.27524648 -6.13796327 101.55067459 -6.23571491 85.8261137 C-6.28070447 78.52512237 -6.32011172 71.22418016 -6.34643555 63.9230957 C-6.36939018 57.56038884 -6.40275951 51.19783702 -6.44870156 44.83525306 C-6.47266833 41.46544414 -6.49137431 38.09578909 -6.49761391 34.72589684 C-6.50719094 30.96636283 -6.53517413 27.20739422 -6.56762695 23.44799805 C-6.56619186 22.32734451 -6.56475677 21.20669098 -6.5632782 20.05207825 C-6.58208542 18.5187233 -6.58208542 18.5187233 -6.60127258 16.95439148 C-6.60588155 16.06486125 -6.61049051 15.17533102 -6.61523914 14.25884533 C-7.08024929 11.52887431 -8.00786318 10.83172211 -10 9 C-10.38976435 5.88188517 -10.50422245 3.88980433 -8.9375 1.125 C-5.85928089 -0.66235303 -3.47093932 -0.43386742 0 0 Z "
+                                                transform="translate(26,39)"
+                                            />
+                                        </svg>
                                         <span
                                             class="flex-1 ms-2 text-left rtl:text-right whitespace-nowrap"
                                             >Backdrops</span
@@ -425,7 +493,8 @@ onBeforeUnmount(() => {
                                         <svg
                                             class="w-3 h-3"
                                             :class="{
-                                                'rotate-180': isDropdownVisibleBackdrop,
+                                                'rotate-180':
+                                                    isDropdownVisibleBackdrop,
                                             }"
                                             aria-hidden="true"
                                             xmlns="http://www.w3.org/2000/svg"
@@ -449,20 +518,54 @@ onBeforeUnmount(() => {
                                         }"
                                     >
                                         <AdminDropdownLink
-                                        class="ms-8 text-gray-500"
-                                        :href="route('backdrop.index')"
-                                        :active="route().current('backdrop.index')">
-                                           Backdrop List
+                                            class="ms-8 text-gray-500"
+                                            :href="route('backdrop.index')"
+                                            :active="
+                                                route().current(
+                                                    'backdrop.index'
+                                                )
+                                            "
+                                        >
+                                            Backdrop List
                                         </AdminDropdownLink>
                                         <AdminDropdownLink
-                                        class="ms-8 text-gray-500"
-                                        :href="route('backdroptype.index')"
-                                        :active="route().current('backdroptype.index')"
+                                            class="ms-8 text-gray-500"
+                                            :href="route('backdroptype.index')"
+                                            :active="
+                                                route().current(
+                                                    'backdroptype.index'
+                                                )
+                                            "
                                         >
-                                          Backdrop Type
+                                            Backdrop Type
                                         </AdminDropdownLink>
                                     </ul>
                                 </AdminDropdown>
+
+                                <AdminNavLink
+    :href="route('user.index')"
+    :active="route().current('user.index')"
+>
+    <svg
+        :class="[
+            'w-6 h-6 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white',
+            {
+                'text-pink-400': route().current('user.index'),
+                'text-gray-400 dark:text-gray-400': !route().current('user.index'),
+            },
+        ]"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 640 512"
+    >
+        <path
+            fill="currentColor"
+            d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z"
+        />
+    </svg>
+    <span class="ml-3">Users</span>
+</AdminNavLink>
+
+                                
                             </ul>
                         </div>
                     </div>

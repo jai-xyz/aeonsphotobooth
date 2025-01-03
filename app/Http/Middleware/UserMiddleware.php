@@ -26,7 +26,7 @@ class UserMiddleware
                 return redirect('/admin');
             }
         } else {
-            return redirect('/login');
+            return redirect('/');
         }
     }
 }

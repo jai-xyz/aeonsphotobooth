@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\UserAcceptNotification;
 use App\Mail\UserDeclineNotification;
+use App\Mail\PaymentMail;
 use DateTime;
 use App\Models\Registration;
 use Illuminate\Http\RedirectResponse;
@@ -25,8 +26,8 @@ class RegistrationController extends Controller
     public function indexPending(Request $request): Response
     {
         $registrationQuery = Registration::query()
-        ->where('status', 'Pending')
-        ->where('payment_status', 'Pending');
+            ->where('status', 'Pending')
+            ->where('payment_status', 'Pending');
 
         $this->applySearch($registrationQuery, $request->search);
 
@@ -53,12 +54,11 @@ class RegistrationController extends Controller
     }
 
 
-
     public function indexAccepted(Request $request): Response
     {
         $registrationQuery = Registration::query()
-        ->where('status', 'Accept')
-        ->where('payment_status', 'Pending');
+            ->where('status', 'Accept')
+            ->where('payment_status', 'Pending');
 
         $this->applySearch($registrationQuery, $request->search);
 
@@ -76,12 +76,37 @@ class RegistrationController extends Controller
             'search' => $request->search ?? '',
         ]);
     }
+    
+    public function indexArchive(Request $request): Response
+    {
+        $registrationQuery = Registration::query()
+            ->whereIn('status', ['Cancel', 'Complete', 'Decline']);
+    
+        $this->applySearch($registrationQuery, $request->search);
+    
+        $events = $registrationQuery->orderBy('date', 'desc')->orderBy('time', 'desc')->paginate(10);
+    
+        $events->getCollection()->transform(function ($event) {
+            $event->user = DB::table('users')->where('id', $event->user_id)->first();
+            $event->date = (new DateTime($event->date))->format('m-d-Y');
+            $event->time = (new DateTime($event->time))->format('g:i A');
+            return $event;
+        });
+    
+        return Inertia::render('Admin/ArchiveRegistration', [
+            'events' => $events,
+            'search' => $request->search ?? '',
+        ]);
+    }
+
 
     public function index(Request $request): Response
     {
+        $this->updateExpiredEvents();
+
         $registrationQuery = Registration::query()
-        ->where('status', 'Accept')
-        ->where('payment_status', 'paid');
+            ->where('status', 'Accept')
+            ->where('payment_status', 'paid');
 
         $this->applySearch($registrationQuery, $request->search);
 
@@ -103,6 +128,48 @@ class RegistrationController extends Controller
         ]);
     }
 
+    // TO AUTOMATICALLY UPDATE EXPIRED EVENTS TO COMPLETE STATUS
+    public function updateExpiredEvents()
+    {
+        // Get the current date
+        $currentDate = now()->format('Y-m-d');
+    
+        // Find events that are not on the current date, have a status of 'Accept', and payment_status of 'paid'
+        $events = Registration::where('status', 'Accept')
+            ->where('payment_status', 'paid')
+            ->where('date', '<', $currentDate)
+            ->get();
+    
+        foreach ($events as $event) {
+            $originalStatus = $event->status;
+            $event->status = 'Complete';
+            $event->save();
+    
+            if ($event->wasChanged('status')) {
+                Log::info("Event '{$event->event}' (ID: {$event->id}) status updated from '{$originalStatus}' to 'Complete'.");
+            } else {
+                Log::warning("Failed to update status for event '{$event->event}' (ID: {$event->id}).");
+            }
+        }
+    
+        Log::info('Expired events update process completed.');
+    }
+
+    public function updateRestoreEvents(Request $request, Registration $event): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:Pending,Accept,Decline,Cancel,Complete'],
+            'user_id' => ['required', 'integer'],
+        ]);
+
+        $event->status = $validated['status'];
+        $event->user_id = $validated['user_id'];
+
+        $event->save();
+        
+        // Mail::to('rhyaaaaa01072001@gmail.com')->queue(new CancelEventNotification($event));
+        return redirect()->back()->with('success', 'Event has been restored.');
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -137,13 +204,29 @@ class RegistrationController extends Controller
         //
     }
 
+    public function updateListedEvents(Request $request, Registration $event): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:Pending,Accept,Decline,Cancel,Complete'],
+            'user_id' => ['required', 'integer'],
+        ]);
+
+        $event->status = $validated['status'];
+        $event->user_id = $validated['user_id'];
+
+        $event->save();
+        
+        // Mail::to('rhyaaaaa01072001@gmail.com')->queue(new CancelEventNotification($event));
+        return redirect()->back()->with('success', 'The event was canceled successfully.');
+    }
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Registration $event): RedirectResponse
     {
         $validated = $request->validate([
-            'status' => ['required', 'string', 'in:Pending,Accept,Decline'],
+            'status' => ['required', 'string', 'in:Pending,Accept,Decline,Cancel,Complete'],
             'user_id' => ['required', 'integer'],
         ]);
 
@@ -195,8 +278,14 @@ class RegistrationController extends Controller
                 $checkout_url = $decoded['data']['attributes']['checkout_url'];
                 $reference_number = $decoded['data']['attributes']['reference_number'];
 
+
+                 // Log the checkout URL and reference number
+                Log::info("Checkout URL: " . $checkout_url);
+                Log::info("Reference Number: " . $reference_number);
+
                 // Store the reference number in the event
                 $event->reference_number = $reference_number;
+                $event->checkout_url_expiry = now()->addHours(2);
                 $event->save();
             }
 
@@ -262,6 +351,13 @@ class RegistrationController extends Controller
                     $event->payment_status = 'paid';
                     $event->save();
                     Log::info("Payment status updated to 'paid' for reference number {$reference_number}");
+
+                    // Send email notification to user
+                    if (Mail::to('rhyaaaaa01072001@gmail.com')->send(new PaymentMail($event))) {
+                        Log::info("Email sent to admin");
+                    } else {
+                        Log::error("Email not sent to admin");
+                    }
                 }
             } else {
                 Log::error("API response does not contain the expected 'data' key.", ['response' => $decoded]);

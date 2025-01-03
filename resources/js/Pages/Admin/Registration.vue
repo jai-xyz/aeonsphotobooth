@@ -10,7 +10,10 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import { Inertia } from "@inertiajs/inertia";
 import Toast from "@/Components/Toast.vue";
+import "../../../css/custom-styles.css";
 import "../../../css/admin-vuecal.css";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import DangerButton from "@/Components/DangerButton.vue";
 
 const props = defineProps({
     events: {
@@ -74,45 +77,6 @@ watch(
         currentPage.value = activePage.value;
     }
 );
-
-/* #############################
-        UPDATE EVENT STATUS
-   ############################# */
-const updatingEventStatus = ref(false);
-
-const form = useForm({
-    id: "",
-    user_id: "",
-    status: "",
-    originalStatus: "",
-});
-
-const updateEventStatus = (event) => {
-    form.id = event.id;
-    form.user_id = event.user_id;
-    form.status = event.status;
-    form.originalStatus = event.status;
-    updatingEventStatus.value = true;
-};
-
-const updateStatus = () => {
-    form.patch(route("event.update", { event: form.id }), {
-        preserveScroll: true,
-        onSuccess: () => closeModal(),
-        onFinish: () => form.reset(),
-    });
-};
-
-const closeModal = () => {
-    updatingEventStatus.value = false;
-    form.reset();
-};
-
-const statusOptions = ["Pending", "Accept", "Decline"];
-
-const isSameStatus = computed(() => {
-    return form.status === form.originalStatus;
-});
 
 /* #############################
             SEARCH
@@ -309,10 +273,75 @@ const toggleDetails = (eventId) => {
 const isDetailsVisible = (eventId) => {
     return !!visibleDetails.value[eventId];
 };
+
+/* #############################
+        UPDATE EVENT STATUS
+   ############################# */
+const updatingEventStatus = ref(false);
+
+const form = useForm({
+    id: "",
+    user_id: "",
+    status: "",
+});
+
+const updateEventStatus = (event) => {
+    form.id = event.id;
+    form.user_id = event.user_id;
+    form.status = event.status;
+    updatingEventStatus.value = true;
+};
+
+const updateStatus = () => {
+    form.patch(route("event.listed.update", { event: form.id }), {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+        onFinish: () => form.reset(),
+    });
+    console.log(form);
+};
+
+const closeModal = () => {
+    updatingEventStatus.value = false;
+};
+
+/* #############################
+        CONFIRMATION BACKDROP 
+   ############################# */
+const confirmationModal = ref(false);
+const selectedEventId = ref(null);
+
+const openConfirmationModal = (eventId) => {
+    selectedEventId.value = eventId;
+    confirmationModal.value = true;
+};
+
+const closeConfirmationModal = () => {
+    confirmationModal.value = false;
+};
+
+const handleConfirm = () => {
+    confirmationModal.value = false;
+    cancelEvent(selectedEventId.value);
+};
+
+const cancelEvent = (eventId) => {
+    // Find the event by ID and update its status to 'Cancelled'
+    const eventsArray = Array.isArray(props.events)
+        ? props.events
+        : props.events.data;
+    const event = eventsArray.find((event) => event.id === eventId);
+    if (event) {
+        form.id = event.id;
+        form.user_id = event.user_id;
+        form.status = "Cancel";
+        updateStatus();
+    }
+};
 </script>
 
 <template>
-    <Head title="Events" />
+    <Head title="Listed Events" />
 
     <Toast />
 
@@ -364,7 +393,7 @@ const isDetailsVisible = (eventId) => {
                                     >
                                 </div>
                             </li>
-                                  <li>
+                            <li>
                                 <div class="flex items-center">
                                     <svg
                                         class="w-6 h-6 text-gray-400"
@@ -608,31 +637,6 @@ const isDetailsVisible = (eventId) => {
                                             class="p-4 space-x-2 whitespace-nowrap"
                                         >
                                             <button
-                                                type="button"
-                                                @click="
-                                                    () =>
-                                                        updateEventStatus(event)
-                                                "
-                                                id="updateProductButton"
-                                                class="inline-flex items-center p-2 text-sm font-medium text-center text-white rounded-md bg-yellow-300 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-yellow-300 dark:hover:bg-yellow-400 dark:focus:ring-yellow-200"
-                                            >
-                                                <svg
-                                                    class="w-4 h-4"
-                                                    fill="currentColor"
-                                                    viewBox="0 0 20 20"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"
-                                                    ></path>
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                                        clip-rule="evenodd"
-                                                    ></path>
-                                                </svg>
-                                            </button>
-                                            <button
                                                 @click="toggleDetails(event.id)"
                                                 class="inline-flex items-center text-white rounded-md bg-gray-500 p-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-gray-300 dark:hover:bg-gray-400 dark:focus:ring-gray-200"
                                             >
@@ -671,6 +675,44 @@ const isDetailsVisible = (eventId) => {
                                                         d="M18 3H6v4H3c-1.1 0-2 .9-2 2v6h4v6h14v-6h4v-6c0-1.1-.9-2-2-2h-3V3zM8 5h8v2H8V5zm10 14H6v-6h12v6zm4-8H4v-2h16v2z"
                                                     />
                                                 </svg>
+                                            </button>
+                                            <button
+                                                @click="
+                                                    openConfirmationModal(
+                                                        event.id
+                                                    )
+                                                "
+                                                class="inline-flex items-center text-xs text-white rounded-md bg-red-500 p-2 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-300 dark:hover:bg-red-400 dark:focus:ring-red-200"
+                                                title="Cancel Event"
+                                            >
+                                                <div
+                                                    class="flex items-center space-x-1"
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        stroke-width="4"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        class="w-4 h-4"
+                                                    >
+                                                        <line
+                                                            x1="18"
+                                                            y1="6"
+                                                            x2="6"
+                                                            y2="18"
+                                                        ></line>
+                                                        <line
+                                                            x1="6"
+                                                            y1="6"
+                                                            x2="18"
+                                                            y2="18"
+                                                        ></line>
+                                                    </svg>
+                                                    <span>CANCEL EVENT</span>
+                                                </div>
                                             </button>
                                         </td>
                                     </tr>
@@ -1122,5 +1164,79 @@ const isDetailsVisible = (eventId) => {
                 </div>
             </div>
         </Modal>
+
+        <ConfirmationModal
+            :show="confirmationModal"
+            @close="closeConfirmationModal"
+        >
+            <div class="relative w-full h-full max-w-md md:h-auto">
+                <!-- Modal content -->
+                <div
+                    class="relative bg-white rounded-lg shadow dark:bg-gray-800"
+                >
+                    <!-- Modal header -->
+                    <div class="flex justify-end p-2">
+                        <button
+                            type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                            @click="closeConfirmationModal"
+                        >
+                            <svg
+                                class="w-5 h-5"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 pt-0 text-center">
+                        <svg
+                            class="w-16 h-16 mx-auto text-red-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            ></path>
+                        </svg>
+                        <h3 class="mt-5 mb-8 text-gray-700 dark:text-gray-400">
+                            Are you sure you want to cancel this event?
+                        </h3>
+                        <!-- Modal footer -->
+                        <div class="mt-8 flex justify-center gap-6">
+                            <SecondaryButton
+                                class="uppercase px-5"
+                                @click="closeConfirmationModal"
+                            >
+                                No, go back
+                            </SecondaryButton>
+
+                            <DangerButton
+                                class="uppercase px-5 text-xs"
+                                :class="{
+                                    'opacity-25': updatingEventStatus,
+                                }"
+                                :disabled="updatingEventStatus"
+                                @click="handleConfirm"
+                            >
+                                Yes, I want to cancel
+                            </DangerButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ConfirmationModal>
     </AdminAuthenticatedLayout>
 </template>

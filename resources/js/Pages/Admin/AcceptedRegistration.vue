@@ -10,6 +10,7 @@ import InputError from "@/Components/InputError.vue";
 import { Inertia } from "@inertiajs/inertia";
 import Toast from "@/Components/Toast.vue";
 import "../../../css/admin-vuecal.css";
+import "../../../css/custom-styles.css";
 
 const props = defineProps({
     events: {
@@ -183,7 +184,7 @@ const isDetailsVisible = (eventId) => {
 </script>
 
 <template>
-    <Head title="Events" />
+    <Head title="Accepted Events" />
 
     <Toast />
 
@@ -563,6 +564,7 @@ const isDetailsVisible = (eventId) => {
                                                     />
                                                 </svg>
                                             </button>
+                                            
                                         </td>
                                     </tr>
 

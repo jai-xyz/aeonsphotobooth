@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 
+
 class UserRegistrationController extends Controller
 {
     /**
@@ -26,24 +27,12 @@ class UserRegistrationController extends Controller
     {
         $userId = Auth::id();
 
-        $events = DB::table('registrations')
-            ->join('barangays', 'registrations.barangay', '=', 'barangays.id')
-            ->join('cities', 'registrations.city', '=', 'cities.id')
-            ->join('provinces', 'registrations.province', '=', 'provinces.id')
-            ->join('regions', 'registrations.region', '=', 'regions.id')
-            ->where('registrations.user_id', $userId)
-            ->orderBy('registrations.created_at', 'desc')
-            ->select(
-                'registrations.*',
-                'barangays.name as barangay_name',
-                'cities.name as city_name',
-                'provinces.name as province_name',
-                'regions.name as region_name'
-            )
-            ->get();
 
+        $registrationQuery = Registration::query()->where('user_id', $userId);
 
-        $events = $events->map(function ($event) {
+        $events = $registrationQuery->orderBy('created_at', 'desc')->paginate(10);
+
+        $events->getCollection()->transform(function ($event) {
             $event->user = DB::table('users')->where('id', $event->user_id)->first();
             $event->date = (new DateTime($event->date))->format('m-d-Y');
             $event->time = (new DateTime($event->time))->format('g:i A');
@@ -63,7 +52,6 @@ class UserRegistrationController extends Controller
 
         $getAllPackages = Packages::with('options')->get();
 
-        //                                                       Accepted
         $getEvents = DB::table('registrations')->where('status', 'Accept')->where('payment_status', 'paid')->get();
 
         $backdropTypes = DB::table('backdroptypes')->get();
@@ -229,11 +217,22 @@ class UserRegistrationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Registration $registration)
+    public function update(Request $request, Registration $event): RedirectResponse
     {
-        //
-    }
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:Pending,Accept,Decline,Cancel,Complete'],
+            'user_id' => ['required', 'integer'],
+        ]);
 
+        $event->status = $validated['status'];
+        $event->user_id = $validated['user_id'];
+
+        $event->save();
+        
+        // Mail::to('rhyaaaaa01072001@gmail.com')->queue(new CancelEventNotification($event));
+        return redirect()->back()->with('success', 'Event has been restored successfully.');
+    }
+  
     /**
      * Remove the specified resource from storage.
      */

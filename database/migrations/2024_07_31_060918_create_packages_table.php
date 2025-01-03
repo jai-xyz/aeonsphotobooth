@@ -18,7 +18,7 @@ return new class extends Migration
             // $table->string('price');
             $table->string('duration');
             // $table->string('number_of_shots');
-            $table->string('size'); 
+            $table->string('size')->nullable(); 
             $table->string('size2')->nullable();
             $table->string('size3')->nullable();
             $table->longText('inclusion');

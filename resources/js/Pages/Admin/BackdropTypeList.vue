@@ -12,7 +12,7 @@ import TextInput from "@/Components/TextInput.vue";
 import Toast from "@/Components/Toast.vue";
 import "../../../css/custom-styles.css";
 import { Inertia } from "@inertiajs/inertia";
-import DeleteModal from "@/Components/DeleteModal.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 
 const props = defineProps({
@@ -154,12 +154,12 @@ const noChanges = computed(() => {
    ############################# */
 const deletingBackdroptype = ref(false);
 
-const openDeleteModal = (type) => {
+const openConfirmationModal = (type) => {
     currentBackdropType.value = type;
     deletingBackdroptype.value = true;
 };
 
-const closeDeleteModal = () => {
+const closeConfirmationModal = () => {
     deletingBackdroptype.value = false;
     deleteForm.reset();
 };
@@ -171,7 +171,7 @@ const submitDelete = () => {
         route("backdroptype.destroy", currentBackdropType.value.id),
         {
             preserveScroll: true,
-            onSuccess: () => closeDeleteModal(),
+            onSuccess: () => closeConfirmationModal(),
         }
     );
 };
@@ -296,13 +296,13 @@ const submitDelete = () => {
                                 <tr>
                                     <th
                                         scope="col"
-                                        class="text-center p-4 text-xs font-medium text-gray-500 uppercase dark:text-gray-400"
+                                        class="text-center p-4 text-xs font-extrabold text-gray-700 uppercase dark:text-gray-400"
                                     >
                                         Type
                                     </th>
                                     <th
                                         scope="col"
-                                        class="text-center p-4 text-xs font-medium text-gray-500 uppercase dark:text-gray-400"
+                                        class="text-center p-4 text-xs font-extrabold text-gray-700 uppercase dark:text-gray-400"
                                     >
                                         Action
                                     </th>
@@ -348,11 +348,11 @@ const submitDelete = () => {
                                             </svg>
                                         </button>
                                         <button
-                                            v-if="!backdroptype.isUsed"
+                                            v-if="backdroptype.isUsed"
                                             type="button"
                                             id="deleteProductButton"
                                             @click="
-                                                openDeleteModal(backdroptype)
+                                                openConfirmationModal(backdroptype)
                                             "
                                             class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-700 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900"
                                         >
@@ -655,7 +655,7 @@ const submitDelete = () => {
         </Modal>
 
         <!-- DELETE BACKDROP TYPE MODAL -->
-        <DeleteModal :show="deletingBackdroptype" @close="closeDeleteModal">
+        <ConfirmationModal :show="deletingBackdroptype" @close="closeConfirmationModal">
             <div class="relative w-full h-full max-w-md md:h-auto">
                 <!-- Modal content -->
                 <div
@@ -666,7 +666,7 @@ const submitDelete = () => {
                         <button
                             type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
-                            @click="closeDeleteModal"
+                            @click="closeConfirmationModal"
                         >
                             <svg
                                 class="w-5 h-5"
@@ -719,7 +719,7 @@ const submitDelete = () => {
 
                             <SecondaryButton
                                 class="normal-case px-5"
-                                @click="closeDeleteModal"
+                                @click="closeConfirmationModal"
                             >
                                 No, cancel
                             </SecondaryButton>
@@ -740,6 +740,6 @@ const submitDelete = () => {
                     </div>
                 </div>
             </div>
-        </DeleteModal>
+        </ConfirmationModal>
     </AdminAuthenticatedLayout>
 </template>

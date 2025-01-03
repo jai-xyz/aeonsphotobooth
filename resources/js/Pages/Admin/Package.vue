@@ -10,7 +10,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextArea from "@/Components/TextArea.vue";
 import TextInput from "@/Components/TextInput.vue";
 import Modal from "@/Components/Modal.vue";
-import DeleteModal from "@/Components/DeleteModal.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import { watch, computed, ref } from "vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import { Inertia } from "@inertiajs/inertia";
@@ -133,7 +133,6 @@ const removeAddFormOption = (index) => {
     addForm.options.splice(index, 1);
 };
 
-
 /* #############################
         SIZE DROPDOWN
    ############################# */
@@ -145,7 +144,7 @@ function toggleDropdownSize() {
 }
 
 const submitAdd = () => {
-  console.log("Add form size:", addForm.size);
+    console.log("Add form size:", addForm.size);
     console.log("Add form size2:", addForm.size2);
     console.log("Add form size3:", addForm.size3);
     console.log("Submitting form with data:", addForm);
@@ -168,7 +167,7 @@ const submitAdd = () => {
 const closeAddModal = () => {
     addingNewProduct.value = false;
     addForm.reset();
-    isDropdownVisibleSize.value = false;  
+    isDropdownVisibleSize.value = false;
     addForm.errors.options = "";
 };
 
@@ -206,12 +205,12 @@ const openEditModal = (pkg) => {
     editForm.inclusion = pkg.inclusion;
     editForm.note = pkg.note;
     // editForm.extension = pkg.extension;
-   editForm.options = (pkg.options || [
-        { number_of_shots: "", price: "", extension: "" },
-    ]).map(option => ({
+    editForm.options = (
+        pkg.options || [{ number_of_shots: "", price: "", extension: "" }]
+    ).map((option) => ({
         number_of_shots: String(option.number_of_shots),
         price: String(option.price),
-        extension: String(option.extension)
+        extension: String(option.extension),
     }));
 
     // for checking if there are changes
@@ -223,10 +222,10 @@ const openEditModal = (pkg) => {
     editForm.OrigSize2 = pkg.size2;
     editForm.OrigSize3 = pkg.size3;
     editForm.OrigInclusion = pkg.options.inclusion;
-       editForm.OrigOptions = editForm.options.map(option => ({
+    editForm.OrigOptions = editForm.options.map((option) => ({
         number_of_shots: option.number_of_shots,
         price: option.price,
-        extension: option.extension
+        extension: option.extension,
     }));
     editingProduct.value = true;
 };
@@ -238,7 +237,11 @@ const addEditFormOption = () => {
         lastOption.price &&
         lastOption.extension
     ) {
-        editForm.options.push({ number_of_shots: "", price: "", extension: "" });
+        editForm.options.push({
+            number_of_shots: "",
+            price: "",
+            extension: "",
+        });
         editForm.errors.options = ""; // Clear error message
     } else {
         editForm.errors.options =
@@ -249,7 +252,6 @@ const addEditFormOption = () => {
 const removeEditFormOption = (index) => {
     editForm.options.splice(index, 1);
 };
-
 
 const submitEdit = () => {
     editForm.patch(
@@ -269,7 +271,7 @@ const submitEdit = () => {
 const closeEditModal = () => {
     editingProduct.value = false;
     editForm.reset();
-    isDropdownVisibleSize.value = false;  
+    isDropdownVisibleSize.value = false;
     addForm.errors.options = "";
 };
 
@@ -292,12 +294,12 @@ const noChanges = computed(() => {
    ############################# */
 const deletingProduct = ref(false);
 
-const openDeleteModal = (pkg) => {
+const openConfirmationModal = (pkg) => {
     currentPackage.value = pkg;
     deletingProduct.value = true;
 };
 
-const closeDeleteModal = () => {
+const closeConfirmationModal = () => {
     deletingProduct.value = false;
     deleteForm.reset();
 };
@@ -307,7 +309,7 @@ const deleteForm = useForm({});
 const submitDelete = () => {
     deleteForm.delete(route("package.destroy", currentPackage.value.id), {
         preserveScroll: true,
-        onSuccess: () => closeDeleteModal(),
+        onSuccess: () => closeConfirmationModal(),
     });
 };
 
@@ -351,7 +353,14 @@ const isDetailsVisible = (pkgId) => {
     return !!visibleDetails.value[pkgId];
 };
 
+/* #############################
+        SIZES DISPLAY
+   #############################    */
 
+const formatSizes = (pkg) => {
+  const sizes = [pkg.size, pkg.size2, pkg.size3].filter(Boolean);
+  return sizes.join(', ');
+};
 </script>
 
 <template>
@@ -572,16 +581,36 @@ const isDetailsVisible = (pkgId) => {
                                     <td
                                         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                     >
-                                        {{ pkg.size
-                                        }}{{ pkg.size2 ? ", " + pkg.size2 : ""
-                                        }}{{ pkg.size3 ? ", " + pkg.size3 : ""
-                                        }}{{ pkg.size4 ? ", " + pkg.size4 : ""
-                                        }}{{
-                                            pkg.size5 ? ", " + pkg.size5 : ""
-                                        }}
+                                        {{ formatSizes(pkg) }}
                                     </td>
 
                                     <td class="p-4 space-x-2 whitespace-nowrap">
+                                        <button
+                                            @click="toggleDetails(pkg.id)"
+                                            class="inline-flex items-center text-white rounded-md bg-gray-500 p-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-gray-300 dark:hover:bg-gray-400 dark:focus:ring-gray-200"
+                                        >
+                                            <svg
+                                                class="w-4 h-4"
+                                                :class="{
+                                                    'rotate-180':
+                                                        isDetailsVisible(
+                                                            pkg.id
+                                                        ),
+                                                }"
+                                                aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 10 6"
+                                            >
+                                                <path
+                                                    stroke="white"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="m1 1 4 4 4-4"
+                                                />
+                                            </svg>
+                                        </button>
                                         <button
                                             type="button"
                                             id="updateProductButton"
@@ -608,7 +637,7 @@ const isDetailsVisible = (pkgId) => {
                                             v-if="!pkg.isUsed"
                                             type="button"
                                             id="deleteProductButton"
-                                            @click="openDeleteModal(pkg)"
+                                            @click="openConfirmationModal(pkg)"
                                             class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-700 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900"
                                         >
                                             <svg
@@ -622,32 +651,6 @@ const isDetailsVisible = (pkgId) => {
                                                     d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                                                     clip-rule="evenodd"
                                                 ></path>
-                                            </svg>
-                                        </button>
-                                        <button
-                                            @click="toggleDetails(pkg.id)"
-                                            class="inline-flex items-center text-white rounded-md bg-gray-500 p-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-gray-300 dark:hover:bg-gray-400 dark:focus:ring-gray-200"
-                                        >
-                                            <svg
-                                                class="w-4 h-4"
-                                                :class="{
-                                                    'rotate-180':
-                                                        isDetailsVisible(
-                                                            pkg.id
-                                                        ),
-                                                }"
-                                                aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 10 6"
-                                            >
-                                                <path
-                                                    stroke="white"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="m1 1 4 4 4-4"
-                                                />
                                             </svg>
                                         </button>
                                     </td>
@@ -685,7 +688,14 @@ const isDetailsVisible = (pkgId) => {
                                                     <td
                                                         class="w-2/4 p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
                                                     >
-                                                         <div v-html="pkg.inclusion.replace(/\n/g, '<br>')"></div>
+                                                        <div
+                                                            v-html="
+                                                                pkg.inclusion.replace(
+                                                                    /\n/g,
+                                                                    '<br>'
+                                                                )
+                                                            "
+                                                        ></div>
                                                     </td>
                                                     <td
                                                         class="w-1/4 p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
@@ -953,7 +963,7 @@ const isDetailsVisible = (pkgId) => {
 
                                     <!-- Dropdown menu -->
                                     <div
-                                        class="absolute z-10  bg-gray-50 divide-y w-full divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                                        class="absolute z-10 bg-gray-50 divide-y w-full divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
                                         :class="{
                                             hidden: !isDropdownVisibleSize,
                                         }"
@@ -993,7 +1003,7 @@ const isDetailsVisible = (pkgId) => {
                                                         for="checkbox-item-2"
                                                         class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                                                     >
-                                                        Strips  
+                                                        Strips
                                                     </label>
                                                 </div>
                                             </li>
@@ -1003,7 +1013,7 @@ const isDetailsVisible = (pkgId) => {
                                                         id="checkbox-item-3"
                                                         type="checkbox"
                                                         :true-value="'Polaroid size'"
-                                                         :false-value="''"
+                                                        :false-value="''"
                                                         v-model="addForm.size3"
                                                         class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                                     />
@@ -1023,7 +1033,6 @@ const isDetailsVisible = (pkgId) => {
                                     class="mt-2"
                                     :message="addForm.errors.size"
                                 />
-
                             </div>
 
                             <div class="col-span-6">
@@ -1176,7 +1185,13 @@ const isDetailsVisible = (pkgId) => {
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div class="mt-6 flex justify-start gap-6">
+                        <div class="mt-6 flex justify-end gap-6">
+                            <SecondaryButton
+                                class="normal-case py-2.5 px-5"
+                                @click="closeAddModal"
+                            >
+                                Cancel
+                            </SecondaryButton>
                             <PrimaryButton
                                 class="normal-case"
                                 :class="{ 'opacity-25': addForm.processing }"
@@ -1184,13 +1199,6 @@ const isDetailsVisible = (pkgId) => {
                             >
                                 Add package
                             </PrimaryButton>
-
-                            <SecondaryButton
-                                class="normal-case py-2.5 px-5"
-                                @click="closeAddModal"
-                            >
-                                Cancel
-                            </SecondaryButton>
                         </div>
                     </form>
                 </div>
@@ -1317,7 +1325,7 @@ const isDetailsVisible = (pkgId) => {
                                     :message="editForm.errors.size"
                                 />
                             </div> -->
-                              <div class="col-span-6 sm:col-span-3">
+                            <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="size"
                                     value="Size"
@@ -1350,7 +1358,7 @@ const isDetailsVisible = (pkgId) => {
 
                                     <!-- Dropdown menu -->
                                     <div
-                                        class="absolute z-10  bg-gray-50 divide-y w-full divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                                        class="absolute z-10 bg-gray-50 divide-y w-full divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
                                         :class="{
                                             hidden: !isDropdownVisibleSize,
                                         }"
@@ -1390,7 +1398,7 @@ const isDetailsVisible = (pkgId) => {
                                                         for="checkbox-item-2"
                                                         class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                                                     >
-                                                        Strips  
+                                                        Strips
                                                     </label>
                                                 </div>
                                             </li>
@@ -1400,7 +1408,7 @@ const isDetailsVisible = (pkgId) => {
                                                         id="checkbox-item-3"
                                                         type="checkbox"
                                                         :true-value="'Polaroid size'"
-                                                         :false-value="''"
+                                                        :false-value="''"
                                                         v-model="editForm.size3"
                                                         class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                                     />
@@ -1420,7 +1428,6 @@ const isDetailsVisible = (pkgId) => {
                                     class="mt-2"
                                     :message="editForm.errors.size"
                                 />
-
                             </div>
 
                             <div class="col-span-6">
@@ -1468,7 +1475,7 @@ const isDetailsVisible = (pkgId) => {
                                 />
                             </div>
 
-                              <div class="mb-4 col-span-6">
+                            <div class="mb-4 col-span-6">
                                 <h3 class="text-md font-bold mb-2">
                                     Package Options
                                 </h3>
@@ -1573,7 +1580,13 @@ const isDetailsVisible = (pkgId) => {
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div class="mt-6 flex justify-start gap-6">
+                        <div class="mt-6 flex justify-end gap-6">
+                            <SecondaryButton
+                                class="normal-case px-5"
+                                @click="closeEditModal"
+                            >
+                                Cancel
+                            </SecondaryButton>
                             <PrimaryButton
                                 class="normal-case"
                                 :class="{
@@ -1584,13 +1597,6 @@ const isDetailsVisible = (pkgId) => {
                             >
                                 Update
                             </PrimaryButton>
-
-                            <SecondaryButton
-                                class="normal-case px-5"
-                                @click="closeEditModal"
-                            >
-                                Cancel
-                            </SecondaryButton>
                         </div>
                     </form>
                 </div>
@@ -1599,7 +1605,10 @@ const isDetailsVisible = (pkgId) => {
 
         <!-- DELETE PRODUCT MODAL -->
 
-        <DeleteModal :show="deletingProduct" @close="closeDeleteModal">
+        <ConfirmationModal
+            :show="deletingProduct"
+            @close="closeConfirmationModal"
+        >
             <div class="relative w-full h-full max-w-md md:h-auto">
                 <!-- Modal content -->
                 <div
@@ -1610,7 +1619,7 @@ const isDetailsVisible = (pkgId) => {
                         <button
                             type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
-                            @click="closeDeleteModal"
+                            @click="closeConfirmationModal"
                         >
                             <svg
                                 class="w-5 h-5"
@@ -1650,6 +1659,13 @@ const isDetailsVisible = (pkgId) => {
                         </h3>
                         <!-- Modal footer -->
                         <div class="mt-6 flex justify-center gap-6">
+                            <SecondaryButton
+                                class="normal-case px-5"
+                                @click="closeConfirmationModal"
+                            >
+                                No, cancel
+                            </SecondaryButton>
+
                             <DangerButton
                                 class="normal-case bg-danger"
                                 :class="{
@@ -1660,17 +1676,10 @@ const isDetailsVisible = (pkgId) => {
                             >
                                 Yes, I'm sure
                             </DangerButton>
-
-                            <SecondaryButton
-                                class="normal-case px-5"
-                                @click="closeDeleteModal"
-                            >
-                                No, cancel
-                            </SecondaryButton>
                         </div>
                     </div>
                 </div>
             </div>
-        </DeleteModal>
+        </ConfirmationModal>
     </AdminAuthenticatedLayout>
 </template>

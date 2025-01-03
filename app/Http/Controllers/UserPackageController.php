@@ -12,11 +12,23 @@ class UserPackageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() : Response
+    public function index($packageId): Response
     {
-        $packages = Packages::all();
+        $package = Packages::with('options')->find($packageId);
+        if (!$package) {
+            abort(404, 'Package not found');
+        }
+    
+        $getAllPackages = Packages::with('options')->get();
 
-        return Inertia::render('User/Packages', ['packages' => $packages]);
+
+        return Inertia::render(
+            'Packages',
+            [
+                'packages' => $package,
+                'getAllPackages' => $getAllPackages,
+            ]
+        );
     }
 
     /**
