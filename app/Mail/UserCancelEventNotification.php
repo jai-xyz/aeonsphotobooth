@@ -9,11 +9,15 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CancelEventNotification extends Mailable
+class UserCancelEventNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * Create a new message instance.
+     */
     public $event;
+    
 
     /**
      * Create a new message instance.
@@ -26,9 +30,9 @@ class CancelEventNotification extends Mailable
     public function build()
     {
         return $this->subject('Event Cancelled')
-                    ->markdown('emails.cancel_event_notification', [
-                        'event' => $this->event,
-                    ]);
+            ->markdown('emails.user_cancel_event_notification', [
+                'event' => $this->event,
+            ]);
     }
 
 
@@ -38,13 +42,13 @@ class CancelEventNotification extends Mailable
     // public function envelope(): Envelope
     // {
     //     return new Envelope(
-    //         subject: 'Cancel Event Notification',
+    //         subject: 'User Cancel Event Notification',
     //     );
     // }
 
-    // /**
-    //  * Get the message content definition.
-    //  */
+    /**
+     * Get the message content definition.
+     */
     // public function content(): Content
     // {
     //     return new Content(

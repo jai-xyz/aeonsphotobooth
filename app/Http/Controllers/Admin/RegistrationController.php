@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\UserAcceptNotification;
 use App\Mail\UserDeclineNotification;
+use App\Mail\CancelEventNotification;
 use App\Mail\PaymentMail;
 use DateTime;
 use App\Models\Registration;
@@ -84,7 +85,7 @@ class RegistrationController extends Controller
     
         $this->applySearch($registrationQuery, $request->search);
     
-        $events = $registrationQuery->orderBy('date', 'desc')->orderBy('time', 'desc')->paginate(10);
+        $events = $registrationQuery->orderBy('updated_at', 'desc')->paginate(10);
     
         $events->getCollection()->transform(function ($event) {
             $event->user = DB::table('users')->where('id', $event->user_id)->first();
@@ -167,7 +168,7 @@ class RegistrationController extends Controller
 
         $event->save();
         
-        // Mail::to('rhyaaaaa01072001@gmail.com')->queue(new CancelEventNotification($event));
+        Mail::to('rhyaaaaa01072001@gmail.com')->queue(new CancelEventNotification($event));
         return redirect()->back()->with('success', 'Event has been restored.');
     }
 
@@ -204,7 +205,8 @@ class RegistrationController extends Controller
         //
     }
 
-    public function updateListedEvents(Request $request, Registration $event): RedirectResponse
+    // CANCEL LISTED EVENTS
+    public function cancelListedEvents(Request $request, Registration $event): RedirectResponse
     {
         $validated = $request->validate([
             'status' => ['required', 'string', 'in:Pending,Accept,Decline,Cancel,Complete'],
@@ -213,10 +215,15 @@ class RegistrationController extends Controller
 
         $event->status = $validated['status'];
         $event->user_id = $validated['user_id'];
+        $email = $event->email;
 
-        $event->save();
+        if($event->save()){
+            Log::info("Event '{$event->event}' (ID: {$event->id}) status updated to 'Cancel'.");
+        } else {
+            Log::warning("Failed to update status for event '{$event->event}' (ID: {$event->id}).");
+        }
         
-        // Mail::to('rhyaaaaa01072001@gmail.com')->queue(new CancelEventNotification($event));
+        Mail::to($email)->queue(new CancelEventNotification($event));
         return redirect()->back()->with('success', 'The event was canceled successfully.');
     }
 

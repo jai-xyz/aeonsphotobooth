@@ -11,13 +11,17 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@inertiajs/core": "^1.0.14",
     "@inertiajs/inertia": "^0.11.1",
+    "@inertiajs/inertia-vue3": "^0.6.0",
+    "@inertiajs/progress": "^0.1.2",
     "@mdi/font": "5.9.55",
+    "apexcharts": "^4.3.0",
     "axios": "^1.7.9",
     "flowbite": "^2.5.1",
     "roboto-fontface": "*",
     "swiper": "^11.1.15",
     "vue-cal": "^4.9.0",
     "vue-router": "^4.0.13",
+    "vue3-smooth-scroll": "^0.8.1",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {

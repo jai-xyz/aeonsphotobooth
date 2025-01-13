@@ -358,8 +358,8 @@ const isDetailsVisible = (pkgId) => {
    #############################    */
 
 const formatSizes = (pkg) => {
-  const sizes = [pkg.size, pkg.size2, pkg.size3].filter(Boolean);
-  return sizes.join(', ');
+    const sizes = [pkg.size, pkg.size2, pkg.size3].filter(Boolean);
+    return sizes.join(", ");
 };
 </script>
 
@@ -828,9 +828,9 @@ const formatSizes = (pkg) => {
         </div>
 
         <!-- ADD PRODUCT MODAL -->
-        <Modal :show="addingNewProduct" @close="closeAddModal">
+        <Modal :show="addingNewProduct" @close="closeAddModal" >
             <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800 ">
                 <!-- Modal header -->
                 <div
                     class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700"
@@ -859,9 +859,9 @@ const formatSizes = (pkg) => {
                 </div>
                 <!-- Modal body -->
 
-                <div class="p-6 space-y-6">
+                <div class="px-6 py-2 space-y-2 max-h-96 overflow-y-auto">
                     <form @submit.prevent="submitAdd">
-                        <div class="grid grid-cols-6 gap-6 mb-6">
+                        <div class="grid grid-cols-6 gap-2 mb-6">
                             <div class="col-span-6 sm:col-span-3">
                                 <InputLabel
                                     for="name"
@@ -1233,7 +1233,8 @@ const formatSizes = (pkg) => {
                         </svg>
                     </button>
                 </div>
-                <div class="p-6 space-y-6">
+                                <div class="px-6 py-2 space-y-2 max-h-96 overflow-y-auto">
+
                     <form @submit.prevent="submitEdit">
                         <div class="grid grid-cols-6 gap-6 mb-6">
                             <div class="col-span-6 sm:col-span-3">

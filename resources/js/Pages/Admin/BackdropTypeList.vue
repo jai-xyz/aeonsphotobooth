@@ -229,7 +229,7 @@ const submitDelete = () => {
                                     >
                                 </div>
                             </li>
-                             <li>
+                            <li>
                                 <div class="flex items-center">
                                     <svg
                                         class="w-6 h-6 text-gray-400"
@@ -352,7 +352,9 @@ const submitDelete = () => {
                                             type="button"
                                             id="deleteProductButton"
                                             @click="
-                                                openConfirmationModal(backdroptype)
+                                                openConfirmationModal(
+                                                    backdroptype
+                                                )
                                             "
                                             class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-700 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900"
                                         >
@@ -655,7 +657,10 @@ const submitDelete = () => {
         </Modal>
 
         <!-- DELETE BACKDROP TYPE MODAL -->
-        <ConfirmationModal :show="deletingBackdroptype" @close="closeConfirmationModal">
+        <ConfirmationModal
+            :show="deletingBackdroptype"
+            @close="closeConfirmationModal"
+        >
             <div class="relative w-full h-full max-w-md md:h-auto">
                 <!-- Modal content -->
                 <div

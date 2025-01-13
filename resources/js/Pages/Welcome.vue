@@ -11,9 +11,9 @@ import { computed, onMounted } from "vue";
 import { Head, Link } from "@inertiajs/vue3";
 import AButton from "@/Components/AButton.vue";
 // const showingNavigationDropdown = ref(false);
-import UserNavbar from "@/Components/UserNavbar.vue";
 import "../../css/custom-styles.css";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import UserNavbar from "@/Components/UserNavbar.vue";
 
 const props = defineProps({
     canLogin: Boolean,
@@ -24,7 +24,6 @@ const props = defineProps({
         required: true,
     },
 });
-console.log(props.packages);
 
 function formattedAlias(name) {
     return name === "Package A"
@@ -76,12 +75,12 @@ function getInclusionLines(inclusion, name) {
     return lines ? lines.slice(0, 5) : "";
 }
 
-// onMounted(() => {
-//   const script = document.createElement('script');
-//   script.src = "https://static.elfsight.com/platform/platform.js";
-//   script.async = true;
-//   document.body.appendChild(script);
-// });
+onMounted(() => {
+    const script = document.createElement("script");
+    script.src = "https://static.elfsight.com/platform/platform.js";
+    script.async = true;
+    document.body.appendChild(script);
+});
 </script>
 
 <template>
@@ -95,23 +94,25 @@ function getInclusionLines(inclusion, name) {
             <UserNavbar :auth="auth" :can-login="true" :can-register="true" />
 
             <!-- BANNER -->
-            <div class="flex justify-center items-center mx-auto">
+            <section id="home" class="flex justify-center items-center mx-auto">
                 <img
                     src="/images/bannerbgnew.png"
                     alt="banner image"
                     class="h-full object-cover xs:min-h-[500px] xxs:min-h-[320px]"
                 />
-            </div>
+            </section>
 
             <!-- PACKAGES -->
-            <div class="relative px-6 mx-auto bg-[#f2f2f2] 2xl:mx-16">
+            <section class="relative px-6 mx-auto bg-[#f2f2f2] 2xl:mx-16" 
+            id="packages"
+            >
                 <div
                     class="col-span-full text-start font-bold text-4xl text-gray-800 mb-6 font-oswald"
                 >
                     Rates and Packages
                 </div>
                 <div
-                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 me-2"
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 me-2"
                 >
                     <div
                         v-for="pkg in packages"
@@ -214,8 +215,8 @@ function getInclusionLines(inclusion, name) {
                         >
                             <img
                                 class=""
-                                src="/images/boomerang.gif"
-                                alt="boomerang gif"
+                                src="/images/coming1.png"
+                                alt="coming soon 1"
                             />
                         </div>
                         <div
@@ -223,8 +224,8 @@ function getInclusionLines(inclusion, name) {
                         >
                             <img
                                 class=""
-                                src="/images/boomerang.gif"
-                                alt="boomerang gif"
+                                src="/images/coming2.png"
+                                alt="coming soon 2"
                             />
                         </div>
                     </div>
@@ -260,7 +261,7 @@ function getInclusionLines(inclusion, name) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <!-- SPECIAL PACKAGES & ADD-ONS -->
             <img
@@ -372,14 +373,23 @@ function getInclusionLines(inclusion, name) {
                         >
                             <span class="text-blue-500">Facebook</span> Reviews
                             <p class="text-lg">We've got their trust</p>
+
+                            <div
+                                class="relative flex flex-col items-center mt-4"
+                            >
+                                <div
+                                    class="elfsight-app-f29c04d1-3841-4335-bb82-75d757a18590 rounded-3xl drop-shadow-xl px-8 w-full max-w-screen-2xl"
+                                    data-elfsight-app-lazy
+                                ></div>
+                            </div>
                             <div
                                 class="relative flex flex-col items-center mt-4"
                             >
                                 <iframe
-                                    class="rounded-3xl drop-shadow-xl xs:h-[200px] sm:w-[500px] sm:h-[225px] md:w-[600px] md:h-[250px] lg:w-[800px] lg:h-[350px] xl:w-[1000px] xl:h-[450px] 2xl:w-[1100px] 2xl:h-[500px]"
+                                    class="rounded-3xl drop-shadow-xl xs:h-[275px] sm:w-[500px] sm:h-[325px] md:w-[600px] md:h-[400px] lg:w-[800px] lg:h-[450px] xl:w-[1000px] xl:h-[550px] 2xl:w-[1100px] 2xl:h-[600px]"
                                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1182.764288940067!2d120.92650159495922!3d14.365145408701999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d49c7bd107c3%3A0x628349f6e9f16df5!2sAeon&#39;s%20Photobooth!5e0!3m2!1sen!2sph!4v1735768675678!5m2!1sen!2sph"
                                     allowfullscreen=""
-                                    loading="lazy"
+                                    loading="auto"
                                     referrerpolicy="no-referrer-when-downgrade"
                                 ></iframe>
                             </div>
@@ -388,8 +398,9 @@ function getInclusionLines(inclusion, name) {
                 </div>
 
                 <!-- Footer -->
-                <div
+                <section
                     class="relative mx-auto pb-8 bg-gradient-to-tr from-primary-200 to-primary-800 w-full"
+                    id="contact-us"
                 >
                     <div
                         class="relative flex justify-center items-center rounded-lg 2xl:mx-16"
@@ -410,9 +421,7 @@ function getInclusionLines(inclusion, name) {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                
+                </section>
             </div>
         </div>
     </div>

@@ -49,13 +49,16 @@
     border: 1px solid rgb(235, 185, 215);
 }
 
+.vuecal__cell-content:has(.vuecal__cell-events-count) {
+    background-color: rgb(62 201 114/0.2); /* Change this to your desired background color */
+}
 
 /* Dash indicator */
 .vuecal__cell-events-count {
     width: 18px;
-    height: 2px;
+    height: 4px;
     color: transparent;
-    background-color: #f57da9;
+    background-color: green;
   }
 
 /* .vuecal__cell-split.booth1 {

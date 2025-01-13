@@ -15,7 +15,7 @@ import "../../../css/custom-styles.css";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 
-// TODO: FILTER BACKDROPS BY TYPE 
+// TODO: FILTER BACKDROPS BY TYPE
 
 const props = defineProps({
     backdrops: {
@@ -30,7 +30,7 @@ const props = defineProps({
 
 /* #############################
             PAGINATION
-   ############################# */  
+   ############################# */
 const paginationbackdrops = ref(props.backdrops.data);
 const currentPage = ref(1);
 
@@ -79,7 +79,7 @@ watch(
 
 /* #############################
         FILTER AND COUNT
-   ############################# */  
+   ############################# */
 const backdrops = ref(props.backdrops);
 
 const allCount = computed(() => props.backdrops.data.length);
@@ -141,7 +141,7 @@ const displayCount = computed(() => {
 
 /* #############################
             ADD BACKDROP
-   ############################# */  
+   ############################# */
 const addBackdropForm = useForm({
     backdroptype_id: "",
     color: "",
@@ -177,7 +177,7 @@ const submitAddBackdrop = () => {
 
 /* #############################
             EDIT BACKDROP
-   ############################# */  
+   ############################# */
 const editingBackdrop = ref(false);
 const currentBackdrop = ref(null);
 
@@ -207,7 +207,6 @@ const openEditModal = (backdrop) => {
     editBackdropForm.origImage = backdrop.image;
 
     editingBackdrop.value = true;
-
 };
 
 const noChangesEdit = computed(() => {
@@ -235,24 +234,26 @@ const submitEditBackdrop = () => {
     }
 
     if (!editBackdropForm.image) {
-    editBackdropForm.image = currentBackdrop.value.image;
-  }
+        editBackdropForm.image = currentBackdrop.value.image;
+    }
 
     editBackdropForm.post(
         route("backdrop.update", {
-            backdrop: editBackdropForm.id, page: currentPage.value
+            backdrop: editBackdropForm.id,
+            page: currentPage.value,
         }),
-     {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: () => closeEditModal(),
-        onFinish: () => editBackdropForm.reset(),
-    });
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => closeEditModal(),
+            onFinish: () => editBackdropForm.reset(),
+        }
+    );
 };
 
 /* #############################
         DELETE BACKDROP
-   ############################# */  
+   ############################# */
 const deletingBackdrop = ref(false);
 
 const openConfirmationModal = (type) => {
@@ -272,8 +273,7 @@ const submitDelete = () => {
         preserveScroll: true,
         onSuccess: () => closeConfirmationModal(),
     });
-}
-
+};
 </script>
 
 <template>
@@ -328,7 +328,7 @@ const submitDelete = () => {
                                     >
                                 </div>
                             </li>
-                             <li>
+                            <li>
                                 <div class="flex items-center">
                                     <svg
                                         class="w-6 h-6 text-gray-400"
@@ -559,7 +559,11 @@ const submitDelete = () => {
 
                                     <td
                                         v-else-if="
-                                            backdrop.backdroptype !== 'Custom' || backdrop.backdroptype !== 'Sequins' || backdrop.backdroptype !== 'Plain'
+                                            backdrop.backdroptype !==
+                                                'Custom' ||
+                                            backdrop.backdroptype !==
+                                                'Sequins' ||
+                                            backdrop.backdroptype !== 'Plain'
                                         "
                                         class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"
                                     >
@@ -596,7 +600,9 @@ const submitDelete = () => {
                                             v-if="backdrop.isUsed"
                                             type="button"
                                             id="deleteProductButton"
-                                            @click="openConfirmationModal(backdrop)"
+                                            @click="
+                                                openConfirmationModal(backdrop)
+                                            "
                                             class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-700 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900"
                                         >
                                             <svg
@@ -769,8 +775,7 @@ const submitDelete = () => {
                     <form @submit.prevent="submitAddBackdrop">
                         <div class="mb-6">
                             <div class="col-span-6 sm:col-span-3">
-                                                                <div class="mb-2">
-
+                                <div class="mb-2">
                                     <InputLabel
                                         for="backdroptype"
                                         value="Backdrop Type"
@@ -803,8 +808,7 @@ const submitDelete = () => {
                                     />
                                 </div>
 
-                                                               <div class="mb-2">
-
+                                <div class="mb-2">
                                     <InputLabel for="color" value="Color" />
 
                                     <TextInput
@@ -926,10 +930,9 @@ const submitDelete = () => {
                                                 .backdroptype_id
                                         "
                                     />
-                                </div> 
+                                </div>
 
-                                 <div class="mb-2">
-
+                                <div class="mb-2">
                                     <InputLabel for="color" value="Color" />
                                     <TextInput
                                         id="edit-color"
@@ -982,8 +985,8 @@ const submitDelete = () => {
                                 class="normal-case ms-3"
                                 :class="{
                                     'opacity-25':
-                                        editBackdropForm.processing || noChangesEdit
-                                        ,
+                                        editBackdropForm.processing ||
+                                        noChangesEdit,
                                 }"
                                 :disabled="
                                     editBackdropForm.processing || noChangesEdit
@@ -997,8 +1000,11 @@ const submitDelete = () => {
             </div>
         </Modal>
 
-         <!-- DELETE BACKDROP MODAL -->
-            <ConfirmationModal :show="deletingBackdrop" @close="closeConfirmationModal">
+        <!-- DELETE BACKDROP MODAL -->
+        <ConfirmationModal
+            :show="deletingBackdrop"
+            @close="closeConfirmationModal"
+        >
             <div class="relative w-full h-full max-w-md md:h-auto">
                 <!-- Modal content -->
                 <div
@@ -1044,8 +1050,8 @@ const submitDelete = () => {
                         <h3
                             class="mt-5 mb-6 text-lg text-gray-500 dark:text-gray-400"
                         >
-                                Are you sure you want to delete this backdrop? This
-                                action cannot be undone.
+                            Are you sure you want to delete this backdrop? This
+                            action cannot be undone.
                         </h3>
                         <!-- Modal footer -->
                         <div class="mt-6 flex justify-center gap-6">

@@ -14,6 +14,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/',[HomeController::class, 'index'], function () {
     if (Auth::check()) {
@@ -67,7 +68,7 @@ Route::middleware('auth', UserMiddleware::class)->group(function () {
 });
 
 // ADMIN ROUTES
-Route::get('/admin', function () {
+Route::get('/admin', [DashboardController::class, 'index'], function () {
     return Inertia::render('Admin/Dashboard');
 })->middleware(['auth', 'verified', AdminMiddleware::class])->name('admin.dashboard');
 
@@ -100,7 +101,7 @@ Route::middleware('auth', AdminMiddleware::class)->group(function () {
 
     // EVENTS LISTED ROUTES
     Route::get('/admin/listed-events', [RegistrationController::class, 'index'])->name('event.index');
-    Route::patch('/admin/listed-events/{event}', [RegistrationController::class, 'updateListedEvents'])->name('event.listed.update');
+    Route::patch('/admin/listed-events/{event}', [RegistrationController::class, 'cancelListedEvents'])->name('event.listed.update');
 
     // EVENTS ARCHIEVE ROUTES
     Route::get('/admin/archive-events', [RegistrationController::class, 'indexArchive'])->name('event.archive.index');

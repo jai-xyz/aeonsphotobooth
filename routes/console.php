@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Schedule;
 
 // run the checkAndUpdatePaymentStatus method every minute 
 // php artisan schedule:work to run locally
-// Schedule::command(app(\App\Http\Controllers\Admin\RegistrationController::class)
-//         ->checkAndUpdatePaymentStatus())->everyMinute();
+Schedule::command(app(\App\Http\Controllers\Admin\RegistrationController::class)
+        ->checkAndUpdatePaymentStatus())->everyMinute();
 
 Schedule::command(app(\App\Http\Controllers\Admin\RegistrationController::class)
-        ->updateExpiredEvents())->everyMinute();
+        ->updateExpiredEvents())->daily();

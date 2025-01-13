@@ -16,7 +16,7 @@ use App\Mail\AdminNotification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
-
+use App\Mail\UserCancelEventNotification;
 
 class UserRegistrationController extends Controller
 {
@@ -27,19 +27,40 @@ class UserRegistrationController extends Controller
     {
         $userId = Auth::id();
 
+        $activeregistrationQuery = Registration::query()->where('user_id', $userId)->whereIn('status', ['Pending', 'Accept'])->whereIn('payment_status', ['Pending', 'paid']);
 
-        $registrationQuery = Registration::query()->where('user_id', $userId);
+        $activeevents = $activeregistrationQuery
+            ->orderBy('date', 'asc')
+            ->orderBy('time', 'asc')
+            ->paginate(10);
 
-        $events = $registrationQuery->orderBy('created_at', 'desc')->paginate(10);
-
-        $events->getCollection()->transform(function ($event) {
+        $activeevents->getCollection()->transform(function ($event) {
             $event->user = DB::table('users')->where('id', $event->user_id)->first();
             $event->date = (new DateTime($event->date))->format('m-d-Y');
             $event->time = (new DateTime($event->time))->format('g:i A');
             return $event;
         });
 
-        return Inertia::render('User/List', ['events' => $events]);
+        $archivedregistrationQuery = Registration::query()->where('user_id', $userId)->whereIn('status', ['Complete', 'Decline', 'Cancel']);
+
+        $archivedevents = $archivedregistrationQuery
+            ->orderBy('date', 'desc')
+            ->orderBy('time', 'desc')
+            ->paginate(10);
+
+        $archivedevents->getCollection()->transform(function ($event) {
+            $event->user = DB::table('users')->where('id', $event->user_id)->first();
+            $event->date = (new DateTime($event->date))->format('m-d-Y');
+            $event->time = (new DateTime($event->time))->format('g:i A');
+            return $event;
+        });
+
+
+        return Inertia::render('User/List', [
+            'activeevents' => $activeevents,
+            'archivedevents' => $archivedevents,
+
+    ]);
     }
 
 
@@ -94,7 +115,7 @@ class UserRegistrationController extends Controller
                 'ampm' => 'required|string|in:AM,PM',
                 'packageid' => 'required|exists:packages,id',
                 'packagename' => 'required|string|max:255',
-                'alias' => 'required|string|max:255', 
+                'alias' => 'required|string|max:255',
                 'packagesize' => 'required|string|max:255',
                 'backdroptype' => 'required|string|max:255',
                 'backdropcolor' => 'required|string|max:255',
@@ -110,16 +131,16 @@ class UserRegistrationController extends Controller
             ]
         );
 
-      // Convert hour, minute, and ampm to a 24-hour format time string
-    $hour = (int) $validatedData['hour'];
-    $minute = (int) $validatedData['minute'];
-    $ampm = $validatedData['ampm'];
+        // Convert hour, minute, and ampm to a 24-hour format time string
+        $hour = (int) $validatedData['hour'];
+        $minute = (int) $validatedData['minute'];
+        $ampm = $validatedData['ampm'];
 
-    if ($ampm === 'PM' && $hour != 12) {
-        $hour += 12;
-    } elseif ($ampm === 'AM' && $hour == 12) {
-        $hour = 0;
-    }
+        if ($ampm === 'PM' && $hour != 12) {
+            $hour += 12;
+        } elseif ($ampm === 'AM' && $hour == 12) {
+            $hour = 0;
+        }
         // $hour = 5;
         // $minute = 7;
         $time = sprintf('%02d:%02d', $hour, $minute);
@@ -174,12 +195,12 @@ class UserRegistrationController extends Controller
             Mail::to('rhyaaaaa01072001@gmail.com')->queue(new AdminNotification($userRegistration));
 
             Session::put('registration_success', true);
-            
+
             return redirect()->route('user.event.confirmation');
         } catch (\Exception $e) {
             // Log the error for debugging
             Log::error('Error processing registration: ' . $e->getMessage());
-    
+
             return redirect()->back()->with(['error' => 'An error occurred while processing your registration. Please try again.'], 500);
         }
     }
@@ -228,11 +249,11 @@ class UserRegistrationController extends Controller
         $event->user_id = $validated['user_id'];
 
         $event->save();
-        
-        // Mail::to('rhyaaaaa01072001@gmail.com')->queue(new CancelEventNotification($event));
-        return redirect()->back()->with('success', 'Event has been restored successfully.');
+
+        Mail::to('rhyaaaaa01072001@gmail.com')->queue(new UserCancelEventNotification($event));
+        return redirect()->back()->with('success', 'Event has been cancelled successfully.');
     }
-  
+
     /**
      * Remove the specified resource from storage.
      */

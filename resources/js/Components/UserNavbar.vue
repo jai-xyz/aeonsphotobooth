@@ -1,20 +1,87 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 import AButton from "@/Components/AButton.vue";
 import AButtonSecondary from "@/Components/AButtonSecondary.vue";
+import { useRouter } from "vue-router";
+
+const route = window.route;
 
 const showingNavigationDropdown = ref(false);
+
+const activeSection = ref("");
+
+const sections = ["home", "packages", "contact-us"];
 
 const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     auth: Object,
+});
+
+const styles = computed(() => {
+    return (section) =>
+        activeSection.value === section
+            ? {
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.375rem",
+                  backgroundColor: "#f9e7ed",
+                  color: "#ec4899",
+                  fontSize: "1rem",
+                  fontWeight: "500",
+                  lineHeight: "1.25rem",
+                  textAlign: "center",
+                  outline: "none",
+                  borderColor: "#be185d",
+                  transition: "all 0.15s ease-in-out",
+              }
+            : {
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.375rem",
+                  fontSize: "1rem",
+                  fontWeight: "500",
+                  lineHeight: "1.25rem",
+                  color: "#6b7280",
+                  borderColor: "#d1d5db",
+                  outline: "none",
+                  transition: "all 0.15s ease-in-out",
+              };
+});
+
+const { component } = usePage();
+const router = useRouter();
+
+const isHomeRoute = computed(() => {
+    return component === "Welcome";
+});
+
+onMounted(() => {
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    activeSection.value = entry.target.id;
+                }
+            });
+        },
+        { threshold: 0.5 }
+    );
+
+    sections.forEach((section) => {
+        const element = document.getElementById(section);
+        if (element) {
+            observer.observe(element);
+        }
+    });
 });
 </script>
 
@@ -33,45 +100,33 @@ const props = defineProps({
                 </div>
 
                 <!-- Navigation Links -->
-                <div
+                 <div
+                    v-if="isHomeRoute"
                     class="hidden lg:flex flex-1 ps-4 space-x-2 m-auto align-center lg:space-x-4"
                 >
-                    <NavLink
-                        :href="route('home')"
-                        :active="route().current('home')"
-                    >
-                        Home
-                    </NavLink>
-                    <!-- <NavLink
-                        :href="route('user.package.index')"
-                        :active="route().current('user.package.index')"
-                    >
-                        Packages
-                    </NavLink> -->
-                    <!-- <NavLink
-                        :href="route('user.event.index')"
-                        :active="route().current('user.event.index')"
-                    >
-                        FAQs
-                    </NavLink>
-                    <NavLink
-                        :href="route('user.event.index')"
-                        :active="route().current('user.event.index')"
-                    >
-                        Contact Us
-                    </NavLink> -->
+                    <a :style="styles('home')" href="#home" v-smooth-scroll class="hover:bg-[#e9eaeb]">Home</a>
+                    <a :style="styles('packages')" href="#packages" v-smooth-scroll class="hover:bg-[#e9eaeb]">Packages</a>
+                    <a :style="styles('contact-us')" href="#contact-us" v-smooth-scroll class="hover:bg-[#e9eaeb]">Contact Us</a>
+                </div>
+
+                <div
+                    v-else
+                    class="hidden lg:flex flex-1 ps-4 space-x-2 m-auto align-center lg:space-x-4"
+                >
+                    <NavLink :style="styles('home')" href="/#home" class="hover:bg-[#e9eaeb]">Home</NavLink>
+                    <NavLink :style="styles('packages')" href="/#packages" class="hover:bg-[#e9eaeb]">Packages</NavLink>
+                    <NavLink :style="styles('contact-us')" href="/#contact-us" class="hover:bg-[#e9eaeb]">Contact us</NavLink>
                 </div>
 
                 <div
                     v-if="auth.user"
                     class="hidden sm:flex align-center ms-auto"
                 >
-                  
-                        <Link
-                            :href="route('user.event.create')"
-                            class="text-primary-700 font-medium flex justify-center align-center m-auto gap-1"
-                        >
-                          <div class="flex gap-x-1 justify-center items-center">
+                    <Link
+                        :href="route('user.event.create')"
+                        class="text-primary-700 font-medium flex justify-center align-center m-auto gap-1"
+                    >
+                        <div class="flex gap-x-1 justify-center items-center">
                             <span class="uppercase"> Book Now</span>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -83,9 +138,8 @@ const props = defineProps({
                                     d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7v-2H5V9h14v4h2V6a2 2 0 0 0-2-2zM5 7V6h14v1H5zm16 11v-3h-2v3h-3v2h3v3h2v-3h3v-2h-3z"
                                 />
                             </svg>
-                    </div>
-
-                        </Link>
+                        </div>
+                    </Link>
                     <div
                         class="border-l border-gray-300 mx-2 my-auto h-7"
                     ></div>
@@ -128,7 +182,9 @@ const props = defineProps({
                                     class="bg-white divide-y divide-gray-100 dark:bg-gray-700 dark:divide-gray-600"
                                 >
                                     <div>
-                                        <div class="pointer-events-none ms-4 mx-auto">
+                                        <div
+                                            class="pointer-events-none ms-4 mx-auto"
+                                        >
                                             <div
                                                 class="font-medium text-base text-gray-800"
                                             >

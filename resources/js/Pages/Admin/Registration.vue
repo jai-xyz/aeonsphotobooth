@@ -256,7 +256,6 @@ const onEventClick = (event) => {
     if (event.title) {
         const eventId = event.id; // Use the title (which is the event ID) to find the event
         selectedEvent.value = props.getEvents.find((e) => e.id === eventId);
-        console.log("Selected Events: ", selectedEvent.value);
         showDialog.value = true;
     }
 };
@@ -426,56 +425,58 @@ const cancelEvent = (eventId) => {
                 >
                     <div class="flex items-center mb-4 sm:mb-0">
                         <div class="relative w-48 mt-1 sm:w-64 xl:w-96">
-                            <div
-                                class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-                            >
-                                <svg
-                                    class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 20 20"
+                            <div v-if="view === 'table'">
+                                <div
+                                    class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
                                 >
-                                    <path
-                                        stroke="currentColor"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                                    />
-                                </svg>
-                            </div>
-                            <input
-                                type="text"
-                                name="email"
-                                id="search"
-                                v-model="search"
-                                autocomplete="off"
-                                class="ps-10 pr-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="Search for events"
-                            />
-                            <div
-                                v-show="search !== ''"
-                                class="absolute inset-y-0 end-0 flex items-center pe-3 cursor-pointer"
-                                @click="search = ''"
-                            >
-                                <svg
-                                    class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
+                                    <svg
+                                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 20 20"
+                                    >
+                                        <path
+                                            stroke="currentColor"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                                        />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="text"
+                                    name="email"
+                                    id="search"
+                                    v-model="search"
+                                    autocomplete="off"
+                                    class="ps-10 pr-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="Search for events"
+                                />
+                                <div
+                                    v-show="search !== ''"
+                                    class="absolute inset-y-0 end-0 flex items-center pe-3 cursor-pointer"
+                                    @click="search = ''"
                                 >
-                                    <path
-                                        stroke="currentColor"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18 17.94 6M18 18 6.06 6"
-                                    />
-                                </svg>
+                                    <svg
+                                        class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke="currentColor"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M6 18 17.94 6M18 18 6.06 6"
+                                        />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -509,340 +510,325 @@ const cancelEvent = (eventId) => {
             </div>
         </div>
 
-        <div class="flex flex-col mb-20">
-            <div class="overflow-x-auto">
-                <div class="inline-block min-w-full align-middle">
-                    <div class="overflow-hidden shadow">
-                        <div v-if="view === 'table'">
-                            <table
-                                class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600"
-                            >
-                                <thead class="bg-gray-100 dark:bg-gray-700">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
-                                        >
-                                            Event Title
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
-                                        >
-                                            Date & Time
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
-                                        >
-                                            Contact Person
-                                        </th>
-
-                                        <th
-                                            scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
-                                        >
-                                            Attachment/s
-                                        </th>
-
-                                        <th
-                                            scope="col"
-                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
-                                        >
-                                            Actions
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody
-                                    v-for="event in events.data"
-                                    :key="event.id"
-                                    class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
-                                >
-                                    <tr
-                                        class="hover:bg-gray-100 dark:hover:bg-gray-700"
+        <div class="flex flex-col mb-20 p-4 bg-white">
+            <div class="inline-block min-w-full align-middle">
+                <div class="overflow-hidden shadow">
+                    <div v-if="view === 'table'">
+                        <table
+                            class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600"
+                        >
+                            <thead class="bg-gray-100 dark:bg-gray-700">
+                                <tr>
+                                    <th
+                                        scope="col"
+                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
                                     >
-                                        <td
+                                        Event Title
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                    >
+                                        Date & Time
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                    >
+                                        Contact Person
+                                    </th>
+
+                                    <th
+                                        scope="col"
+                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                    >
+                                        Attachment/s
+                                    </th>
+
+                                    <th
+                                        scope="col"
+                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                    >
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody
+                                v-for="event in events.data"
+                                :key="event.id"
+                                class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
+                            >
+                                <tr
+                                    class="hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                    <td
+                                        @click="toggleDetails(event.id)"
+                                        class="p-4 text-sm font-normal text-gray-700 whitespace-nowrap dark:text-gray-400 cursor-pointer"
+                                    >
+                                        <div
+                                            class="text-base font-semibold text-gray-900 dark:text-white"
+                                        >
+                                            {{ event.event }}
+                                        </div>
+                                        <div
+                                            class="text-sm font-normal text-gray-600 dark:text-gray-400"
+                                        >
+                                            {{ event.theme }}
+                                        </div>
+                                    </td>
+                                    <td
+                                        class="p-4 text-sm font-normal text-gray-600 whitespace-nowrap dark:text-gray-400"
+                                    >
+                                        <div
+                                            class="text-base font-normal text-gray-900 dark:text-white"
+                                        >
+                                            {{ formatDate(event.date) }}
+                                        </div>
+                                        <div
+                                            class="text-base font-normal text-gray-600 dark:text-white"
+                                        >
+                                            {{ event.time }}
+                                        </div>
+                                    </td>
+                                    <td
+                                        class="p-4 text-sm font-normal text-gray-600 whitespace-nowrap dark:text-gray-400"
+                                    >
+                                        <div
+                                            class="text-base font-normal text-gray-900 dark:text-white"
+                                        >
+                                            {{ event.contactperson }}
+                                        </div>
+                                        <div
+                                            class="text-base font-normal text-gray-600 dark:text-white"
+                                        >
+                                            {{ event.contactno }}
+                                        </div>
+                                        <div
+                                            class="text-sm font-normal text-gray-600 dark:text-white"
+                                        >
+                                            {{ event.email }}
+                                        </div>
+                                    </td>
+                                    <td
+                                        class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-600 xl:max-w-xs dark:text-gray-400"
+                                    >
+                                        <div v-if="event.images">
+                                            <div
+                                                v-for="(
+                                                    image, index
+                                                ) in JSON.parse(event.images)"
+                                                :key="index"
+                                            >
+                                                <img
+                                                    :src="image"
+                                                    :alt="
+                                                        'Image ' + (index + 1)
+                                                    "
+                                                    width="100"
+                                                    class="p-1"
+                                                />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="p-4 space-x-2 whitespace-nowrap">
+                                        <button
                                             @click="toggleDetails(event.id)"
-                                            class="p-4 text-sm font-normal text-gray-700 whitespace-nowrap dark:text-gray-400 cursor-pointer"
+                                            class="inline-flex items-center text-white rounded-md bg-gray-500 p-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-gray-300 dark:hover:bg-gray-400 dark:focus:ring-gray-200"
+                                        >
+                                            <svg
+                                                class="w-4 h-4"
+                                                :class="{
+                                                    'rotate-180':
+                                                        isDetailsVisible(
+                                                            event.id
+                                                        ),
+                                                }"
+                                                aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 10 6"
+                                            >
+                                                <path
+                                                    stroke="white"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="m1 1 4 4 4-4"
+                                                />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            class="inline-flex items-center text-white rounded-md bg-blue-500 p-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-blue-300 dark:hover:bg-blue-400 dark:focus:ring-blue-200"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                class="w-4 h-4"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    d="M18 3H6v4H3c-1.1 0-2 .9-2 2v6h4v6h14v-6h4v-6c0-1.1-.9-2-2-2h-3V3zM8 5h8v2H8V5zm10 14H6v-6h12v6zm4-8H4v-2h16v2z"
+                                                />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            @click="
+                                                openConfirmationModal(event.id)
+                                            "
+                                            class="inline-flex items-center text-xs text-white rounded-md bg-red-500 p-2 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-300 dark:hover:bg-red-400 dark:focus:ring-red-200"
+                                            title="Cancel Event"
                                         >
                                             <div
-                                                class="text-base font-semibold text-gray-900 dark:text-white"
-                                            >
-                                                {{ event.event }}
-                                            </div>
-                                            <div
-                                                class="text-sm font-normal text-gray-600 dark:text-gray-400"
-                                            >
-                                                {{ event.theme }}
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="p-4 text-sm font-normal text-gray-600 whitespace-nowrap dark:text-gray-400"
-                                        >
-                                            <div
-                                                class="text-base font-normal text-gray-900 dark:text-white"
-                                            >
-                                                {{ formatDate(event.date) }}
-                                            </div>
-                                            <div
-                                                class="text-base font-normal text-gray-600 dark:text-white"
-                                            >
-                                                {{ event.time }}
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="p-4 text-sm font-normal text-gray-600 whitespace-nowrap dark:text-gray-400"
-                                        >
-                                            <div
-                                                class="text-base font-normal text-gray-900 dark:text-white"
-                                            >
-                                                {{ event.contactperson }}
-                                            </div>
-                                            <div
-                                                class="text-base font-normal text-gray-600 dark:text-white"
-                                            >
-                                                {{ event.contactno }}
-                                            </div>
-                                            <div
-                                                class="text-sm font-normal text-gray-600 dark:text-white"
-                                            >
-                                                {{ event.email }}
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-600 xl:max-w-xs dark:text-gray-400"
-                                        >
-                                            <div v-if="event.images">
-                                                <div
-                                                    v-for="(
-                                                        image, index
-                                                    ) in JSON.parse(
-                                                        event.images
-                                                    )"
-                                                    :key="index"
-                                                >
-                                                    <img
-                                                        :src="image"
-                                                        :alt="
-                                                            'Image ' +
-                                                            (index + 1)
-                                                        "
-                                                        width="100"
-                                                        class="p-1"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="p-4 space-x-2 whitespace-nowrap"
-                                        >
-                                            <button
-                                                @click="toggleDetails(event.id)"
-                                                class="inline-flex items-center text-white rounded-md bg-gray-500 p-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-gray-300 dark:hover:bg-gray-400 dark:focus:ring-gray-200"
-                                            >
-                                                <svg
-                                                    class="w-4 h-4"
-                                                    :class="{
-                                                        'rotate-180':
-                                                            isDetailsVisible(
-                                                                event.id
-                                                            ),
-                                                    }"
-                                                    aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 10 6"
-                                                >
-                                                    <path
-                                                        stroke="white"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="m1 1 4 4 4-4"
-                                                    />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                class="inline-flex items-center text-white rounded-md bg-blue-500 p-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-blue-300 dark:hover:bg-blue-400 dark:focus:ring-blue-200"
+                                                class="flex items-center space-x-1"
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="4"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
                                                     class="w-4 h-4"
-                                                    fill="currentColor"
                                                 >
-                                                    <path
-                                                        d="M18 3H6v4H3c-1.1 0-2 .9-2 2v6h4v6h14v-6h4v-6c0-1.1-.9-2-2-2h-3V3zM8 5h8v2H8V5zm10 14H6v-6h12v6zm4-8H4v-2h16v2z"
-                                                    />
+                                                    <line
+                                                        x1="18"
+                                                        y1="6"
+                                                        x2="6"
+                                                        y2="18"
+                                                    ></line>
+                                                    <line
+                                                        x1="6"
+                                                        y1="6"
+                                                        x2="18"
+                                                        y2="18"
+                                                    ></line>
                                                 </svg>
-                                            </button>
-                                            <button
-                                                @click="
-                                                    openConfirmationModal(
-                                                        event.id
-                                                    )
-                                                "
-                                                class="inline-flex items-center text-xs text-white rounded-md bg-red-500 p-2 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 dark:bg-red-300 dark:hover:bg-red-400 dark:focus:ring-red-200"
-                                                title="Cancel Event"
-                                            >
-                                                <div
-                                                    class="flex items-center space-x-1"
-                                                >
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        stroke-width="4"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        class="w-4 h-4"
-                                                    >
-                                                        <line
-                                                            x1="18"
-                                                            y1="6"
-                                                            x2="6"
-                                                            y2="18"
-                                                        ></line>
-                                                        <line
-                                                            x1="6"
-                                                            y1="6"
-                                                            x2="18"
-                                                            y2="18"
-                                                        ></line>
-                                                    </svg>
-                                                    <span>CANCEL EVENT</span>
-                                                </div>
-                                            </button>
-                                        </td>
-                                    </tr>
-
-                                    <!-- Ensure the detailed row is within the same v-for loop -->
-                                    <tr
-                                        v-if="isDetailsVisible(event.id)"
-                                        :key="'details-' + event.id"
-                                        class="bg-gray-50 dark:bg-gray-700"
-                                    >
-                                        <td colspan="5" class="p-2">
-                                            <table
-                                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-600"
-                                            >
-                                                <thead
-                                                    class="bg-gray-100 dark:bg-gray-700"
-                                                >
-                                                    <tr>
-                                                        <th
-                                                            scope="col"
-                                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
-                                                        >
-                                                            Address
-                                                        </th>
-                                                        <th
-                                                            scope="col"
-                                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
-                                                        >
-                                                            Package
-                                                        </th>
-                                                        <th
-                                                            scope="col"
-                                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
-                                                        >
-                                                            Backdrop
-                                                        </th>
-                                                        <th
-                                                            scope="col"
-                                                            class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
-                                                        >
-                                                            Suggestion
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td
-                                                            class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
-                                                        >
-                                                            {{ event.street }},
-                                                            {{
-                                                                event.barangay
-                                                            }},
-                                                            {{ event.city }},
-                                                            {{ event.province }}
-                                                        </td>
-                                                        <td
-                                                            class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
-                                                        >
-                                                            <div>
-                                                                <strong
-                                                                    >Package:</strong
-                                                                >
-                                                                {{
-                                                                    event.packagename
-                                                                }}
-                                                            </div>
-                                                            <div>
-                                                                <strong
-                                                                    >Price:</strong
-                                                                >
-                                                                {{
-                                                                    event.price
-                                                                }}
-                                                            </div>
-                                                            <div>
-                                                                <strong
-                                                                    >Number of
-                                                                    Shots:</strong
-                                                                >
-                                                                {{
-                                                                    event.number_of_shots
-                                                                }}
-                                                            </div>
-                                                        </td>
-                                                        <td
-                                                            class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
-                                                        >
-                                                            <div>
-                                                                <strong
-                                                                    >Backdrop
-                                                                    Type:</strong
-                                                                >
-                                                                {{
-                                                                    event.backdroptype
-                                                                }}
-                                                            </div>
-                                                            <div>
-                                                                <strong
-                                                                    >Backdrop
-                                                                    Color:</strong
-                                                                >
-                                                                {{
-                                                                    event.backdropcolor
-                                                                }}
-                                                            </div>
-                                                        </td>
-                                                        <td
-                                                            class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
-                                                        >
-                                                            {{
-                                                                event.suggestion
-                                                            }}
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tr v-if="events.data.length === 0">
-                                    <td
-                                        colspan="12"
-                                        class="p-4 text-center text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
-                                    >
-                                        No records found
+                                                <span>CANCEL EVENT</span>
+                                            </div>
+                                        </button>
                                     </td>
                                 </tr>
-                            </table>
-                        </div>
+
+                                <!-- Ensure the detailed row is within the same v-for loop -->
+                                <tr
+                                    v-if="isDetailsVisible(event.id)"
+                                    :key="'details-' + event.id"
+                                    class="bg-gray-50 dark:bg-gray-700"
+                                >
+                                    <td colspan="5" class="p-2">
+                                        <table
+                                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-600"
+                                        >
+                                            <thead
+                                                class="bg-gray-100 dark:bg-gray-700"
+                                            >
+                                                <tr>
+                                                    <th
+                                                        scope="col"
+                                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                    >
+                                                        Address
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                    >
+                                                        Package
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                    >
+                                                        Backdrop
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        class="p-4 text-xs font-extrabold text-left text-gray-700 uppercase dark:text-gray-400"
+                                                    >
+                                                        Suggestion
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td
+                                                        class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
+                                                    >
+                                                        {{ event.street }},
+                                                        {{ event.barangay }},
+                                                        {{ event.city }},
+                                                        {{ event.province }}
+                                                    </td>
+                                                    <td
+                                                        class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
+                                                    >
+                                                        <div>
+                                                            <strong
+                                                                >Package:</strong
+                                                            >
+                                                            {{
+                                                                event.packagename
+                                                            }}
+                                                        </div>
+                                                        <div>
+                                                            <strong
+                                                                >Price:</strong
+                                                            >
+                                                            {{ event.price }}
+                                                        </div>
+                                                        <div>
+                                                            <strong
+                                                                >Number of
+                                                                Shots:</strong
+                                                            >
+                                                            {{
+                                                                event.number_of_shots
+                                                            }}
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
+                                                    >
+                                                        <div>
+                                                            <strong
+                                                                >Backdrop
+                                                                Type:</strong
+                                                            >
+                                                            {{
+                                                                event.backdroptype
+                                                            }}
+                                                        </div>
+                                                        <div>
+                                                            <strong
+                                                                >Backdrop
+                                                                Color:</strong
+                                                            >
+                                                            {{
+                                                                event.backdropcolor
+                                                            }}
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="p-4 text-sm font-normal bg-white text-gray-900 dark:text-gray-400"
+                                                    >
+                                                        {{ event.suggestion }}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tr v-if="events.data.length === 0">
+                                <td
+                                    colspan="12"
+                                    class="p-4 text-center text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400"
+                                >
+                                    No records found
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>

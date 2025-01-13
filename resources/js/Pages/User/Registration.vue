@@ -1111,7 +1111,8 @@ const handleConfirm = () => {
                                     <div>
                                         <InputLabel
                                             for="date"
-                                            class="text-green-600"
+                                            value="Date & Time"
+                                            class="text-pink-900"
                                         />
                                         <!-- Button to open modal -->
                                         <PrimaryButton
@@ -1817,8 +1818,8 @@ const handleConfirm = () => {
                                                                 : form.packagesize.toLowerCase() ===
                                                                   '4r'
                                                                 ? '550px'
-                                                                : form.packagesize() ===
-                                                                  'Polaroid size'
+                                                                : form.packagesize.toLowerCase() ===
+                                                                  'polaroid size'
                                                                 ? '550px'
                                                                 : '300px',
                                                         height:
@@ -1828,8 +1829,8 @@ const handleConfirm = () => {
                                                                 : form.packagesize.toLowerCase() ===
                                                                   '4r'
                                                                 ? '415px'
-                                                                : form.packagesize() ===
-                                                                  'Polaroid size'
+                                                               : form.packagesize.toLowerCase() ===
+                                                                  'polaroid size'
                                                                 ? '415px'
                                                                 : '450px',
                                                         position: 'relative',
@@ -2355,7 +2356,7 @@ const handleConfirm = () => {
                                                                 : form.packagesize.toLowerCase() ===
                                                                   '4r'
                                                                 ? '415px'
-                                                                : form.packagesize.toLowerCase() ===
+                                                               : form.packagesize.toLowerCase() ===
                                                                   'polaroid size'
                                                                 ? '415px'
                                                                 : '450px',

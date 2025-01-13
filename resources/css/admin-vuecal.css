@@ -31,6 +31,20 @@
 
 .vuecal__event.allowance .vuecal__event-time {display: none;align-items: center;}
 
+
+.vuecal__cell-content:has(.vuecal__cell-events-count) {
+    background-color: rgb(62 201 114/0.2); /* Change this to your desired background color */
+}
+
+/* Dash indicator */
+.vuecal__cell-events-count {
+    width: 18px;
+    height: 4px;
+    color: transparent;
+    background-color: green;
+  }
+
+  
 .vuecal__event-time {
     font-size: 12px;
     font-weight: bold;
@@ -49,13 +63,6 @@
 }
 
 
-/* Dash indicator */
-.vuecal__cell-events-count {
-    width: 18px;
-    height: 2px;
-    color: transparent;
-    background-color: #f57da9;
-  }
 
 /* .vuecal__cell-split.booth1 {
     background-color: rgba(255, 232, 251, 0.379);
@@ -130,4 +137,33 @@
 .vuecal__flex.vuecal__weekdays-headings{
     border-left: 1px solid rgb(235, 185, 215);
     border-right: 1px solid rgb(235, 185, 215);
+}
+
+.responsive {
+    width: 100%;
+    max-width: 1400px;
+}
+
+@media (max-width: 320px) {
+    .responsive {
+        height: 400px;
+    }
+}
+
+@media (min-width: 321px) and (max-width: 475px) {
+    .responsive {
+        height: 500px;
+    }
+}
+
+@media (min-width: 475px) and (max-width: 768px) {
+    .responsive {
+        height: 550px;
+    }
+}
+
+@media (min-width: 769px) {
+    .responsive {
+        height: 655px;
+    }
 }

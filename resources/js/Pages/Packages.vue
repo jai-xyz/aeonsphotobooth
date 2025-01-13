@@ -59,10 +59,6 @@ const packageData = {
     options: props.packages.options || [],
 };
 
-// console.log(packageData);
-console.log(props.packages);
-console.log("Get all ", props.getAllPackages);
-
 function getInclusionLines(inclusion) {
     if (!inclusion) {
         return [];
@@ -90,7 +86,7 @@ function getInclusionLines(inclusion) {
         style="background-image: url('/images/packagebg.png')"
     >
         <div
-            class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 xxs:m-4 xs:m-10 sm:m-12 md:m-14 lg:grid-cols-2 lg:mx-8 xl:mx-20 2xl:mx-40"
+            class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 mx-24 mb-12"
         >
             <div class="relative self-center">
                 <div
@@ -103,7 +99,7 @@ function getInclusionLines(inclusion) {
                 >
                     {{ packageData.alias }}
                 </div>
-                <div class="font-bold text-xl text-gray-500 pt-10 pb-4">
+                <div class="font-bold text-xl text-[#333535] pt-10 pb-4">
                     INCLUSIONS:
                 </div>
                 <div class="flex me-8">
@@ -118,6 +114,32 @@ function getInclusionLines(inclusion) {
                         ></div>
                     </div>
                 </div>
+                   <div
+                        v-if="
+                            packageData.options &&
+                            packageData.options.length > 0
+                        "
+                        class="text-[#1f2937] flex py-2 mx-auto xs:flex xxs:block"
+                    >
+                        <strong class="text-4xl self-end font-bold"
+                            >₱{{ packageData.options[0].price }}</strong
+                        ><span class="self-end text-lg"
+                            >/{{ packageData.duration }}</span
+                        >
+                        
+                       
+                    </div>
+                     <div
+                            class="flex flex-col  xxs:text-sm xs:text-sm lg:text-sm"
+                        >
+                            <div class="ps-2">NOTE: {{ packageData.note }}</div>
+                            <div class="ps-2 self-start">
+                                EXTENSION: ₱{{
+                                    packageData.options[0].extension
+                                }}
+                                / hours
+                            </div>
+                        </div>
             </div>
             <div
                 class="relative flex flex-col xxs:mt-4 xs:mt-6 xs:w-full sm:mt-6 sm:w-full md:mt-8 md:w-full lg:w-full 2xl:w-[700px] xs-xs:w-[310px]"
@@ -132,11 +154,7 @@ function getInclusionLines(inclusion) {
                         <div class="font-bold text-xl text-white">
                             With Goodplans.
                         </div>
-                        <div class="font-light text-sm pt-4 text-white">
-                            Lorem ipsum, dolor sit amet consectetur adipisicing
-                            elit. Velit facilis illo quod doloremque nihil
-                            doloribus id
-                        </div>
+               
                     </div>
                     <div>
                         <div class="bg-primary-100">
@@ -149,6 +167,7 @@ function getInclusionLines(inclusion) {
                                     @swiper="onSwiper"
                                     @slideChange="onSlideChange"
                                 >
+                                <!-- slider 1 -->
                                     <swiper-slide>
                                         <img
                                             :src="
@@ -163,7 +182,7 @@ function getInclusionLines(inclusion) {
                                                     ? '/uploads/slider/polaroid.png'
                                                     : packageData.packageName ===
                                                       'Package D'
-                                                    ? '/uploads/slider/single-shot-magnetic.png'
+                                                    ? '/uploads/slider/photostandee-1.png'
                                                     : ''
                                             "
                                             alt="slide1"
@@ -171,12 +190,15 @@ function getInclusionLines(inclusion) {
                                             class="mx-auto flex align-center justify-center rounded-lg"
                                         />
                                     </swiper-slide>
+                                <!-- slider 2 -->
                                     <swiper-slide
                                         v-if="
                                             packageData.packageName ===
                                                 'Package A' ||
                                             packageData.packageName ===
-                                                'Package B'
+                                                'Package B' || 
+                                            packageData.packageName ===  
+                                                'Package D'
                                         "
                                     >
                                         <img
@@ -187,6 +209,9 @@ function getInclusionLines(inclusion) {
                                                     : packageData.packageName ===
                                                       'Package B'
                                                     ? '/uploads/slider/magnetic-strips.png'
+                                                    : packageData.packageName ===
+                                                      'Package D'
+                                                    ? '/uploads/slider/single-shot-magnetic.png'
                                                     : ''
                                             "
                                             alt="slide1"
@@ -194,7 +219,7 @@ function getInclusionLines(inclusion) {
                                             class="mx-auto flex align-center justify-center rounded-lg"
                                         />
                                     </swiper-slide>
-
+                                <!-- slider 3 -->
                                     <swiper-slide
                                         v-if="
                                             packageData.packageName ===
@@ -205,7 +230,7 @@ function getInclusionLines(inclusion) {
                                             :src="
                                                 packageData.packageName ===
                                                 'Package A'
-                                                    ? '/uploads/slider/photostandee-1.png'
+                                                    ?  '/uploads/slider/photostandee-strips.png'
                                                     : ''
                                             "
                                             alt="slide1"
@@ -213,25 +238,7 @@ function getInclusionLines(inclusion) {
                                             class="mx-auto flex align-center justify-center rounded-lg"
                                         />
                                     </swiper-slide>
-
-                                    <swiper-slide
-                                        v-if="
-                                            packageData.packageName ===
-                                            'Package A'
-                                        "
-                                    >
-                                        <img
-                                            :src="
-                                                packageData.packageName ===
-                                                'Package A'
-                                                    ? '/uploads/slider/photostandee-strips.png'
-                                                    : ''
-                                            "
-                                            alt="slide1"
-                                            width="auto"
-                                            class="mx-auto flex align-center justify-center rounded-lg"
-                                        />
-                                    </swiper-slide>
+                                 
                                     ...
                                 </swiper>
                             </div>
@@ -239,34 +246,9 @@ function getInclusionLines(inclusion) {
                     </div>
                 </div>
                 <div
-                    class="font-light text-gray-700 self-ends w-full flex flex-col justify-center align-center"
+                    class="font-light mt-4 text-gray-700 self-ends w-full flex flex-col justify-center align-center"
                 >
-                    <div
-                        v-if="
-                            packageData.options &&
-                            packageData.options.length > 0
-                        "
-                        class="text-[#1f2937] flex py-2 mx-auto xs:flex xxs:block"
-                    >
-                        <strong class="text-4xl self-end font-bold"
-                            >₱{{ packageData.options[0].price }}</strong
-                        ><span class="self-end text-lg"
-                            >/{{ packageData.duration }}</span
-                        >
-                        <div
-                            class="flex flex-col mx-auto xxs:text-sm xs:text-sm lg:text-sm"
-                        >
-                            <div class="ps-2">NOTE: {{ packageData.note }}</div>
-                            <div class="ps-2 self-start">
-                                EXTENSION: ₱{{
-                                    packageData.options[0].extension
-                                }}
-                                / hours
-                            </div>
-                        </div>
-                    </div>
-
-                    <AButton
+                                     <AButton
                         class="w-full shadow-lg flex justify-center align-center"
                         :href="`/event/registration/${packageData.packageId}`"
                     >
