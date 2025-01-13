@@ -85,12 +85,5 @@ export default {
         charts:true,
     }),
 ]
-    // content: [
-    //     "./node_modules/flowbite/**/*.js"
-    // ]
-    // forms,
-    // require('daisyui')],
-    // daisyui: {
-    //     themes: ["emerald"],
-    //   },
+  
 };
