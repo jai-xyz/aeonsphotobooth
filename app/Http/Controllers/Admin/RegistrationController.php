@@ -308,7 +308,10 @@ class RegistrationController extends Controller
     {
         Log::info('checkAndUpdatePaymentStatus method called.');
 
-        $events = Registration::where('payment_status', 'Pending')->get();
+        $registrationQuery = Registration::query()
+        ->where('payment_status', 'Pending');
+
+        $events = $registrationQuery->get();
         Log::info('Number of pending events: ' . $events->count());
 
         foreach ($events as $event) {
