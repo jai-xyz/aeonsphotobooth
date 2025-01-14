@@ -308,6 +308,7 @@ class RegistrationController extends Controller
     {
         Log::info('checkAndUpdatePaymentStatus method called.');
 
+        $events = collect();
 
         try {
             $registrationQuery = Registration::query()
