@@ -77,23 +77,23 @@ class RegistrationController extends Controller
             'search' => $request->search ?? '',
         ]);
     }
-    
+
     public function indexArchive(Request $request): Response
     {
         $registrationQuery = Registration::query()
             ->whereIn('status', ['Cancel', 'Complete', 'Decline']);
-    
+
         $this->applySearch($registrationQuery, $request->search);
-    
+
         $events = $registrationQuery->orderBy('updated_at', 'desc')->paginate(10);
-    
+
         $events->getCollection()->transform(function ($event) {
             $event->user = DB::table('users')->where('id', $event->user_id)->first();
             $event->date = (new DateTime($event->date))->format('m-d-Y');
             $event->time = (new DateTime($event->time))->format('g:i A');
             return $event;
         });
-    
+
         return Inertia::render('Admin/ArchiveRegistration', [
             'events' => $events,
             'search' => $request->search ?? '',
@@ -134,25 +134,25 @@ class RegistrationController extends Controller
     {
         // Get the current date
         $currentDate = now()->format('Y-m-d');
-    
+
         // Find events that are not on the current date, have a status of 'Accept', and payment_status of 'paid'
         $events = Registration::where('status', 'Accept')
             ->where('payment_status', 'paid')
             ->where('date', '<', $currentDate)
             ->get();
-    
+
         foreach ($events as $event) {
             $originalStatus = $event->status;
             $event->status = 'Complete';
             $event->save();
-    
+
             if ($event->wasChanged('status')) {
                 Log::info("Event '{$event->event}' (ID: {$event->id}) status updated from '{$originalStatus}' to 'Complete'.");
             } else {
                 Log::warning("Failed to update status for event '{$event->event}' (ID: {$event->id}).");
             }
         }
-    
+
         Log::info('Expired events update process completed.');
     }
 
@@ -167,7 +167,7 @@ class RegistrationController extends Controller
         $event->user_id = $validated['user_id'];
 
         $event->save();
-        
+
         Mail::to('rhyaaaaa01072001@gmail.com')->queue(new CancelEventNotification($event));
         return redirect()->back()->with('success', 'Event has been restored.');
     }
@@ -217,12 +217,12 @@ class RegistrationController extends Controller
         $event->user_id = $validated['user_id'];
         $email = $event->email;
 
-        if($event->save()){
+        if ($event->save()) {
             Log::info("Event '{$event->event}' (ID: {$event->id}) status updated to 'Cancel'.");
         } else {
             Log::warning("Failed to update status for event '{$event->event}' (ID: {$event->id}).");
         }
-        
+
         Mail::to($email)->queue(new CancelEventNotification($event));
         return redirect()->back()->with('success', 'The event was canceled successfully.');
     }
@@ -286,7 +286,7 @@ class RegistrationController extends Controller
                 $reference_number = $decoded['data']['attributes']['reference_number'];
 
 
-                 // Log the checkout URL and reference number
+                // Log the checkout URL and reference number
                 Log::info("Checkout URL: " . $checkout_url);
                 Log::info("Reference Number: " . $reference_number);
 
@@ -308,11 +308,16 @@ class RegistrationController extends Controller
     {
         Log::info('checkAndUpdatePaymentStatus method called.');
 
-        $registrationQuery = Registration::query()
-        ->where('payment_status', 'Pending');
 
-        $events = $registrationQuery->get();
-        Log::info('Number of pending events: ' . $events->count());
+        try {
+            $registrationQuery = Registration::query()
+                ->where('payment_status', 'Pending');
+
+            $events = $registrationQuery->get();
+            Log::info('Number of pending events: ' . $events->count());
+        } catch (\Exception $e) {
+            Log::error('Error fetching pending events: ' . $e->getMessage());
+        }
 
         foreach ($events as $event) {
             $reference_number = $event->reference_number;
