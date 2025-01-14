@@ -134,12 +134,19 @@ class RegistrationController extends Controller
     {
         // Get the current date
         $currentDate = now()->format('Y-m-d');
-
+        $events = collect();
+        
         // Find events that are not on the current date, have a status of 'Accept', and payment_status of 'paid'
-        $events = Registration::where('status', 'Accept')
-            ->where('payment_status', 'paid')
-            ->where('date', '<', $currentDate)
-            ->get();
+        try {
+            $events = Registration::where('status', 'Accept')
+                ->where('payment_status', 'paid')
+                ->where('date', '<', $currentDate)
+                ->get();
+            Log::info('Number of expired events: ' . $events->count());
+        } catch (\Exception $e) {
+            Log::error('Error fetching expired events: ' . $e->getMessage());
+        }
+    
 
         foreach ($events as $event) {
             $originalStatus = $event->status;
@@ -227,8 +234,8 @@ class RegistrationController extends Controller
         return redirect()->back()->with('success', 'The event was canceled successfully.');
     }
 
-    /**
-     * Update the specified resource in storage.
+    /**`
+     * Update the specified resource in storage.`
      */
     public function update(Request $request, Registration $event): RedirectResponse
     {
